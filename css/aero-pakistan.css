@@ -1,0 +1,328 @@
+/* Aero Pakistan — deep navy with cyan / sky accents */
+
+.aero-page {
+  --ap-cyan: #38bdf8;
+  --ap-cyan-soft: #7dd3fc;
+  --ap-sky: #0ea5e9;
+  --ap-surface: color-mix(in srgb, #0a1628 90%, var(--ap-cyan));
+  --ap-line: color-mix(in srgb, var(--ap-cyan) 28%, transparent);
+  padding-bottom: clamp(56px, 10vh, 96px);
+  position: relative;
+}
+
+.aero-page.page-dark {
+  background:
+    linear-gradient(
+      180deg,
+      #06101c 0%,
+      #0a1628 45%,
+      #050a12 100%
+    );
+}
+
+.aero-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--ap-cyan) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--ap-cyan) 18%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 100%);
+}
+
+.aero-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+.aero-hero {
+  max-width: 52rem;
+}
+
+.aero-page .page-kicker {
+  color: var(--ap-cyan);
+}
+
+.aero-hero h1 {
+  max-width: 20ch;
+}
+
+.aero-hero .page-lead {
+  max-width: 44ch;
+  color: color-mix(in srgb, var(--white) 88%, var(--ap-cyan-soft));
+}
+
+.aero-hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aero-hero-links a {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ap-cyan-soft);
+  border-bottom: 1px solid color-mix(in srgb, var(--ap-sky) 50%, transparent);
+  padding-bottom: 2px;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.aero-hero-links a:hover {
+  color: var(--white);
+  border-bottom-color: var(--white);
+}
+
+.aero-hero-links a:focus-visible {
+  outline: 1px solid var(--ap-cyan);
+  outline-offset: 4px;
+}
+
+.aero-overview,
+.aero-modules,
+.aero-legacy,
+.aero-achievements,
+.aero-faq,
+.aero-cta {
+  margin-top: clamp(48px, 8vh, 80px);
+  max-width: 1100px;
+}
+
+.aero-page h2 {
+  margin: 0 0 20px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 44px);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--white);
+}
+
+.aero-overview-grid {
+  display: grid;
+  gap: 28px 40px;
+}
+
+.aero-overview-copy p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--white) 90%, var(--muted-on-dark));
+  max-width: 62ch;
+}
+
+.aero-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-content: start;
+}
+
+.aero-stats li {
+  padding: 16px 18px;
+  background: var(--ap-surface);
+  border: 1px solid var(--ap-line);
+  border-radius: 4px;
+}
+
+.aero-stats strong {
+  display: block;
+  font-family: var(--display);
+  font-size: clamp(18px, 2.4vw, 24px);
+  letter-spacing: -0.02em;
+  color: var(--ap-cyan-soft);
+  line-height: 1.2;
+}
+
+.aero-stats span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--white) 78%, var(--muted-on-dark));
+}
+
+.aero-module-grid {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aero-module {
+  padding: 22px 22px 24px;
+  background: color-mix(in srgb, #0c1a2c 92%, var(--ap-cyan));
+  border: 1px solid var(--ap-line);
+  border-left: 3px solid var(--ap-cyan);
+  border-radius: 2px;
+  transition: border-color 0.25s var(--ease), transform 0.35s var(--ease);
+}
+
+.aero-module:hover {
+  border-color: color-mix(in srgb, var(--ap-cyan) 55%, transparent);
+  border-left-color: var(--ap-sky);
+  transform: translateY(-2px);
+}
+
+.aero-module-field {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ap-cyan);
+}
+
+.aero-module h3 {
+  margin: 0 0 10px;
+  font-family: var(--display);
+  font-size: clamp(20px, 2.4vw, 26px);
+  letter-spacing: -0.02em;
+  color: var(--white);
+}
+
+.aero-module p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--white) 86%, var(--muted-on-dark));
+}
+
+.aero-legacy p,
+.aero-achievements p,
+.aero-faq p,
+.aero-cta p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.65;
+  max-width: 62ch;
+  color: color-mix(in srgb, var(--white) 90%, var(--muted-on-dark));
+}
+
+.aero-faq details {
+  margin-top: 8px;
+  padding: 18px 0;
+  border-top: 1px solid var(--ap-line);
+}
+
+.aero-faq details:last-of-type {
+  border-bottom: 1px solid var(--ap-line);
+}
+
+.aero-faq summary {
+  cursor: pointer;
+  font-family: var(--display);
+  font-size: clamp(18px, 2.2vw, 22px);
+  letter-spacing: -0.02em;
+  color: var(--white);
+  list-style: none;
+}
+
+.aero-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.aero-faq summary::after {
+  content: "+";
+  float: right;
+  color: var(--ap-cyan);
+  font-family: var(--sans);
+  font-weight: 600;
+}
+
+.aero-faq details[open] summary::after {
+  content: "−";
+}
+
+.aero-faq summary:focus-visible {
+  outline: 1px solid var(--ap-cyan);
+  outline-offset: 4px;
+}
+
+.aero-faq details p {
+  margin-top: 14px;
+}
+
+.aero-cta a {
+  color: var(--ap-cyan-soft);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--ap-cyan) 50%, transparent);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.aero-cta a:hover {
+  color: var(--white);
+  border-bottom-color: var(--white);
+}
+
+.aero-cta a:focus-visible {
+  outline: 1px solid var(--ap-cyan);
+  outline-offset: 3px;
+}
+
+.aero-page .page-back {
+  color: var(--ap-cyan);
+}
+
+.aero-page .page-back:hover {
+  color: var(--white);
+}
+
+.aero-page .page-back:focus-visible {
+  outline-color: var(--ap-cyan);
+}
+
+@media (min-width: 640px) {
+  .aero-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .aero-overview-grid {
+    grid-template-columns: 1.35fr 1fr;
+    align-items: start;
+  }
+
+  .aero-module-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .aero-module:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    max-width: calc(50% - 8px);
+  }
+}
+
+@media (min-width: 1100px) {
+  .aero-module-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .aero-module:last-child:nth-child(odd) {
+    grid-column: auto;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aero-module {
+    transition: none;
+  }
+
+  .aero-module:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,233 @@
+/* Inter-House Science Event — scoped to body.interhouse-page */
+
+body.interhouse-page {
+  --ih-frere: #dc2626;
+  --ih-napier: #1e3a8a;
+  --ih-streeton: #16a34a;
+  --ih-papworth: #38bdf8;
+  --ih-papworth-ink: #0c1929;
+  --ih-champ: #dc2626;
+}
+
+body.interhouse-page .page h1 {
+  max-width: 18ch;
+}
+
+.ih-houses {
+  margin: 48px 0 56px;
+}
+
+.ih-houses h2 {
+  margin: 0 0 8px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(28px, 3.5vw, 40px);
+  letter-spacing: -0.03em;
+  color: var(--white);
+}
+
+.ih-houses > p {
+  margin: 0 0 28px;
+  max-width: 48ch;
+  color: var(--muted-on-dark);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.ih-house-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .ih-house-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ih-house-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.ih-house {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  overflow: hidden;
+  transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease);
+}
+
+.ih-house:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(5, 5, 8, 0.32);
+}
+
+.ih-house-banner {
+  padding: 28px 22px 30px;
+  min-height: 7.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--white);
+}
+
+.ih-house-banner h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(26px, 2.8vw, 32px);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.ih-house-banner p {
+  margin: 8px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+.ih-house-frere .ih-house-banner { background: var(--ih-frere); }
+.ih-house-napier .ih-house-banner { background: var(--ih-napier); }
+.ih-house-streeton .ih-house-banner { background: var(--ih-streeton); }
+.ih-house-papworth .ih-house-banner {
+  background: var(--ih-papworth);
+  color: var(--ih-papworth-ink);
+}
+
+.ih-about {
+  margin: 0 0 56px;
+  max-width: 62ch;
+}
+
+.ih-about h2 {
+  margin: 0 0 14px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(28px, 3.5vw, 40px);
+  letter-spacing: -0.03em;
+  color: var(--white);
+}
+
+.ih-about p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--muted-on-dark);
+}
+
+.ih-gallery {
+  margin: 0 0 56px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 720px) {
+  .ih-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ih-gallery figure {
+  margin: 0;
+  overflow: hidden;
+  background: var(--black);
+  border: 1px solid var(--line);
+}
+
+.ih-gallery img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ih-champs {
+  margin: 0 0 8px;
+  padding: 28px 28px 30px;
+  max-width: 36rem;
+  background: color-mix(in srgb, var(--ih-champ) 12%, var(--black));
+  border: 1px solid color-mix(in srgb, var(--ih-champ) 55%, transparent);
+  border-left: 4px solid var(--ih-champ);
+}
+
+.ih-champs-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #fca5a5;
+}
+
+.ih-champs-mark svg {
+  flex-shrink: 0;
+  color: var(--ih-champ);
+}
+
+.ih-champs h2 {
+  margin: 0 0 8px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(28px, 3.5vw, 40px);
+  letter-spacing: -0.03em;
+  color: var(--white);
+}
+
+.ih-champs > p {
+  margin: 0 0 20px;
+  color: var(--muted-on-dark);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.ih-champs ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.ih-champs li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ih-champs .ih-level {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #fca5a5;
+}
+
+.ih-champs .ih-winner {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(22px, 2.6vw, 28px);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--white);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ih-house {
+    transition: none;
+  }
+  .ih-house:hover {
+    transform: none;
+  }
+}
