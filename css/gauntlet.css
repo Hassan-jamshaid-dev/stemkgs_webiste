@@ -16,13 +16,14 @@
 
 .gauntlet-about h2,
 .gauntlet-gallery h2 {
-  margin: 0 0 20px;
+  margin: 0 auto 20px;
   font-family: var(--display);
   font-weight: 700;
   font-size: clamp(28px, 4vw, 44px);
   letter-spacing: -0.03em;
   line-height: 1.05;
   color: var(--white);
+  text-align: center;
 }
 
 .gauntlet-about .page-body p {

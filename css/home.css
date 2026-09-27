@@ -218,7 +218,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-start;
   padding: calc(var(--nav) + 48px) clamp(24px, 6vw, 80px) clamp(56px, 10vh, 100px);
   background: var(--bg-hero);
@@ -303,18 +303,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(105deg, rgba(5, 5, 8, 0.82) 0%, rgba(40, 20, 76, 0.58) 30%, rgba(20, 44, 72, 0.22) 52%, transparent 72%),
-    /* bottom leans purple so the seam into Subjects is not a hard cut */
-    linear-gradient(180deg, rgba(5, 5, 8, 0.28) 0%, transparent 28%, rgba(5, 5, 8, 0.35) 72%, rgba(38, 18, 72, 0.55) 100%);
+    radial-gradient(ellipse 70% 55% at 50% 48%, rgba(5, 5, 8, 0.72) 0%, rgba(40, 20, 76, 0.45) 42%, transparent 72%),
+    linear-gradient(180deg, rgba(5, 5, 8, 0.35) 0%, transparent 28%, rgba(5, 5, 8, 0.35) 72%, rgba(38, 18, 72, 0.55) 100%);
 }
 .hero-copy {
   position: relative;
   z-index: 2;
   text-align: left;
-  max-width: 12ch;
-  /* solid-enough panel so copy stays AAA over collage + wash */
-  padding: 12px 16px 14px 0;
-  background: linear-gradient(90deg, rgba(5, 5, 8, 0.55) 0%, rgba(5, 5, 8, 0.28) 70%, transparent 100%);
+  max-width: 18ch;
+  /* solid-enough panel so copy stays readable over collage + wash */
+  padding: 16px 20px 18px;
+  background: radial-gradient(ellipse 80% 70% at 50% 50%, rgba(5, 5, 8, 0.55) 0%, rgba(5, 5, 8, 0.22) 70%, transparent 100%);
 }
 .hero .eyebrow {
   color: var(--blue-bright);
@@ -386,6 +385,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   gap: 16px;
   margin-bottom: clamp(40px, 7vh, 72px);
   max-width: 1100px;
+  text-align: left;
 }
 .subjects-tick {
   display: block;
@@ -521,6 +521,7 @@ a.subject:focus-visible {
 .comps-head {
   max-width: 720px;
   margin-bottom: clamp(36px, 6vh, 56px);
+  text-align: left;
 }
 .comps-head h2 {
   margin: 0;
@@ -530,6 +531,7 @@ a.subject:focus-visible {
   line-height: 0.95;
   font-size: clamp(48px, 7vw, 96px);
   color: var(--white);
+  text-align: left;
 }
 .comps-head p {
   margin: 16px 0 0;
@@ -627,6 +629,7 @@ a.subject:focus-visible {
 .about-col {
   position: relative;
   z-index: 1;
+  text-align: left;
 }
 .about-col .eyebrow {
   margin-bottom: 20px;
@@ -639,8 +642,9 @@ a.subject:focus-visible {
   letter-spacing: -0.035em;
   line-height: 0.95;
   font-size: clamp(40px, 5.5vw, 72px);
-  max-width: 12ch;
+  max-width: 14ch;
   color: var(--white);
+  text-align: left;
 }
 .about > p {
   position: relative;
@@ -664,6 +668,7 @@ a.subject:focus-visible {
   );
   color: var(--white);
   isolation: isolate;
+  text-align: left;
 }
 .contact::after {
   content: "";
@@ -686,7 +691,7 @@ a.subject:focus-visible {
   width: 40px;
   height: 2px;
   background: linear-gradient(90deg, var(--purple-soft), var(--blue-bright));
-  margin-bottom: 28px;
+  margin: 0 0 28px;
 }
 .contact h2 {
   margin: 0;
@@ -696,6 +701,7 @@ a.subject:focus-visible {
   line-height: 0.95;
   font-size: clamp(48px, 7vw, 96px);
   color: var(--white);
+  text-align: left;
 }
 .contact p {
   margin: 20px 0 0;
@@ -782,25 +788,27 @@ a.subject:focus-visible {
   z-index: 1;
 }
 .page-kicker {
-  margin: 0 0 20px;
+  margin: 0 auto 20px;
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--blue-bright);
   font-weight: 600;
+  text-align: center;
 }
 .page h1 {
-  margin: 0 0 28px;
+  margin: 0 auto 28px;
   font-family: var(--display);
   font-weight: 700;
   font-size: clamp(48px, 8vw, 96px);
   letter-spacing: -0.035em;
   line-height: 0.95;
-  max-width: 14ch;
+  max-width: 18ch;
   color: var(--white);
+  text-align: center;
 }
 .page-lead {
-  margin: 0 0 28px;
+  margin: 0 auto 28px;
   font-size: clamp(20px, 2.4vw, 26px);
   line-height: 1.45;
   max-width: 38ch;
@@ -808,6 +816,7 @@ a.subject:focus-visible {
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--muted-on-dark);
+  text-align: center;
 }
 .page-body {
   max-width: 62ch;
@@ -837,37 +846,50 @@ a.subject:focus-visible {
 }
 
 .gallery-note {
-  margin: 0 0 40px;
+  margin: 0 auto 40px;
   max-width: 42ch;
   color: var(--muted-on-dark);
   font-size: 16px;
+  text-align: center;
+}
+.gallery-section {
+  margin-top: clamp(48px, 8vh, 80px);
+  max-width: 1100px;
+}
+.gallery-section > h2 {
+  margin: 0 auto 20px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--white);
+  text-align: center;
 }
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 18px 16px;
+  gap: 16px;
   max-width: 1100px;
 }
 .gallery-frame {
   margin: 0;
   grid-column: span 4;
   overflow: hidden;
-  background: var(--card);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--card) 70%, var(--black));
   border: 1px solid color-mix(in srgb, var(--purple-soft) 45%, transparent);
+  aspect-ratio: 4 / 3;
 }
-.gallery-frame-lg { grid-column: span 8; }
-.gallery-frame-wide { grid-column: span 8; }
+.gallery-frame-lg { grid-column: span 8; aspect-ratio: 3 / 4; }
+.gallery-frame-wide { grid-column: span 8; aspect-ratio: 16 / 9; }
 .gallery-frame img {
   width: 100%;
   height: 100%;
-  min-height: 220px;
-  max-height: 520px;
   object-fit: cover;
+  object-position: center 30%;
   display: block;
-  aspect-ratio: 4 / 3;
 }
-.gallery-frame-lg img { aspect-ratio: 3 / 4; max-height: 640px; }
-.gallery-frame-wide img { aspect-ratio: 16 / 9; max-height: 420px; }
 
 .page-subject .page-lead { margin-bottom: 48px; }
 .subject-team,
@@ -879,19 +901,21 @@ a.subject:focus-visible {
 .subject-team h2,
 .subject-modules h2,
 .subject-acc h2 {
-  margin: 0 0 12px;
+  margin: 0 auto 12px;
   font-family: var(--display);
   font-weight: 700;
   font-size: clamp(28px, 4vw, 44px);
   letter-spacing: -0.03em;
   line-height: 1;
   color: var(--white);
+  text-align: center;
 }
 .subject-note {
-  margin: 0 0 28px;
+  margin: 0 auto 28px;
   max-width: 46ch;
   color: var(--muted-on-dark);
   font-size: 16px;
+  text-align: center;
 }
 .subject-team-grid {
   display: grid;
@@ -956,12 +980,13 @@ a.subject:focus-visible {
 .acc-page-list li:last-child { border-bottom: 1px solid var(--line); }
 .acc-page-list .comp-label { margin-bottom: 8px; }
 .acc-page-list h2 {
-  margin: 0 0 10px;
+  margin: 0 auto 10px;
   font-family: var(--display);
   font-weight: 700;
   font-size: clamp(28px, 4vw, 40px);
   letter-spacing: -0.025em;
   color: var(--white);
+  text-align: center;
 }
 .acc-page-list p {
   margin: 0;
@@ -1031,8 +1056,7 @@ a.subject:focus-visible {
   }
   .hero-wash {
     background:
-      linear-gradient(105deg, rgba(5, 5, 8, 0.86) 0%, rgba(40, 20, 76, 0.62) 42%, rgba(20, 44, 72, 0.28) 100%),
-      /* bottom leans purple into Subjects */
+      radial-gradient(ellipse 80% 60% at 50% 45%, rgba(5, 5, 8, 0.78) 0%, rgba(40, 20, 76, 0.5) 45%, transparent 75%),
       linear-gradient(180deg, rgba(5, 5, 8, 0.3) 0%, transparent 30%, rgba(5, 5, 8, 0.4) 70%, rgba(38, 18, 72, 0.58) 100%);
   }
   .subject-stage {
