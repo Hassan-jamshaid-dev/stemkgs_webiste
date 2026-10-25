@@ -927,6 +927,10 @@ a.subject:focus-visible {
   object-position: center 30%;
   display: block;
 }
+.gallery-frame-contain img {
+  object-fit: contain;
+  object-position: center;
+}
 
 .page-subject .page-lead { margin-bottom: 48px; }
 .subject-team,
@@ -1155,14 +1159,17 @@ main a:focus-visible {
 
 /* External competition pages (.ext-page) — center headings like KGSO.
    Home .comps-head, .hero, .about, and .contact stay left.
-   Body paragraphs are not restyled. Both horizontal margins are auto
-   so a heading block is centered, never pushed to one side. */
+   Layout for these pages lives in css/external-comps.css. */
 .page.ext-page h1,
 .page.ext-page h2,
 .page.ext-page h3,
 .page.ext-page .page-kicker,
 .page.ext-page .page-lead,
-.page.ext-page .acsec-subhead {
+.page.ext-page .ext-card-kicker,
+.page.ext-page .ext-note,
+.page.ext-page .ext-meta,
+.page.ext-page .ext-contact,
+.page.ext-page .ext-credit {
   text-align: center;
   margin-left: auto;
   margin-right: auto;
@@ -1175,8 +1182,7 @@ main a:focus-visible {
 }
 
 .page.ext-page .page-kicker,
-.page.ext-page .page-lead,
-.page.ext-page .acsec-subhead {
+.page.ext-page .page-lead {
   display: block;
   width: fit-content;
   max-width: min(42ch, 100%);
@@ -1185,52 +1191,5 @@ main a:focus-visible {
 .page.ext-page h2,
 .page.ext-page h3 {
   width: auto;
-  max-width: none;
-}
-
-.page.ext-page .module-focus,
-.page.ext-page .aero-module-field,
-.page.ext-page .race-module-field {
-  text-align: center;
-}
-
-.page.ext-page .acsec-hero,
-.page.ext-page .acsec-modules,
-.page.ext-page .acsec-legacy,
-.page.ext-page .aero-hero,
-.page.ext-page .aero-overview,
-.page.ext-page .aero-modules,
-.page.ext-page .aero-legacy,
-.page.ext-page .aero-achievements,
-.page.ext-page .aero-faq,
-.page.ext-page .aero-cta,
-.page.ext-page .race-hero,
-.page.ext-page .race-overview,
-.page.ext-page .race-modules,
-.page.ext-page .race-involvement,
-.page.ext-page .race-awards,
-.page.ext-page .race-faq,
-.page.ext-page .race-cta,
-.page.ext-page .psifi-hero,
-.page.ext-page .scinova-hero,
-.page.ext-page .subject-modules,
-.page.ext-page .module-list,
-.page.psifi-page .page-body,
-.page.scinova-page .page-body {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.page.ext-page .psifi-hero,
-.page.ext-page .scinova-hero {
-  max-width: 52rem;
-}
-
-.page.psifi-page .module-list p,
-.page.scinova-page .module-list p {
-  max-width: 62ch;
-}
-
-.page.psifi-page .page-body a {
-  color: var(--blue-bright);
+  max-width: 100%;
 }

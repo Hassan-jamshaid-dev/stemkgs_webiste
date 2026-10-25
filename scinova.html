@@ -10,7 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/home.css?v=24">
+  <link rel="stylesheet" href="css/home.css?v=25">
+  <link rel="stylesheet" href="css/external-comps.css?v=2">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -35,24 +36,22 @@
   </header>
 
   <main id="main" class="page page-dark scinova-page ext-page">
-    <section class="scinova-hero" aria-labelledby="scinova-title">
+    <header class="ext-hero" aria-labelledby="scinova-title">
       <p class="page-kicker">External competition</p>
       <h1 id="scinova-title">SciNova</h1>
       <p class="page-lead">An external competition associated with Lahore Grammar School.</p>
-      <div class="page-body">
-        <p>SciNova is an external competition associated with Lahore Grammar School. Its primary mathematics module is Ptolemy's Puzzle.</p>
-        <p>Further SciNova details will be added when they are confirmed.</p>
-      </div>
-    </section>
+      <p class="ext-meta">Its primary mathematics module is Ptolemy's Puzzle.</p>
+    </header>
 
-    <section class="subject-modules" aria-labelledby="scinova-maths-title">
+    <section class="ext-section" aria-labelledby="scinova-maths-title">
       <h2 id="scinova-maths-title">Mathematics</h2>
-      <ul class="module-list">
-        <li>
+      <div class="ext-cards">
+        <article class="ext-card">
           <h3>Ptolemy's Puzzle</h3>
           <p>The primary mathematics module at SciNova.</p>
-        </li>
-      </ul>
+        </article>
+      </div>
+      <p class="ext-note">Further SciNova details will be added when they are confirmed.</p>
     </section>
 
     <a class="page-back" href="index.html#comps">Back to competitions</a>

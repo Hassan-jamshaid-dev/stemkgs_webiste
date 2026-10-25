@@ -10,8 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/home.css?v=24">
-  <link rel="stylesheet" href="css/acsec.css">
+  <link rel="stylesheet" href="css/home.css?v=25">
+  <link rel="stylesheet" href="css/external-comps.css?v=2">
+  <link rel="stylesheet" href="css/acsec.css?v=2">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -36,101 +37,112 @@
   </header>
 
   <main id="main" class="page page-dark acsec-page ext-page">
-    <section class="acsec-hero" aria-labelledby="acsec-title">
+    <header class="ext-hero" aria-labelledby="acsec-title">
       <p class="page-kicker">External competition</p>
       <h1 id="acsec-title">ACSEC — Aitchison College Science &amp; Engineering Concept</h1>
-      <p class="acsec-subhead">Pakistan's Premier High-School STEM Olympiad</p>
-      <div class="page-body">
-        <p>ACSEC is the flagship annual science and engineering competition hosted by Aitchison College in Lahore, Pakistan. Bringing together over 1,000 delegates from top schools nationwide, ACSEC tests theoretical knowledge, practical research, problem-solving, and build-engineering across high-stakes STEM disciplines.</p>
-      </div>
-      <ul class="acsec-stats">
-        <li>
-          <span class="stat-label">Host</span>
-          <span class="stat-value">Aitchison College Science Society (ACSS)</span>
-        </li>
-        <li>
-          <span class="stat-label">Location</span>
-          <span class="stat-value">Lahore, Pakistan</span>
-        </li>
-        <li>
-          <span class="stat-label">Delegates</span>
-          <span class="stat-value">1,000+ nationally</span>
-        </li>
-        <li>
-          <span class="stat-label">Core focus</span>
-          <span class="stat-value">Pure Sciences, Engineering, Robotics, Bio-Math and Cyber-Logic</span>
-        </li>
-      </ul>
-    </section>
+      <p class="page-lead">Pakistan's premier high-school STEM olympiad, hosted by Aitchison College in Lahore, Pakistan.</p>
+      <p class="ext-meta">Host: Aitchison College Science Society (ACSS).</p>
+      <p class="ext-note">ACSEC is the flagship annual science and engineering competition hosted by Aitchison College in Lahore, Pakistan. Bringing together over 1,000 delegates from top schools nationwide, ACSEC tests theoretical knowledge, practical research, problem-solving, and build-engineering across high-stakes STEM disciplines.</p>
+    </header>
 
-    <section class="acsec-modules" aria-labelledby="acsec-modules-title">
+    <nav class="ext-nav" aria-label="On this page">
+      <a href="#acsec-modules-title">Modules</a>
+      <a href="#acsec-legacy-title">KGS at ACSEC</a>
+    </nav>
+
+    <ul class="ext-facts" aria-label="Quick facts">
+      <li><span class="ext-fact-label">Host</span> Aitchison College Science Society (ACSS)</li>
+      <li><span class="ext-fact-label">Location</span> Lahore, Pakistan</li>
+      <li><span class="ext-fact-label">Delegates</span> 1,000+ nationally</li>
+      <li><span class="ext-fact-label">Core focus</span> Pure Sciences, Engineering, Robotics, Bio-Math and Cyber-Logic</li>
+    </ul>
+
+    <section class="ext-section" aria-labelledby="acsec-modules-title">
       <h2 id="acsec-modules-title">Modules</h2>
-      <p>Six competition tracks spanning theory, build, and applied STEM.</p>
-      <div class="acsec-module-grid">
-        <article class="acsec-module">
+      <p class="ext-note">Six competition tracks spanning theory, build, and applied STEM.</p>
+      <div class="ext-cards">
+        <article class="ext-card">
           <h3>Robinson Challenge &amp; Research Prize</h3>
-          <p class="module-focus">Pure Physics &amp; Theoretical Research</p>
-          <ul>
-            <li>Advanced Newtonian mechanics and wave dynamics</li>
-            <li>Theoretical paper analysis and peer-review modeling</li>
-            <li>Scientific inquiry and hypothesis-testing under time constraints</li>
-          </ul>
+          <p>Pure Physics &amp; Theoretical Research</p>
+          <details>
+            <summary>Topics covered</summary>
+            <ul>
+              <li>Advanced Newtonian mechanics and wave dynamics</li>
+              <li>Theoretical paper analysis and peer-review modeling</li>
+              <li>Scientific inquiry and hypothesis-testing under time constraints</li>
+            </ul>
+          </details>
         </article>
-        <article class="acsec-module">
+        <article class="ext-card">
           <h3>Icarus &amp; Aeronautical Build</h3>
-          <p class="module-focus">Mechanical &amp; Aerospace Engineering</p>
-          <ul>
-            <li>Aerodynamics, lift, drag, and thrust</li>
-            <li>On-site model engineering and payload optimization</li>
-            <li>Flight performance testing under changing conditions</li>
-          </ul>
+          <p>Mechanical &amp; Aerospace Engineering</p>
+          <details>
+            <summary>Topics covered</summary>
+            <ul>
+              <li>Aerodynamics, lift, drag, and thrust</li>
+              <li>On-site model engineering and payload optimization</li>
+              <li>Flight performance testing under changing conditions</li>
+            </ul>
+          </details>
         </article>
-        <article class="acsec-module">
+        <article class="ext-card">
           <h3>Asimo's Ascension</h3>
-          <p class="module-focus">Robotics, Automation &amp; Electrical Engineering</p>
-          <ul>
-            <li>Microcontroller logic (Arduino/Raspberry Pi fundamentals)</li>
-            <li>Obstacle navigation and sensor integration</li>
-            <li>Real-time circuit troubleshooting and robot maneuverability</li>
-          </ul>
+          <p>Robotics, Automation &amp; Electrical Engineering</p>
+          <details>
+            <summary>Topics covered</summary>
+            <ul>
+              <li>Microcontroller logic (Arduino/Raspberry Pi fundamentals)</li>
+              <li>Obstacle navigation and sensor integration</li>
+              <li>Real-time circuit troubleshooting and robot maneuverability</li>
+            </ul>
+          </details>
         </article>
-        <article class="acsec-module">
+        <article class="ext-card">
           <h3>Fibonacci's Trials &amp; Cosmic Corona</h3>
-          <p class="module-focus">Applied Mathematics &amp; Astronomy</p>
-          <ul>
-            <li>Applied calculus, sequence modeling, and game theory</li>
-            <li>Observational astronomy, orbital mechanics, and space science logic</li>
-            <li>Data interpretation from cosmic telemetry models</li>
-          </ul>
+          <p>Applied Mathematics &amp; Astronomy</p>
+          <details>
+            <summary>Topics covered</summary>
+            <ul>
+              <li>Applied calculus, sequence modeling, and game theory</li>
+              <li>Observational astronomy, orbital mechanics, and space science logic</li>
+              <li>Data interpretation from cosmic telemetry models</li>
+            </ul>
+          </details>
         </article>
-        <article class="acsec-module">
+        <article class="ext-card">
           <h3>Turing's Lair &amp; Cryptic Realm</h3>
-          <p class="module-focus">Computer Science, Logic &amp; Cryptography</p>
-          <ul>
-            <li>Cipher breaking</li>
-            <li>Algorithmic logic puzzles and recursion</li>
-            <li>Cybersecurity scenarios and competitive code debugging</li>
-          </ul>
+          <p>Computer Science, Logic &amp; Cryptography</p>
+          <details>
+            <summary>Topics covered</summary>
+            <ul>
+              <li>Cipher breaking</li>
+              <li>Algorithmic logic puzzles and recursion</li>
+              <li>Cybersecurity scenarios and competitive code debugging</li>
+            </ul>
+          </details>
         </article>
-        <article class="acsec-module">
+        <article class="ext-card">
           <h3>Genetic Enigma &amp; Forensic Science</h3>
-          <p class="module-focus">Biology, Biochemistry &amp; Forensic Investigation</p>
-          <ul>
-            <li>Molecular biology, genetics, and DNA profiling</li>
-            <li>Forensic crime scene analysis and biochemical trace analysis</li>
-            <li>Epidemiological outbreak tracking and biological system analysis</li>
-          </ul>
+          <p>Biology, Biochemistry &amp; Forensic Investigation</p>
+          <details>
+            <summary>Topics covered</summary>
+            <ul>
+              <li>Molecular biology, genetics, and DNA profiling</li>
+              <li>Forensic crime scene analysis and biochemical trace analysis</li>
+              <li>Epidemiological outbreak tracking and biological system analysis</li>
+            </ul>
+          </details>
         </article>
       </div>
     </section>
 
-    <section class="acsec-legacy" aria-labelledby="acsec-legacy-title">
+    <section class="ext-section" aria-labelledby="acsec-legacy-title">
       <h2 id="acsec-legacy-title">The KGS STEM Society at ACSEC</h2>
-      <p>The Karachi Grammar School STEM Society represents KGS at national STEM events and sends teams to compete across theoretical and engineering categories at ACSEC.</p>
-      <p class="acsec-note">Specific results will be added when they are confirmed.</p>
+      <p class="ext-note">The Karachi Grammar School STEM Society represents KGS at national STEM events and sends teams to compete across theoretical and engineering categories at ACSEC.</p>
+      <p class="ext-note">Specific results will be added when they are confirmed.</p>
     </section>
 
-    <p class="acsec-credit">Prepared by the KGS STEM Society.</p>
+    <p class="ext-credit">Prepared by the KGS STEM Society.</p>
     <a class="page-back" href="index.html#comps">Back to competitions</a>
   </main>
 

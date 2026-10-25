@@ -1,5 +1,8 @@
 /* Procedural STEM scenes. One renderer, one particle field, one line field.
-   Stage index 0..6 matches the fallback list in index.html, then a short convergence. */
+   Stage index 0..6 matches the fallback list in index.html, then a short convergence.
+   The camera is one scroll-driven path: poses are built once, then eased between
+   stages. Nothing in the path is smoothed across frames, so a fast scroll lands
+   on the pose for that progress immediately. */
 (function (global) {
   var NAVY = 0x071018;
   var SUBJECTS = 0x261248;
@@ -101,7 +104,7 @@
     var depth = lite ? 3 : 4;
     var flowCount = lite ? 16 : 28;
     var glyphCount = lite ? 8 : 12;
-    var weights = [1, 1, 1, 1, 1, 1, 1, 0.72];
+    var weights = [1, 1, 1, 1, 1, 1, 1, 0.58];
     var ranges = [];
     var sumW = 0;
     var wi;
@@ -115,7 +118,6 @@
 
     var textures = [];
     var dead = false;
-    var held = 0;
     var UP = new THREE.Vector3(0, 1, 0);
     var tmp = new THREE.Vector3();
 
@@ -1018,8 +1020,13 @@
     var tintA = new THREE.Color();
     var tintB = new THREE.Color();
     var tint = new THREE.Color();
+    var subjectsHex = SUBJECTS;
+    try {
+      var seamCss = getComputedStyle(document.documentElement).getPropertyValue("--bg-subjects").trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(seamCss)) subjectsHex = parseInt(seamCss.slice(1), 16);
+    } catch (err) { /* keep the subjects purple fallback */ }
     var bgA = new THREE.Color(NAVY);
-    var bgB = new THREE.Color(SUBJECTS);
+    var bgB = new THREE.Color(subjectsHex);
     var bg = new THREE.Color(NAVY);
     var TINTS = [0xe8eef6, 0x7eb6ea, 0xd5dee8, 0xf7f8fb, 0x8ebfed, 0xdfe7f1, 0xc5d5e6, 0x9ec8f0];
 
@@ -1027,7 +1034,7 @@
       var a = ranges[index][0];
       var b = ranges[index][1];
       var span = Math.max(0.0001, b - a);
-      var w = span * 0.22;
+      var w = span * 0.3;
       var last = index === ranges.length - 1;
       var rise0 = index === 0 ? a : a - w;
       var rise1 = index === 0 ? a : a + w;
@@ -1045,7 +1052,7 @@
       while (i < last && p >= ranges[i][1]) i++;
       if (i >= last) return { i: last, next: last, t: 0 };
       var b = ranges[i][1];
-      var w = Math.max(0.0001, (b - ranges[i][0]) * 0.22);
+      var w = Math.max(0.0001, (b - ranges[i][0]) * 0.3);
       var t0 = b - w;
       if (p <= t0) return { i: i, next: i, t: 0 };
       return { i: i, next: i + 1, t: smooth((p - t0) / w) };
@@ -1062,6 +1069,51 @@
       var a = ranges[index][0];
       var b = ranges[index][1];
       return clamp((p - a) / Math.max(0.0001, b - a), 0, 1);
+    }
+
+    /* One path. Knots are allocated here, never inside render.
+       Each stage arrives, drifts forward a little, then eases toward the next. */
+    var knotT = [];
+    var knotPos = [];
+    var knotLook = [];
+    var camLook = new THREE.Vector3();
+    var beats = [
+      { x: -2.35, y: 0.92, z: 9.9, lx: -0.35, ly: 0.42, lz: 0 },
+      { x: 1.85, y: 1.38, z: 8.15, lx: 0.15, ly: 1.2, lz: 0 },
+      { x: 1.2, y: 0.48, z: 6.85, lx: 0.12, ly: -0.05, lz: 0.05 },
+      { x: -1.75, y: 0.82, z: 8.55, lx: 0.05, ly: 0.3, lz: 0 },
+      { x: 1.6, y: 0.55, z: 7.15, lx: 0, ly: 0.38, lz: 0.1 },
+      { x: 0.35, y: 0.58, z: 6.45, lx: 0.4, ly: 0.16, lz: 0 },
+      { x: -0.95, y: 1.22, z: 7.05, lx: 0, ly: 0.5, lz: 0 },
+      { x: 0.12, y: 0.5, z: 5.85, lx: 0, ly: 0.12, lz: 0 }
+    ];
+
+    function addKnot(t, pose, drift) {
+      var side = pose.x < -0.2 ? -1 : 1;
+      var yaw = drift * side * 0.2;
+      knotT.push(t);
+      knotPos.push(new THREE.Vector3(pose.x + yaw, pose.y + drift * 0.08, pose.z - drift * 0.5));
+      knotLook.push(new THREE.Vector3(pose.lx + yaw * 0.45, pose.ly + drift * 0.05, pose.lz));
+    }
+
+    for (var beat = 0; beat < beats.length; beat++) {
+      var ra = ranges[beat][0];
+      var rb = ranges[beat][1];
+      var spanB = rb - ra;
+      var poseB = beats[beat];
+      if (beat === 0) addKnot(0, poseB, 0);
+      addKnot(ra + spanB * 0.16, poseB, 0);
+      if (beat === beats.length - 1) addKnot(1, poseB, 0.22);
+      else addKnot(ra + spanB * 0.64, poseB, 1);
+    }
+
+    function samplePath(pNow, out, list) {
+      var lastKnot = knotT.length - 1;
+      var i = 0;
+      while (i < lastKnot - 1 && pNow >= knotT[i + 1]) i++;
+      var spanK = knotT[i + 1] - knotT[i];
+      var t = spanK <= 1e-5 ? 0 : smooth(clamp((pNow - knotT[i]) / spanK, 0, 1));
+      out.copy(list[i]).lerp(list[i + 1], t);
     }
 
     function render(p, time) {
@@ -1088,7 +1140,8 @@
       var last = ranges.length - 1;
       var c0 = ranges[last][0];
       var c1 = ranges[last][1];
-      var endU = smooth(clamp((p - (c0 + (c1 - c0) * 0.42)) / Math.max(0.0001, c1 - (c0 + (c1 - c0) * 0.42)), 0, 1));
+      var blendStart = c0 + (c1 - c0) * 0.12;
+      var endU = smooth(clamp((p - blendStart) / Math.max(0.0001, c1 - blendStart), 0, 1));
       var veil = 1 - endU;
       pointsMat.opacity = 0.94 * veil;
       lineMat.opacity = 0.82 * veil;
@@ -1157,32 +1210,34 @@
       scene.fog.color.copy(bg);
       renderer.setClearColor(bg, 1);
 
+      samplePath(p, camera.position, knotPos);
+      samplePath(p, camLook, knotLook);
       var compact = window.innerWidth < 800 || window.innerHeight < 700;
-      camera.fov = compact ? 46 : 38;
-      camera.position.set(
-        Math.sin(p * Math.PI * 2) * (compact ? 0.12 : 0.24),
-        compact ? 0.72 : 0.26,
-        (compact ? 11.6 : 9.05) - Math.sin(Math.min(p, 0.9) * Math.PI) * 0.28
-      );
-      camera.lookAt(0, compact ? 0.42 : 0.08, 0);
+      if (compact) {
+        camera.position.x *= 0.4;
+        camera.position.y = 0.62 + (camera.position.y - 0.62) * 0.48;
+        camera.position.z = 11.15 + (camera.position.z - 8.3) * 0.36;
+        camLook.x *= 0.4;
+        camLook.y = 0.36 + (camLook.y - 0.36) * 0.5;
+      }
+      camera.fov = (compact ? 49 : 42) - Math.sin(Math.min(p, 0.92) * Math.PI) * (compact ? 3 : 5);
+      camera.lookAt(camLook);
       camera.updateProjectionMatrix();
+      var sway = camera.position.x * 0.035 * veil;
+      points.position.x = sway;
+      lines.position.x = sway * 1.35;
       renderer.render(scene, camera);
 
-      var best = 0;
-      var bestV = -1;
-      for (var s = 0; s < 7; s++) {
-        var pr = presence(p, s);
-        if (pr > bestV) {
-          bestV = pr;
-          best = s;
-        }
-      }
-      if (bestV >= 0.08) held = best;
-      var copyOpacity = 1 - smooth(clamp((p - c0) / Math.max(0.0001, (c1 - c0) * 0.75), 0, 1));
+      var stage = loc.i >= last ? last - 1 : loc.i;
+      if (loc.next < last && loc.t >= 0.5) stage = loc.next;
+      var swapping = loc.i !== loc.next && loc.next < last;
+      var dip = swapping ? Math.sin(loc.t * Math.PI) * 0.28 : 0;
+      var copyOpacity = (1 - endU) * (1 - dip);
       return {
-        stage: held,
+        stage: stage,
         copyOpacity: copyOpacity,
-        showMath: held === 3 && presence(p, 3) > 0.42 && copyOpacity > 0.25
+        showMath: stage === 3 && presence(p, 3) > 0.42 && copyOpacity > 0.28,
+        end: endU
       };
     }
 

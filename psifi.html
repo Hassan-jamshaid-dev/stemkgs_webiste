@@ -10,7 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/home.css?v=24">
+  <link rel="stylesheet" href="css/home.css?v=25">
+  <link rel="stylesheet" href="css/external-comps.css?v=2">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -35,94 +36,140 @@
   </header>
 
   <main id="main" class="page page-dark psifi-page ext-page">
-    <section class="psifi-hero" aria-labelledby="psifi-title">
+    <header class="ext-hero" aria-labelledby="psifi-title">
       <p class="page-kicker">External competition</p>
       <h1 id="psifi-title">PsiFi</h1>
-      <p class="page-lead">A multi-day science and technology olympiad at LUMS.</p>
-      <div class="page-body">
-        <p>PsiFi is a multi-day science and technology olympiad for school students across Pakistan, organised by SPADES (Society for the Promotion and Development of Engineering and Sciences) at LUMS, Lahore. It is open to O-Level, A-Level, Matric, and FSc students. Teams are 3–5 people.</p>
-        <p>It mixes academic challenges, engineering builds, and a final Showdown where top teams compete against each other. Winning a module is different from winning the Showdown, and both are different from the overall delegation title.</p>
-        <p>The next edition is PsiFi XVIII, 23–26 December 2026, at LUMS, Lahore. It is upcoming as of October 2026. <a href="https://spades.lums.edu.pk/flagships/psifi" target="_blank" rel="noopener">Official PsiFi page</a>.</p>
-      </div>
-    </section>
+      <p class="page-lead">A multi-day science and technology olympiad for school students across Pakistan.</p>
+      <p class="ext-meta">Organised by SPADES (Society for the Promotion and Development of Engineering and Sciences) at LUMS, Lahore.</p>
+      <p class="ext-official"><a href="https://spades.lums.edu.pk/flagships/psifi" target="_blank" rel="noopener">Official PsiFi page</a></p>
+    </header>
 
-    <section class="subject-modules" aria-labelledby="psifi-categories-title">
+    <nav class="ext-nav" aria-label="On this page">
+      <a href="#psifi-categories-title">Categories</a>
+      <a href="#psifi-xvii-title">PsiFi XVII</a>
+      <a href="#psifi-xvi-title">PsiFi XVI</a>
+      <a href="#psifi-x-title">PsiFi X</a>
+    </nav>
+
+    <ul class="ext-facts" aria-label="Quick facts">
+      <li><span class="ext-fact-label">Open to</span> O-Level, A-Level, Matric, and FSc</li>
+      <li><span class="ext-fact-label">Teams</span> 3–5 people</li>
+      <li><span class="ext-fact-label">Next edition</span> PsiFi XVIII, 23–26 December 2026, at LUMS, Lahore</li>
+      <li><span class="ext-fact-label">Status</span> Upcoming as of October 2026</li>
+    </ul>
+
+    <div class="ext-callout">
+      <p>It mixes academic challenges, engineering builds, and a final Showdown where top teams compete against each other.</p>
+      <p>Winning a module is different from winning the Showdown, and both are different from the overall delegation title.</p>
+    </div>
+
+    <section class="ext-section" aria-labelledby="psifi-categories-title">
       <h2 id="psifi-categories-title">Categories</h2>
-      <p class="subject-note">A category is described only where the format is confirmed. Others are names only.</p>
-      <ul class="module-list">
-        <li>
+      <p class="ext-note">A category is described only where the format is confirmed. Others are names only.</p>
+      <div class="ext-cards">
+        <article class="ext-card">
           <h3>Scifinity</h3>
-          <p>Science-fiction and fandom. Structured character arguments, fictional mysteries, prop or storyline design, and explaining the science behind fiction. It is not only a film quiz.</p>
-        </li>
-        <li>
+          <p>Science-fiction and fandom.</p>
+          <details>
+            <summary>What Scifinity includes</summary>
+            <p>Structured character arguments, fictional mysteries, prop or storyline design, and explaining the science behind fiction. It is not only a film quiz.</p>
+          </details>
+        </article>
+        <article class="ext-card">
           <h3>Math Gauge</h3>
           <p>Mathematics and applied problem-solving.</p>
-        </li>
-        <li>
+        </article>
+        <article class="ext-card">
           <h3>Robowars</h3>
-          <p>Robotics, design, control, and strategy. PsiFi XVII included Sumowars with custom-built robots.</p>
-        </li>
-        <li>
+          <p>Robotics, design, control, and strategy.</p>
+          <details>
+            <summary>PsiFi XVII Sumowars</summary>
+            <p>PsiFi XVII included Sumowars with custom-built robots.</p>
+          </details>
+        </article>
+        <article class="ext-card">
           <h3>Siege</h3>
-          <p>Engineering under constraints. In 2025, a boat-building round and a catapult challenge.</p>
-        </li>
-        <li>
+          <p>Engineering under constraints.</p>
+          <details>
+            <summary>2025 Siege rounds</summary>
+            <p>In 2025, a boat-building round and a catapult challenge.</p>
+          </details>
+        </article>
+        <article class="ext-card">
           <h3>RC Planes</h3>
-          <p>Aircraft construction and aerodynamics. In 2025, designing and flying functional aircraft through laps.</p>
-        </li>
-        <li>
+          <p>Aircraft construction and aerodynamics.</p>
+          <details>
+            <summary>2025 aircraft task</summary>
+            <p>In 2025, designing and flying functional aircraft through laps.</p>
+          </details>
+        </article>
+        <article class="ext-card">
           <h3>Pixel Spectrum</h3>
-          <p>Creative, media, and technology. In 2025, an interactive scavenger hunt on the LUMS campus.</p>
-        </li>
-        <li>
-          <h3>Kepler's Paradigm</h3>
-        </li>
-        <li>
+          <p>Creative, media, and technology.</p>
+          <details>
+            <summary>2025 Pixel Spectrum task</summary>
+            <p>In 2025, an interactive scavenger hunt on the LUMS campus.</p>
+          </details>
+        </article>
+        <article class="ext-card">
           <h3>Diagnosis Dilemma</h3>
-          <p>Medical and diagnostic problem-solving. Exact PsiFi XVIII tasks are not confirmed beyond that.</p>
-        </li>
-        <li>
-          <h3>Carson's Lab</h3>
-        </li>
-        <li>
+          <p>Medical and diagnostic problem-solving.</p>
+          <details>
+            <summary>What is confirmed</summary>
+            <p>Exact PsiFi XVIII tasks are not confirmed beyond that.</p>
+          </details>
+        </article>
+        <article class="ext-card">
           <h3>Science Crime Busters (SCB)</h3>
-          <p>Scientific investigation and deduction. In 2025, designed crime scenes and analytical challenges.</p>
-        </li>
-        <li>
-          <h3>Nightlock Bloom</h3>
-        </li>
-        <li>
-          <h3>Ballad of Songbirds</h3>
-        </li>
-        <li>
-          <h3>Aerie of Mockingjays</h3>
-        </li>
-        <li>
+          <p>Scientific investigation and deduction.</p>
+          <details>
+            <summary>2025 Science Crime Busters</summary>
+            <p>In 2025, designed crime scenes and analytical challenges.</p>
+          </details>
+        </article>
+        <article class="ext-card">
           <h3>Techwars</h3>
-          <p>A technology category from earlier editions. The format has varied.</p>
-        </li>
+          <p>A technology category from earlier editions.</p>
+          <details>
+            <summary>Format note</summary>
+            <p>The format has varied.</p>
+          </details>
+        </article>
+      </div>
+      <ul class="ext-chips" aria-label="Categories listed by name only">
+        <li>Kepler's Paradigm</li>
+        <li>Carson's Lab</li>
+        <li>Nightlock Bloom</li>
+        <li>Ballad of Songbirds</li>
+        <li>Aerie of Mockingjays</li>
       </ul>
     </section>
 
-    <section class="subject-modules" aria-labelledby="psifi-xvii-title">
+    <section class="ext-section" aria-labelledby="psifi-xvii-title">
       <h2 id="psifi-xvii-title">PsiFi XVII, December 2025</h2>
-      <p class="subject-note">From a KGS school announcement. A module win, the Showdown, and the overall delegation title are different results.</p>
-      <ul class="module-list">
+      <p class="ext-note">From a KGS school announcement. A module win, the Showdown, and the overall delegation title are different results.</p>
+      <ul class="ext-results">
         <li>
           <h3>Showdown — 1st, KGS Team B</h3>
-          <p>The Showdown was among the top five teams. The announcement said this was first in a field of more than 550 teams across the event. This is the Showdown. It is not the overall delegation title. The overall delegation winner was ISL. KGS was not the overall delegation winner.</p>
+          <ul>
+            <li>The Showdown was among the top five teams.</li>
+            <li>The announcement said this was first in a field of more than 550 teams across the event.</li>
+            <li>This is the Showdown. It is not the overall delegation title.</li>
+            <li>The overall delegation winner was ISL.</li>
+            <li>KGS was not the overall delegation winner.</li>
+          </ul>
         </li>
         <li>
           <h3>Math Gauge — 1st, KGS Team B</h3>
-          <p>Nabhan Qadri, Muhammad Umer Usman, Inaya Shahzad, Muhammad Meekail Syed, Faaris Ahmed Jamali.</p>
+          <p class="ext-team">Nabhan Qadri, Muhammad Umer Usman, Inaya Shahzad, Muhammad Meekail Syed, Faaris Ahmed Jamali.</p>
         </li>
         <li>
           <h3>Science Crime Busters — 1st, KGS Team C</h3>
-          <p>Muhammad Sualeh Ghazipura, Abdullah Naveed, Mahd Jamal, Shahvaiz Ahmed, Daud Siddiqui.</p>
+          <p class="ext-team">Muhammad Sualeh Ghazipura, Abdullah Naveed, Mahd Jamal, Shahvaiz Ahmed, Daud Siddiqui.</p>
         </li>
         <li>
           <h3>Fandom — 2nd, KGS Team D</h3>
-          <p>Ahmed Hamdaan, Mishal Sohail, Rayan Kazi, Wania Asim, Alishba Amin.</p>
+          <p class="ext-team">Ahmed Hamdaan, Mishal Sohail, Rayan Kazi, Wania Asim, Alishba Amin.</p>
         </li>
         <li>
           <h3>KGS Team A</h3>
@@ -131,17 +178,24 @@
       </ul>
     </section>
 
-    <section class="subject-modules" aria-labelledby="psifi-xvi-title">
+    <section class="ext-section" aria-labelledby="psifi-xvi-title">
       <h2 id="psifi-xvi-title">PsiFi XVI, December 2024</h2>
-      <div class="page-body">
-        <p>KGS described the 2025 Showdown win as a second consecutive Showdown victory. That supports a Showdown win at PsiFi XVI in December 2024. Other 2024 module winners are not listed here.</p>
-      </div>
+      <ul class="ext-results">
+        <li>
+          <h3>Showdown</h3>
+          <ul>
+            <li>KGS described the 2025 Showdown win as a second consecutive Showdown victory.</li>
+            <li>That supports a Showdown win at PsiFi XVI in December 2024.</li>
+            <li>Other 2024 module winners are not listed here.</li>
+          </ul>
+        </li>
+      </ul>
     </section>
 
-    <section class="subject-modules" aria-labelledby="psifi-x-title">
+    <section class="ext-section" aria-labelledby="psifi-x-title">
       <h2 id="psifi-x-title">PsiFi X, 2018</h2>
-      <p class="subject-note">TechJuice archive. Historical results; formats may differ now.</p>
-      <ul class="module-list">
+      <p class="ext-note">TechJuice archive. Historical results; formats may differ now.</p>
+      <ul class="ext-results">
         <li>
           <h3>Overall delegation</h3>
           <p>Runner-up to Lahore Grammar School Johar Town.</p>

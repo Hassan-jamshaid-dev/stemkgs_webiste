@@ -1,0 +1,424 @@
+/* Shared external-competition layout. Accents: --ext-accent on the page. */
+
+.comp-roll-ext {
+  max-width: 1100px;
+  align-items: stretch;
+}
+
+.comp-roll-ext li {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.comp-roll-ext li > a {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  height: auto;
+  min-height: 100%;
+}
+
+.comp-roll-ext .comp-label {
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--blue-bright) 55%, transparent);
+  line-height: 1.2;
+}
+
+.comp-roll-ext h3 {
+  font-size: clamp(26px, 3vw, 36px);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.comp-roll-ext p {
+  max-width: 36ch;
+}
+
+.comp-roll-ext .comp-go {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+  margin-top: auto;
+  padding-top: 16px;
+  color: var(--blue-bright);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 720px) {
+  .comp-roll-ext {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .comp-roll-ext {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ext-page {
+  --ext-accent: var(--blue-bright);
+  overflow-wrap: break-word;
+}
+
+.ext-hero,
+.ext-section,
+.ext-nav,
+.ext-facts,
+.ext-chips,
+.ext-callout,
+.ext-results,
+.ext-contact,
+.ext-credit {
+  width: 100%;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ext-hero {
+  max-width: 52rem;
+}
+
+.page.ext-page .page-lead {
+  max-width: min(38rem, 100%);
+}
+
+.ext-meta,
+.ext-note,
+.ext-contact,
+.ext-credit {
+  max-width: 62ch;
+  color: var(--muted-on-dark);
+  font-size: var(--type-body);
+  line-height: 1.6;
+}
+
+.ext-meta {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.ext-official {
+  margin: 4px 0 0;
+  text-align: center;
+}
+
+.ext-official a,
+.ext-contact a,
+.ext-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--hit);
+  padding: 0 8px;
+  border-radius: var(--radius-control);
+  color: var(--blue-bright);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.ext-official a:hover,
+.ext-contact a:hover,
+.ext-nav a:hover {
+  color: var(--white);
+  border-bottom-color: var(--blue-bright);
+}
+
+.ext-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 8px;
+  max-width: 52rem;
+  margin-top: 28px;
+  padding: 0;
+}
+
+.ext-nav a {
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ext-facts,
+.ext-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 0;
+  list-style: none;
+}
+
+.ext-facts li,
+.ext-chips li {
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--hit);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 14px;
+  background: color-mix(in srgb, var(--blue) 65%, var(--black));
+  border: 1px solid color-mix(in srgb, var(--ext-accent) 55%, transparent);
+  color: var(--white);
+  font-size: 14px;
+  line-height: 1.35;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.ext-chips li {
+  flex: 0 1 auto;
+  flex-direction: row;
+  align-items: center;
+  font-weight: 600;
+}
+
+.ext-fact-label {
+  display: block;
+  font-size: var(--type-kicker);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue-bright);
+}
+
+.ext-callout {
+  max-width: 68ch;
+  margin-top: 28px;
+  padding: 16px 18px;
+  border: 1px solid color-mix(in srgb, var(--blue-bright) 40%, transparent);
+  border-left: 3px solid var(--blue-bright);
+  color: var(--muted-on-dark);
+  text-align: left;
+}
+
+.ext-callout p {
+  margin: 0;
+}
+
+.ext-callout p + p {
+  margin-top: 0.75em;
+}
+
+.ext-section {
+  margin-top: var(--section-gap);
+}
+
+.ext-section h2 {
+  margin-bottom: 12px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: var(--h-section);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--white);
+}
+
+.ext-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.ext-card {
+  min-width: 0;
+  padding: 20px 18px 12px;
+  background: color-mix(in srgb, var(--blue) 72%, var(--black));
+  border: 1px solid color-mix(in srgb, var(--blue-bright) 28%, transparent);
+  border-top: 2px solid var(--ext-accent);
+}
+
+.ext-card:hover {
+  background: color-mix(in srgb, var(--purple) 32%, var(--blue));
+  border-color: color-mix(in srgb, var(--blue-bright) 55%, transparent);
+}
+
+.ext-card-kicker {
+  margin: 0 auto 8px;
+  max-width: 36ch;
+  font-size: var(--type-kicker);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue-bright);
+}
+
+.ext-card h3,
+.ext-results h3 {
+  margin: 0 auto 8px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: var(--h-sub);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--white);
+}
+
+.ext-card > p {
+  margin: 0 auto;
+  max-width: 46ch;
+  color: var(--muted-on-dark);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.ext-card details {
+  margin-top: 6px;
+  text-align: left;
+}
+
+.ext-card summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--hit);
+  padding: 8px 4px;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  list-style: none;
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.ext-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.ext-card summary::after {
+  content: "+";
+  color: var(--blue-bright);
+  font-weight: 600;
+}
+
+.ext-card details[open] summary::after {
+  content: "-";
+}
+
+.ext-card summary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.ext-card details p,
+.ext-card details ul {
+  margin: 4px 0 8px;
+  color: var(--muted-on-dark);
+  font-size: 15px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.ext-card details ul {
+  padding-left: 1.15em;
+}
+
+.ext-card details li + li {
+  margin-top: 0.4em;
+}
+
+.ext-results {
+  display: grid;
+  gap: 12px;
+  max-width: 760px;
+  margin-top: 22px;
+  padding: 0;
+  list-style: none;
+}
+
+.ext-results > li {
+  min-width: 0;
+  padding: 16px 18px 18px;
+  background: color-mix(in srgb, var(--blue) 72%, var(--black));
+  border: 1px solid color-mix(in srgb, var(--blue-bright) 28%, transparent);
+  border-top: 2px solid var(--ext-accent);
+  text-align: left;
+}
+
+.ext-results p,
+.ext-results li li {
+  color: var(--muted-on-dark);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.ext-results p {
+  margin: 0;
+}
+
+.ext-results .ext-team {
+  margin-top: 10px;
+}
+
+.ext-results ul {
+  margin: 0;
+  padding-left: 1.15em;
+  list-style: disc;
+}
+
+.ext-results li li + li {
+  margin-top: 0.45em;
+}
+
+.ext-contact {
+  margin-top: var(--section-gap);
+}
+
+.ext-contact a {
+  border-bottom: 1px solid color-mix(in srgb, var(--blue-bright) 50%, transparent);
+}
+
+.ext-credit {
+  margin-top: clamp(36px, 6vh, 56px);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.ext-page .page-back {
+  display: flex;
+  width: fit-content;
+  margin-inline: auto;
+  justify-content: center;
+}
+
+@media (min-width: 800px) {
+  .ext-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comp-roll-ext li,
+  .comp-roll-ext li > a,
+  .ext-card,
+  .ext-nav a,
+  .ext-official a,
+  .ext-contact a {
+    transition: none;
+  }
+
+  .comp-roll-ext li:hover,
+  .comp-roll-ext li:focus-within,
+  .ext-card:hover {
+    transform: none;
+  }
+}

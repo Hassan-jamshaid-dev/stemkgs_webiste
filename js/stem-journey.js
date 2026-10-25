@@ -1,7 +1,8 @@
 /* Home-page scroll driver for the STEM journey.
-   The viewport is pinned with CSS sticky. Scroll progress comes from ScrollTrigger
-   when that library has loaded, otherwise from the section's own layout.
-   Wheel and touch scrolling stay native. */
+   The viewport is pinned with CSS sticky. Progress is the section's own scroll
+   position, so the camera reverses with the page and a fast scroll jumps to the
+   stage under the viewport. ScrollTrigger only marks that range. Wheel and touch
+   scrolling stay native. */
 (function () {
   var section = document.querySelector(".stem-journey");
   if (!section) return;
@@ -46,6 +47,11 @@
     raf = 0;
     section.classList.remove("is-live");
     section.classList.add("is-static");
+    if (canvas) {
+      canvas.style.display = "none";
+      canvas.style.pointerEvents = "none";
+    }
+    if (pin) pin.style.removeProperty("--journey-end");
     if (st) {
       try { st.kill(); } catch (err) { /* leave the page scrollable */ }
       st = null;
@@ -91,8 +97,9 @@
 
   function currentProgress() {
     var measured = readProgress();
-    if (!st || typeof st.progress !== "number") return measured;
-    if (Math.abs(st.progress - measured) > 0.12) return measured;
+    if (!st || typeof st.progress !== "number" || !isFinite(st.progress)) return measured;
+    /* Layout wins whenever the trigger value is behind a fling. */
+    if (Math.abs(st.progress - measured) > 0.015) return measured;
     return st.progress;
   }
 
@@ -120,6 +127,7 @@
     var opacity = String(view.copyOpacity);
     if (copyEl) copyEl.style.opacity = opacity;
     if (progressEl) progressEl.style.opacity = opacity;
+    if (pin) pin.style.setProperty("--journey-end", String(view.end || 0));
   }
 
   function bindScroll() {
