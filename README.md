@@ -26,7 +26,8 @@ Sections appear in this order:
    - **ACSEC** → `acsec.html`
    - **Aero Pakistan** → `aero-pakistan.html`
    - **Race Pakistan** → `race-pakistan.html` (page title and copy use **RACE Pakistan**)
-   - **SciFi** and **SciNova** — named on the home page only; they do not have their own HTML pages in this repo. SciNova is also mentioned on the Maths page as the host of a mathematics module.
+   - **PsiFi** → `psifi.html` (LUMS event; the home card was previously labeled SciFi)
+   - **SciNova** → `scinova.html`. SciNova is also mentioned on the Maths page as the host of a mathematics module.
 
 6. **About** — Short statement of what STEM Society is at Karachi Grammar School.
 
@@ -54,6 +55,8 @@ Sections appear in this order:
 - **`acsec.html`** — ACSEC (Aitchison College Science & Engineering Concept): overview, module tracks, and a note on KGS STEM Society involvement (specific results placeholder).
 - **`aero-pakistan.html`** — Aero Pakistan: overview, engineering modules, KGS flight legacy, achievements placeholder, FAQ, and a link back to Contact.
 - **`race-pakistan.html`** — RACE Pakistan: overview, motorsport/engineering modules, KGAS involvement, awards, FAQ, and a link back to Contact.
+- **`psifi.html`** — PsiFi at LUMS: what the olympiad is, named categories, and verified KGS results only.
+- **`scinova.html`** — SciNova: external competition associated with Lahore Grammar School; primary mathematics module is Ptolemy's Puzzle. Further details stay unpublished until confirmed.
 
 **Legal**
 
@@ -95,6 +98,8 @@ Supporting intent notes (some still planned rather than built) live in `ARCHITEC
 | `acsec.html` | ACSEC |
 | `aero-pakistan.html` | Aero Pakistan |
 | `race-pakistan.html` | RACE Pakistan |
+| `psifi.html` | PsiFi (LUMS) |
+| `scinova.html` | SciNova |
 | `terms.html` | Terms and conditions |
 | `privacy.html` | Privacy policy |
 

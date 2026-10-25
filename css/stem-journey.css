@@ -1,0 +1,323 @@
+/* Scroll-linked STEM journey. Scoped so the rest of the site is unchanged.
+   Deep navy matches the canvas clear color in js/stem-journey-scene.js (#071018). */
+
+.hero:has(+ .stem-journey)::after {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(7, 16, 24, 0.28) 40%,
+    rgba(7, 16, 24, 0.72) 72%,
+    #071018 100%
+  );
+}
+
+.stem-journey {
+  --journey: #071018;
+  position: relative;
+  z-index: 1;
+  height: 760vh;
+  background: var(--journey);
+  color: var(--white);
+  text-align: left;
+}
+
+.stem-journey-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--journey);
+  pointer-events: none;
+}
+
+.stem-journey:not(.is-live):not(.is-static) .stem-journey-pin {
+  overflow: auto;
+}
+
+.stem-journey-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.stem-journey.is-live .stem-journey-pin::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(7, 16, 24, 0.92) 0%,
+    rgba(7, 16, 24, 0.55) 42%,
+    rgba(7, 16, 24, 0) 100%
+  );
+}
+
+.stem-journey-copy {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 740px;
+  padding: 0 var(--gutter) calc(clamp(28px, 5vh, 52px) + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+  text-align: left;
+}
+
+.stem-journey.is-live .stem-journey-copy {
+  display: block;
+}
+
+.stem-journey-kicker {
+  margin: 0 0 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #b7d4f2;
+}
+
+.stem-journey-copy .stem-journey-kicker::before {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 2px;
+  margin: 0 0 12px;
+  background: #4a8fd4;
+}
+
+.stem-journey-index {
+  margin-right: 8px;
+  color: #4a8fd4;
+  letter-spacing: 0.08em;
+}
+
+.stem-journey-title {
+  margin: 0 0 12px;
+  max-width: 16em;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(32px, 4.6vw, 60px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-align: left;
+  color: var(--white);
+  text-shadow: 0 1px 2px rgba(5, 5, 8, 0.45);
+}
+
+.stem-journey-body {
+  margin: 0;
+  max-width: 38em;
+  font-family: var(--sans);
+  font-size: clamp(16px, 1.7vw, 18px);
+  line-height: 1.5;
+  text-align: left;
+  color: #e6e2ee;
+}
+
+.stem-journey-eq {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.stem-journey-eq[hidden] {
+  display: none;
+}
+
+.stem-journey-eq span {
+  font-family: var(--display);
+  font-size: clamp(18px, 2.1vw, 26px);
+  line-height: 1.2;
+  letter-spacing: 0;
+  color: var(--white);
+}
+
+.stem-journey-eq sup {
+  font-size: 0.62em;
+  line-height: 0;
+}
+
+.stem-journey-progress {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: max(18px, env(safe-area-inset-right, 0px));
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.stem-journey.is-live .stem-journey-progress {
+  display: flex;
+}
+
+.stem-journey-progress span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.stem-journey-progress span.is-on {
+  height: 18px;
+  background: #4a8fd4;
+}
+
+.stem-journey-fallback {
+  position: relative;
+  z-index: 3;
+  max-width: 760px;
+  margin: 0;
+  padding: calc(var(--nav) + 28px) var(--gutter) clamp(36px, 6vh, 72px);
+  background: var(--journey);
+  pointer-events: auto;
+  text-align: left;
+}
+
+.stem-journey.is-live .stem-journey-fallback {
+  display: none;
+}
+
+.stem-journey-fallback ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: stemstage;
+}
+
+.stem-journey-fallback li {
+  counter-increment: stemstage;
+  margin: 0;
+  padding: 16px 0 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  text-align: left;
+}
+
+.stem-journey-fallback li::before {
+  content: counter(stemstage, decimal-leading-zero);
+  display: block;
+  margin-bottom: 6px;
+  color: #4a8fd4;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.stem-journey-fallback h3 {
+  margin: 0 0 6px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(26px, 3.4vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-align: left;
+  color: var(--white);
+}
+
+.stem-journey.is-static {
+  height: auto;
+  min-height: 0;
+}
+
+.stem-journey.is-static .stem-journey-pin {
+  position: relative;
+  top: auto;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.stem-journey.is-static .stem-journey-canvas,
+.stem-journey.is-static .stem-journey-copy,
+.stem-journey.is-static .stem-journey-progress {
+  display: none;
+}
+
+.stem-journey.is-static .stem-journey-fallback {
+  display: block;
+}
+
+.stem-journey.is-static .stem-journey-fallback h3 {
+  font-size: clamp(28px, 4vw, 44px);
+}
+
+.stem-journey.is-static .stem-journey-fallback li {
+  padding: 22px 0 18px;
+}
+
+/* Phones and short windows: a short sticky run, still one canvas. */
+@media (max-width: 800px), (max-height: 700px) {
+  .stem-journey {
+    height: 280vh;
+  }
+
+  .stem-journey-title {
+    font-size: clamp(28px, 8vw, 44px);
+  }
+
+  .stem-journey-progress {
+    top: calc(var(--nav) + 14px);
+    right: auto;
+    left: var(--gutter);
+    flex-direction: row;
+    align-items: center;
+    transform: none;
+  }
+
+  .stem-journey-progress span.is-on {
+    width: 18px;
+    height: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stem-journey {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .stem-journey-pin {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .stem-journey-canvas,
+  .stem-journey-copy,
+  .stem-journey-progress {
+    display: none !important;
+  }
+
+  .stem-journey-fallback {
+    display: block !important;
+  }
+
+  .stem-journey,
+  .stem-journey * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

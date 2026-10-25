@@ -27,7 +27,7 @@ Do not commit unless the user explicitly asks.
 - **Eight subjects already on the site:** Maths, Physics, Chemistry, Computer Science, Robotics, Biology, Astronomy, Crime
 - **Internal competitions:** KGSO, Interhouse Science Bowl, STEM Gauntlet, Hackathon  
   Each is its own clickable card that leads to a page about the event, memorable pictures from it, and maybe last year’s winners
-- **External competitions:** same structure as internal — ACSEC, Aero Pakistan, Race Pakistan, SciFi, SciNova, and any others added later
+- **External competitions:** same structure as internal — ACSEC, Aero Pakistan, Race Pakistan, PsiFi, SciNova, and any others added later
 - **About** section
 - **Contact** section
 
