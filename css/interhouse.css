@@ -10,7 +10,7 @@ body.interhouse-page {
 }
 
 body.interhouse-page .page h1 {
-  max-width: 18ch;
+  max-width: min(18ch, 100%);
 }
 
 .ih-houses {
@@ -21,7 +21,7 @@ body.interhouse-page .page h1 {
   margin: 0 0 8px;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(28px, 3.5vw, 40px);
+  font-size: var(--h-section);
   letter-spacing: -0.03em;
   color: var(--white);
 }
@@ -57,11 +57,11 @@ body.interhouse-page .page h1 {
   flex-direction: column;
   min-height: 100%;
   overflow: hidden;
-  transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease);
+  transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
 
 .ih-house:hover {
-  transform: translateY(-4px);
+  transform: translateY(var(--lift));
   box-shadow: 0 14px 28px rgba(5, 5, 8, 0.32);
 }
 
@@ -109,14 +109,14 @@ body.interhouse-page .page h1 {
   margin: 0 0 14px;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(28px, 3.5vw, 40px);
+  font-size: var(--h-section);
   letter-spacing: -0.03em;
   color: var(--white);
 }
 
 .ih-about p {
   margin: 0;
-  font-size: 17px;
+  font-size: var(--type-body);
   line-height: 1.65;
   color: var(--muted-on-dark);
 }
@@ -180,7 +180,7 @@ body.interhouse-page .page h1 {
   margin: 0 0 8px;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(28px, 3.5vw, 40px);
+  font-size: var(--h-section);
   letter-spacing: -0.03em;
   color: var(--white);
 }

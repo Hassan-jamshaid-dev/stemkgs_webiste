@@ -29,8 +29,8 @@ body.kgso-page {
   background: var(--kgso-black);
   color: var(--kgso-text);
   font-family: var(--kgso-sans);
-  font-size: 17px;
-  line-height: 1.6;
+  font-size: var(--type-body);
+  line-height: 1.55;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -48,7 +48,7 @@ body.kgso-page .kgso-delegation,
 body.kgso-page .kgso-gallery,
 body.kgso-page .kgso-awards {
   position: relative;
-  padding: clamp(56px, 9vh, 112px) clamp(20px, 5vw, 64px);
+  padding: clamp(56px, 9vh, 112px) var(--gutter);
   isolation: isolate;
 }
 
@@ -79,7 +79,7 @@ body.kgso-page h3 {
 body.kgso-page h2 {
   font-family: var(--kgso-sans);
   font-weight: 700;
-  font-size: clamp(1.45rem, 2.4vw, 2rem);
+  font-size: var(--h-section);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin: 0 auto 0.75rem;
@@ -90,7 +90,7 @@ body.kgso-page h2 {
 body.kgso-page h3 {
   font-family: var(--kgso-sans);
   font-weight: 650;
-  font-size: 1.1rem;
+  font-size: var(--h-sub);
   letter-spacing: 0.02em;
   margin: 0 0 0.5rem;
   color: var(--kgso-yellow-hot);
@@ -106,15 +106,20 @@ body.kgso-page p {
   margin: 0 0 1rem;
 }
 
-body.kgso-page a:not(.brand):not(.nav-links a) {
+body.kgso-page main a:not(.page-back) {
   color: var(--kgso-cyan);
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  transition: color 0.2s ease;
+  transition: color var(--duration) var(--ease);
 }
 
-body.kgso-page a:not(.brand):not(.nav-links a):hover {
+body.kgso-page main a:not(.page-back):hover {
   color: var(--kgso-yellow);
+}
+
+body.kgso-page main a:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 body.kgso-page ul,
@@ -569,16 +574,18 @@ body.kgso-page .kgso-how:has(> .kgso-module) > p {
 }
 
 body.kgso-page .page-back {
-  display: inline-block;
-  margin: 0 clamp(20px, 5vw, 64px) clamp(40px, 6vh, 72px);
+  margin: 0 var(--gutter) clamp(40px, 6vh, 72px);
   color: var(--kgso-cyan);
-  font-weight: 600;
-  text-decoration: none;
-  letter-spacing: 0.04em;
 }
 
 body.kgso-page .page-back:hover {
   color: var(--kgso-yellow);
+  border-bottom-color: var(--kgso-yellow);
+}
+
+body.kgso-page .page-back:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 @media (prefers-reduced-motion: reduce) {
   body.kgso-page .kgso-hero h1,
@@ -590,8 +597,13 @@ body.kgso-page .page-back:hover {
     animation: none;
   }
 
+  body.kgso-page .kgso-module,
+  body.kgso-page .kgso-module::before,
+  body.kgso-page main a:not(.page-back) {
+    transition: none;
+  }
+
   body.kgso-page .kgso-module {
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     transform: none !important;
   }
 
