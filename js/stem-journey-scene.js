@@ -1127,7 +1127,9 @@
       }
       waveAttr.needsUpdate = true;
 
-      mol.rotation.y = time * 0.12 + localOf(p, 5) * 0.7;
+      mol.rotation.x = -0.42;
+      mol.rotation.z = 0.18;
+      mol.rotation.y = 0.25 + localOf(p, 5) * 0.45;
 
       var bioLocal = localOf(p, 6);
       var flowArr = flowAttr.array;
