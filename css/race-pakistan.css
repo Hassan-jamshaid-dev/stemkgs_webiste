@@ -1,5 +1,5 @@
 /* Race Pakistan accent only. Shared layout is css/external-comps.css. */
 
 .race-page {
-  --ext-accent: var(--grey-400);
+  --ext-accent: #7eb6e8;
 }

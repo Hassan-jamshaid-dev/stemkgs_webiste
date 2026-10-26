@@ -1,5 +1,5 @@
 /* ACSEC accent only. Shared layout is css/external-comps.css. */
 
 .acsec-page {
-  --ext-accent: var(--purple-soft);
+  --ext-accent: #4a8fd4;
 }
