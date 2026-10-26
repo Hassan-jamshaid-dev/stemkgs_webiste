@@ -41,6 +41,20 @@
     window.addEventListener("scroll", onScroll, { passive: true });
   }
 
+  var progressFill = document.getElementById("scroll-progress-fill");
+  if (progressFill) {
+    function onScrollProgress() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var ratio = max > 0 ? window.scrollY / max : 0;
+      if (ratio < 0) ratio = 0;
+      if (ratio > 1) ratio = 1;
+      progressFill.style.width = "100%";
+      progressFill.style.transform = "scaleX(" + ratio + ")";
+    }
+    onScrollProgress();
+    window.addEventListener("scroll", onScrollProgress, { passive: true });
+  }
+
   if (toggle && links) {
     function setOpen(open) {
       links.classList.toggle("is-open", open);

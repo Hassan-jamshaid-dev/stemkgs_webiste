@@ -1,0 +1,546 @@
+/* Beyond the Classroom — PsiFi and SciNova only. */
+
+body.beyond {
+  --night: #101827;
+  --slate: #172338;
+  --text: #f5f4ef;
+  --muted: #98a6b8;
+  --cyan: #42d9f5;
+  --amber: #ffbe69;
+  --line: rgba(152, 166, 184, 0.18);
+  --focus-ring: 2px solid #42d9f5;
+  --focus-offset: 3px;
+  background: var(--night);
+  color: var(--text);
+  overflow-x: clip;
+  color-scheme: dark;
+}
+
+body.beyond .skip {
+  background: var(--slate);
+  color: var(--text);
+}
+
+body.beyond .nav {
+  background: rgba(16, 24, 39, 0.92);
+  border-bottom-color: var(--line);
+}
+
+body.beyond .nav.is-scrolled {
+  background: rgba(16, 24, 39, 0.97);
+  border-bottom-color: rgba(66, 217, 245, 0.35);
+}
+
+body.beyond .brand {
+  color: var(--text);
+}
+
+body.beyond .brand:hover {
+  color: var(--cyan);
+}
+
+body.beyond .nav-links a {
+  color: var(--muted);
+}
+
+body.beyond .nav-links a::after {
+  background: var(--cyan);
+}
+
+body.beyond .nav-links a:hover,
+body.beyond .nav-links a:focus-visible {
+  color: var(--text);
+}
+
+body.beyond .foot {
+  position: relative;
+  z-index: 1;
+  background: var(--night);
+  color: var(--muted);
+  border-top-color: var(--line);
+}
+
+body.beyond .foot a {
+  color: var(--muted);
+}
+
+body.beyond .foot a:hover,
+body.beyond .foot a:focus-visible {
+  color: var(--text);
+  border-bottom-color: var(--cyan);
+}
+
+body.beyond main {
+  position: relative;
+  z-index: 1;
+}
+
+.beyond-sky {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--night);
+}
+
+.beyond-scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.stairs-a {
+  stroke: rgba(152, 166, 184, 0.38);
+  stroke-width: 1.25;
+  animation: stair-drift 78s linear infinite alternate;
+}
+
+.stairs-b {
+  stroke: rgba(66, 217, 245, 0.28);
+  stroke-width: 1.25;
+  animation: stair-drift 112s linear infinite alternate-reverse;
+}
+
+.stairs-b rect {
+  fill: rgba(23, 35, 56, 0.9);
+  stroke: rgba(255, 190, 105, 0.4);
+}
+
+.route {
+  fill: none;
+  stroke-width: 1;
+  stroke-dasharray: 3 9;
+  vector-effect: non-scaling-stroke;
+}
+
+.route-a { stroke: rgba(66, 217, 245, 0.45); }
+.route-b { stroke: rgba(255, 190, 105, 0.4); }
+.route-c { stroke: rgba(152, 166, 184, 0.4); }
+
+.plane { opacity: 0.9; }
+.plane-still { display: none; }
+
+@keyframes stair-drift {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-72px, -34px); }
+}
+
+@keyframes cue-bob {
+  from { transform: translateY(0); }
+  to { transform: translateY(6px); }
+}
+
+.beyond-wrap {
+  width: min(1120px, 100%);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.beyond-hero {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: clamp(36px, 7vh, 72px);
+}
+
+.beyond-hero .beyond-wrap {
+  padding-top: calc(var(--nav) + 64px);
+}
+
+.beyond-eyebrow {
+  margin: 0 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.beyond-hero h1,
+.beyond-section h2,
+.mod-card h3,
+.scale-date {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  color: var(--text);
+}
+
+.beyond-hero h1 {
+  margin: 0;
+  max-width: 11ch;
+  font-size: clamp(56px, 8vw, 104px);
+  line-height: 0.92;
+  text-shadow: 0 12px 40px rgba(16, 24, 39, 0.85);
+}
+
+.beyond-lede,
+.panel p,
+.scale p,
+.section-note,
+.mod-card p,
+.beyond-close p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--type-body);
+  line-height: 1.6;
+}
+
+.beyond-lede {
+  margin-top: 22px;
+  max-width: 38ch;
+  color: var(--text);
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.45;
+}
+
+.scroll-cue {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 36px;
+  min-height: var(--hit);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.scroll-cue-chevron {
+  display: block;
+  animation: cue-bob 1.8s ease-in-out infinite alternate;
+}
+
+.scroll-cue:hover,
+.scroll-cue:focus-visible {
+  color: var(--text);
+}
+
+.beyond-section {
+  padding: clamp(56px, 9vh, 96px) 0;
+}
+
+.beyond-pair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.panel,
+.scale,
+.mod-card {
+  background: var(--slate);
+  border: 1px solid var(--line);
+  min-width: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: clamp(24px, 3vw, 36px);
+  transition: border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+
+.panel-psifi { box-shadow: inset 3px 0 0 var(--cyan); }
+.panel-nova { box-shadow: inset 3px 0 0 var(--amber); }
+
+.panel:hover,
+.panel:focus-within {
+  transform: translateY(var(--lift));
+}
+
+.panel-psifi:hover,
+.panel-psifi:focus-within {
+  border-color: rgba(66, 217, 245, 0.55);
+}
+
+.panel-nova:hover,
+.panel-nova:focus-within {
+  border-color: rgba(255, 190, 105, 0.6);
+}
+
+.panel-mark,
+.mod-kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.panel-psifi .panel-mark,
+.mod-card .mod-kicker { color: var(--cyan); }
+.panel-nova .panel-mark,
+.mod-card-nova .mod-kicker { color: var(--amber); }
+
+.panel h2,
+.beyond-section h2 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.02;
+  max-width: 16ch;
+}
+
+.panel p { max-width: 46ch; }
+
+.panel-facts {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.panel-facts li {
+  color: var(--text);
+  padding-left: 14px;
+  position: relative;
+}
+
+.panel-psifi .panel-facts li::before,
+.panel-nova .panel-note::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+}
+
+.panel-psifi .panel-facts li::before {
+  background: var(--cyan);
+}
+
+.panel-note {
+  position: relative;
+  padding-left: 14px;
+  color: var(--amber);
+}
+
+.panel-nova .panel-note::before {
+  background: var(--amber);
+}
+
+.beyond-link {
+  color: var(--cyan);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+}
+
+.panel .beyond-link { margin-top: auto; }
+
+.beyond-link:hover,
+.beyond-link:focus-visible {
+  color: var(--text);
+}
+
+.scale {
+  padding: clamp(28px, 4vw, 48px);
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.scale-date {
+  margin: 0;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 0.98;
+}
+
+.scale p { max-width: 46ch; }
+
+.section-note {
+  margin: 16px 0 28px;
+  max-width: 48ch;
+}
+
+.mod-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.mod-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 22px 22px 16px;
+  transition: border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+
+.mod-card:hover,
+.mod-card:focus-within {
+  transform: translateY(var(--lift));
+  border-color: rgba(66, 217, 245, 0.55);
+}
+
+.mod-card-nova:hover,
+.mod-card-nova:focus-within {
+  border-color: rgba(255, 190, 105, 0.65);
+}
+
+.mod-card h3 {
+  margin: 0;
+  font-size: clamp(22px, 2.4vw, 28px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.mod-card details {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.mod-card summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--hit);
+  cursor: pointer;
+  color: var(--text);
+  font-size: 15px;
+  list-style: none;
+}
+
+.mod-card summary::-webkit-details-marker { display: none; }
+
+.mod-card summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  border-right: 1.5px solid var(--cyan);
+  border-bottom: 1.5px solid var(--cyan);
+  transform: rotate(45deg);
+  transition: transform var(--duration) var(--ease);
+}
+
+.mod-card details[open] summary::after {
+  transform: rotate(225deg);
+  margin-top: 4px;
+}
+
+.mod-card summary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.mod-card details p {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+
+.mod-chips {
+  grid-column: 1 / -1;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 4px 0;
+}
+
+.mod-chips li {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  background: rgba(23, 35, 56, 0.72);
+  color: var(--text);
+  font-size: 15px;
+}
+
+.beyond-close {
+  padding-bottom: clamp(72px, 12vh, 120px);
+}
+
+.close-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  margin: 22px 0 0;
+  padding: 0;
+}
+
+.close-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: rgba(152, 166, 184, 0.55);
+  text-underline-offset: 0.22em;
+}
+
+.close-links a:hover,
+.close-links a:focus-visible {
+  color: var(--cyan);
+  text-decoration-color: var(--cyan);
+}
+
+@media (min-width: 720px) {
+  .beyond-pair,
+  .mod-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .mod-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  body.beyond .nav-links {
+    background: rgba(16, 24, 39, 0.98);
+    border-bottom-color: var(--line);
+  }
+
+  body.beyond .nav-links a {
+    border-bottom-color: var(--line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stairs-a,
+  .stairs-b,
+  .scroll-cue-chevron {
+    animation: none;
+  }
+
+  .plane-move { display: none; }
+  .plane-still { display: block; }
+
+  .panel,
+  .mod-card,
+  .mod-card summary::after,
+  .beyond-link,
+  .close-links a,
+  .scroll-cue {
+    transition: none;
+  }
+
+  .panel:hover,
+  .panel:focus-within,
+  .mod-card:hover,
+  .mod-card:focus-within {
+    transform: none;
+  }
+}
