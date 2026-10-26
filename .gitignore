@@ -1,0 +1,12 @@
+# Local Netlify folder
+.netlify/
+
+__pycache__/
+*.pyc
+_tmp_*.py
+_tmp_*.json
+_ui_check/
+_ui_preview2/
+_ui_preview3/
+_ui_zoom/
+netlify_site_info.json

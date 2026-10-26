@@ -1,7 +1,11 @@
-/* Shared external-competition layout. Accents: --ext-accent on the page. */
+/* Shared external-competition layout. Accents: --ext-accent on the page.
+   Flat brand palette only — no gradients, glow, or neon. */
 
 .comp-roll-ext {
-  max-width: 1100px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  max-width: 720px;
   align-items: stretch;
 }
 
@@ -9,6 +13,17 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  background: var(--blue);
+  border: 1px solid var(--blue-mid);
+  box-shadow: none;
+}
+
+.comp-roll-ext li:hover,
+.comp-roll-ext li:focus-within {
+  background: var(--purple);
+  border-color: var(--blue-bright);
+  transform: none;
+  box-shadow: none;
 }
 
 .comp-roll-ext li > a {
@@ -21,19 +36,24 @@
 }
 
 .comp-roll-ext .comp-label {
-  padding: 6px 10px;
-  border: 1px solid color-mix(in srgb, var(--blue-bright) 55%, transparent);
-  line-height: 1.2;
+  padding: 0;
+  border: 0;
+  color: var(--blue-bright);
+  font-weight: 700;
 }
 
 .comp-roll-ext h3 {
-  font-size: clamp(26px, 3vw, 36px);
+  font-family: var(--display);
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   max-width: 100%;
   overflow-wrap: anywhere;
 }
 
 .comp-roll-ext p {
-  max-width: 36ch;
+  max-width: 42ch;
 }
 
 .comp-roll-ext .comp-go {
@@ -43,22 +63,10 @@
   margin-top: auto;
   padding-top: 16px;
   color: var(--blue-bright);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-}
-
-@media (min-width: 720px) {
-  .comp-roll-ext {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1100px) {
-  .comp-roll-ext {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 .ext-page {
@@ -76,13 +84,13 @@
 .ext-contact,
 .ext-credit {
   width: 100%;
-  max-width: 1100px;
+  max-width: 720px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .ext-hero {
-  max-width: 52rem;
+  max-width: 40rem;
 }
 
 .page.ext-page .page-lead {
@@ -116,8 +124,8 @@
   align-items: center;
   justify-content: center;
   min-height: var(--hit);
-  padding: 0 8px;
-  border-radius: var(--radius-control);
+  padding: 0 4px;
+  border-radius: 0;
   color: var(--blue-bright);
   text-decoration: none;
   border-bottom: 1px solid transparent;
@@ -132,76 +140,99 @@
 
 .ext-nav {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px 8px;
-  max-width: 52rem;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0;
+  max-width: 40rem;
   margin-top: 28px;
   padding: 0;
 }
 
 .ext-nav a {
   max-width: 100%;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-align: center;
   text-transform: uppercase;
 }
 
-.ext-facts,
-.ext-chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+/* Quick facts: stacked rows, not a chip dashboard */
+.ext-facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
   margin-top: 22px;
   padding: 0;
   list-style: none;
+  justify-content: stretch;
 }
 
-.ext-facts li,
-.ext-chips li {
-  flex: 1 1 200px;
+.ext-facts li {
+  flex: none;
   min-width: 0;
   max-width: 100%;
   min-height: var(--hit);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 3px;
-  padding: 8px 14px;
-  background: color-mix(in srgb, var(--blue) 65%, var(--black));
-  border: 1px solid color-mix(in srgb, var(--ext-accent) 55%, transparent);
+  gap: 4px;
+  padding: 14px 18px;
+  background: var(--blue);
+  border: 1px solid var(--blue-mid);
+  border-left: 3px solid var(--ext-accent);
   color: var(--white);
-  font-size: 14px;
-  line-height: 1.35;
-  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
   overflow-wrap: anywhere;
-}
-
-.ext-chips li {
-  flex: 0 1 auto;
-  flex-direction: row;
-  align-items: center;
-  font-weight: 600;
 }
 
 .ext-fact-label {
   display: block;
   font-size: var(--type-kicker);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--blue-bright);
 }
 
+.ext-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 12px;
+  margin-top: 22px;
+  padding: 0;
+  list-style: none;
+}
+
+.ext-chips li {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+  padding: 6px 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--blue-mid);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+}
+
 .ext-callout {
   max-width: 68ch;
   margin-top: 28px;
-  padding: 16px 18px;
-  border: 1px solid color-mix(in srgb, var(--blue-bright) 40%, transparent);
-  border-left: 3px solid var(--blue-bright);
+  padding: 18px 20px;
+  background: var(--blue);
+  border: 1px solid var(--blue-mid);
+  border-left: 3px solid var(--ext-accent);
   color: var(--muted-on-dark);
   text-align: left;
 }
@@ -219,40 +250,48 @@
 }
 
 .ext-section h2 {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   font-family: var(--display);
   font-weight: 700;
-  font-size: var(--h-section);
+  font-size: clamp(32px, 4.5vw, 48px);
   letter-spacing: -0.03em;
   line-height: 1.05;
   color: var(--white);
 }
 
+/* Module / category cards — the only multi-column grid */
 .ext-cards {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 14px;
+  max-width: 960px;
   margin-top: 22px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .ext-card {
   min-width: 0;
-  padding: 20px 18px 12px;
-  background: color-mix(in srgb, var(--blue) 72%, var(--black));
-  border: 1px solid color-mix(in srgb, var(--blue-bright) 28%, transparent);
-  border-top: 2px solid var(--ext-accent);
+  padding: 22px 20px 14px;
+  background: var(--blue);
+  border: 1px solid var(--blue-mid);
+  border-top: 3px solid var(--ext-accent);
+  box-shadow: none;
 }
 
 .ext-card:hover {
-  background: color-mix(in srgb, var(--purple) 32%, var(--blue));
-  border-color: color-mix(in srgb, var(--blue-bright) 55%, transparent);
+  background: var(--purple);
+  border-color: var(--blue-mid);
+  border-top-color: var(--ext-accent);
+  transform: none;
+  box-shadow: none;
 }
 
 .ext-card-kicker {
-  margin: 0 auto 8px;
+  margin: 0 auto 10px;
   max-width: 36ch;
   font-size: var(--type-kicker);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--blue-bright);
@@ -260,12 +299,12 @@
 
 .ext-card h3,
 .ext-results h3 {
-  margin: 0 auto 8px;
+  margin: 0 auto 10px;
   font-family: var(--display);
   font-weight: 700;
-  font-size: var(--h-sub);
-  letter-spacing: -0.02em;
-  line-height: 1.25;
+  font-size: clamp(24px, 3vw, 34px);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
   color: var(--white);
 }
 
@@ -273,7 +312,7 @@
   margin: 0 auto;
   max-width: 46ch;
   color: var(--muted-on-dark);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
   text-align: center;
 }
@@ -291,12 +330,12 @@
   width: 100%;
   min-height: var(--hit);
   padding: 8px 4px;
-  border-radius: var(--radius-control);
+  border-radius: 0;
   cursor: pointer;
   list-style: none;
   color: var(--white);
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -307,7 +346,7 @@
 .ext-card summary::after {
   content: "+";
   color: var(--blue-bright);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .ext-card details[open] summary::after {
@@ -338,8 +377,9 @@
 
 .ext-results {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
-  max-width: 760px;
+  max-width: 720px;
   margin-top: 22px;
   padding: 0;
   list-style: none;
@@ -347,11 +387,12 @@
 
 .ext-results > li {
   min-width: 0;
-  padding: 16px 18px 18px;
-  background: color-mix(in srgb, var(--blue) 72%, var(--black));
-  border: 1px solid color-mix(in srgb, var(--blue-bright) 28%, transparent);
-  border-top: 2px solid var(--ext-accent);
+  padding: 18px 20px 20px;
+  background: var(--blue);
+  border: 1px solid var(--blue-mid);
+  border-left: 3px solid var(--ext-accent);
   text-align: left;
+  box-shadow: none;
 }
 
 .ext-results p,
@@ -384,7 +425,7 @@
 }
 
 .ext-contact a {
-  border-bottom: 1px solid color-mix(in srgb, var(--blue-bright) 50%, transparent);
+  border-bottom: 1px solid var(--blue-bright);
 }
 
 .ext-credit {
