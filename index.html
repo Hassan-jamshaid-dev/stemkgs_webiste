@@ -11,9 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/home.css?v=26">
-  <link rel="stylesheet" href="css/external-comps.css?v=4">
-  <link rel="stylesheet" href="css/stem-journey.css?v=3">
-  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js">
+  <link rel="stylesheet" href="css/external-comps.css?v=7">
 </head>
 <body>
   <div class="scroll-progress" aria-hidden="true"><span id="scroll-progress-fill"></span></div>
@@ -80,72 +78,6 @@
         <h1 id="hero-title">STEM Society</h1>
         <span class="hero-rule" aria-hidden="true"></span>
         <p class="hero-standfirst">Eight subjects. One standard for difficult work.</p>
-      </div>
-    </section>
-
-    <section class="stem-journey" id="stem-journey" aria-label="STEM journey" data-stage="astronomy">
-      <div class="stem-journey-pin">
-        <canvas class="stem-journey-canvas" aria-hidden="true"></canvas>
-        <div class="stem-journey-copy">
-          <div aria-live="polite">
-            <p class="stem-journey-kicker"><span class="stem-journey-index" id="stem-journey-index">01</span> <span id="stem-journey-name">Astronomy</span></p>
-            <h2 class="stem-journey-title" id="stem-journey-title">Explore the unknown</h2>
-            <p class="stem-journey-body" id="stem-journey-body">Every discovery begins by looking beyond what we know.</p>
-          </div>
-          <p class="stem-journey-eq" id="stem-journey-eq" hidden>
-            <span>y = sin x</span>
-            <span>a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></span>
-            <span>e<sup>i&pi;</sup> + 1 = 0</span>
-          </p>
-        </div>
-        <div class="stem-journey-progress" aria-hidden="true">
-          <span class="is-on"></span><span></span><span></span><span></span><span></span><span></span><span></span>
-        </div>
-        <div class="stem-journey-fallback">
-          <h2 class="sr-only">STEM journey</h2>
-          <ol>
-            <li data-stage="astronomy">
-              <p class="stem-journey-kicker">Astronomy</p>
-              <h3>Explore the unknown</h3>
-              <p class="stem-journey-body">Every discovery begins by looking beyond what we know.</p>
-            </li>
-            <li data-stage="computer-science">
-              <p class="stem-journey-kicker">Computer Science</p>
-              <h3>Decode the world</h3>
-              <p class="stem-journey-body">Turn logic, data, and imagination into something real.</p>
-            </li>
-            <li data-stage="robotics">
-              <p class="stem-journey-kicker">Robotics</p>
-              <h3>Give ideas motion</h3>
-              <p class="stem-journey-body">Where code meets machines, possibilities become tangible.</p>
-            </li>
-            <li data-stage="mathematics">
-              <p class="stem-journey-kicker">Mathematics</p>
-              <h3>Find the pattern</h3>
-              <p class="stem-journey-body">Discover the structures and relationships behind the universe.</p>
-              <p class="stem-journey-eq">
-                <span>y = sin x</span>
-                <span>a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></span>
-                <span>e<sup>i&pi;</sup> + 1 = 0</span>
-              </p>
-            </li>
-            <li data-stage="physics">
-              <p class="stem-journey-kicker">Physics</p>
-              <h3>Understand the forces</h3>
-              <p class="stem-journey-body">Explore the laws that shape matter, motion, energy, and space.</p>
-            </li>
-            <li data-stage="chemistry">
-              <p class="stem-journey-kicker">Chemistry</p>
-              <h3>Discover what matter is made of</h3>
-              <p class="stem-journey-body">Explore the molecules and reactions that shape our world.</p>
-            </li>
-            <li data-stage="biology">
-              <p class="stem-journey-kicker">Biology</p>
-              <h3>Explore living systems</h3>
-              <p class="stem-journey-body">Understand the structures, connections, and processes that sustain life.</p>
-            </li>
-          </ol>
-        </div>
       </div>
     </section>
 
@@ -361,10 +293,6 @@
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
-  <script src="js/stem-journey-scene.js?v=3" defer></script>
-  <script src="js/stem-journey.js?v=3" defer></script>
   <script src="js/home.js" defer></script>
   <script src="js/external-comps.js" defer></script>
 </body>
