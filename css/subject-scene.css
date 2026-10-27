@@ -140,10 +140,10 @@
 }
 
 .has-subject-scene[data-subject-scene="maths"] {
-  --scene-bg: #0c0818;
-  --scene-accent: #c4b5fd;
-  --scene-page-top: #160e2c;
-  --scene-page-mid: #120a24;
+  --scene-bg: #08101c;
+  --scene-accent: #93c5fd;
+  --scene-page-top: #0a1628;
+  --scene-page-mid: #0a1422;
 }
 
 .has-subject-scene[data-subject-scene="physics"] {
@@ -162,9 +162,10 @@
 
 .has-subject-scene[data-subject-scene="biology"] {
   --scene-bg: #081210;
-  --scene-accent: #6ee7b7;
-  --scene-page-top: #0c1a16;
-  --scene-page-mid: #0a1612;
+  --scene-accent: #4ade80;
+  --scene-blue: #f9a8d4;
+  --scene-page-top: #0a1a14;
+  --scene-page-mid: #081612;
 }
 
 @media (prefers-reduced-motion: reduce) {

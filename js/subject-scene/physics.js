@@ -1,6 +1,6 @@
 /**
- * Physics: standing waves + force vectors + energy sparks — not a code vortex.
- * Palette: deep navy, ice blue, soft white crests.
+ * Physics: standing waves + force vectors + energy beads — not a galaxy, not CS code.
+ * Palette: deep navy, ice blue, soft white crests / warm energy accents.
  */
 import { THREE, gsap } from "./core.js";
 
@@ -8,6 +8,7 @@ export function createPhysicsExperience(mount) {
   let waves = [];
   let vectors = [];
   let sparks = null;
+  let sparkMeta = null;
   const state = { energy: 0, amp: 1.4, freq: 1.2 };
 
   return mount({
@@ -51,7 +52,7 @@ export function createPhysicsExperience(mount) {
           dir,
           origin,
           3.4,
-          i % 2 ? 0xa5f3fc : 0x38bdf8,
+          i % 2 ? 0xfbbf24 : 0x38bdf8,
           0.48,
           0.28
         );
@@ -66,22 +67,27 @@ export function createPhysicsExperience(mount) {
         ctx.track(arrow);
       }
 
-      const sparkN = ctx.mobile ? 220 : 480;
+      // Energy beads ride the wave field — not a starfield / galaxy scatter
+      const sparkN = ctx.mobile ? 48 : 96;
       const spos = new Float32Array(sparkN * 3);
+      sparkMeta = new Float32Array(sparkN * 3); // waveIndex, phase, speed
       for (let i = 0; i < sparkN; i++) {
-        spos[i * 3] = (Math.random() - 0.5) * 18;
-        spos[i * 3 + 1] = (Math.random() - 0.5) * 10;
-        spos[i * 3 + 2] = (Math.random() - 0.5) * 12;
+        sparkMeta[i * 3] = i % waveCount;
+        sparkMeta[i * 3 + 1] = Math.random() * Math.PI * 2;
+        sparkMeta[i * 3 + 2] = 0.55 + Math.random() * 0.9;
+        spos[i * 3] = (Math.random() - 0.5) * 16;
+        spos[i * 3 + 1] = 0;
+        spos[i * 3 + 2] = 0;
       }
       const sgeo = new THREE.BufferGeometry();
       sgeo.setAttribute("position", new THREE.BufferAttribute(spos, 3));
       sparks = new THREE.Points(
         sgeo,
         new THREE.PointsMaterial({
-          color: 0xe0f2fe,
-          size: 0.075,
+          color: 0xfef3c7,
+          size: ctx.mobile ? 0.09 : 0.11,
           transparent: true,
-          opacity: 0.7,
+          opacity: 0.75,
           blending: THREE.AdditiveBlending,
           depthWrite: false,
           toneMapped: false,
@@ -92,7 +98,7 @@ export function createPhysicsExperience(mount) {
 
       ctx.camera.position.set(0, 0.3, 13.2);
       ctx.camera.lookAt(0, 0, 0);
-      ctx._phys = { sparkN, spos };
+      ctx._phys = { sparkN };
     },
     intro(ctx) {
       const tl = gsap.timeline();
@@ -125,16 +131,16 @@ export function createPhysicsExperience(mount) {
       return tl;
     },
     onPersistent(ctx) {
-      state.amp = 0.5;
-      state.freq = 0.72;
-      state.energy = 0.22;
+      state.amp = 0.48;
+      state.freq = 0.7;
+      state.energy = 0.2;
       vectors.forEach(function (a) {
-        a.cone.material.opacity = 0.16;
-        a.line.material.opacity = 0.12;
+        a.cone.material.opacity = 0.14;
+        a.line.material.opacity = 0.1;
       });
-      if (sparks) sparks.material.opacity = 0.22;
+      if (sparks) sparks.material.opacity = 0.2;
       waves.forEach(function (w) {
-        w.material.opacity = Math.max(0.12, w.material.opacity * 0.5);
+        w.material.opacity = Math.max(0.12, w.material.opacity * 0.48);
       });
       ctx.camera.position.set(0, 0.3, 12.8);
     },
@@ -160,12 +166,27 @@ export function createPhysicsExperience(mount) {
         arrow.setLength(pulse, 0.38, 0.24);
       });
 
-      if (sparks && ctx._phys) {
+      if (sparks && sparkMeta && ctx._phys) {
         const arr = sparks.geometry.attributes.position.array;
-        for (let i = 0; i < ctx._phys.sparkN; i++) {
-          arr[i * 3 + 1] += Math.sin(t * 1.2 + i) * 0.012 * (0.35 + state.energy);
-          arr[i * 3] += Math.cos(t * 0.55 + i) * 0.009;
-          if (arr[i * 3 + 1] > 6) arr[i * 3 + 1] = -6;
+        const n = ctx._phys.sparkN;
+        for (let i = 0; i < n; i++) {
+          const wi = sparkMeta[i * 3] | 0;
+          const phase = sparkMeta[i * 3 + 1];
+          const speed = sparkMeta[i * 3 + 2];
+          const wave = waves[wi];
+          if (!wave) continue;
+          const x = ((t * speed * 1.4 + phase) % 18) - 9;
+          const yBase = wave.position.y;
+          const y =
+            yBase +
+            Math.sin(x * state.freq + t * wave.userData.speed * 1.65 + wave.userData.phase) *
+              state.amp *
+              0.55;
+          const z =
+            Math.cos(x * 0.22 + t * 0.32 + wave.userData.phase) * 0.85 * state.energy;
+          arr[i * 3] = x;
+          arr[i * 3 + 1] = y;
+          arr[i * 3 + 2] = z;
         }
         sparks.geometry.attributes.position.needsUpdate = true;
       }
