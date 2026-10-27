@@ -1,0 +1,180 @@
+/* Cinematic subject-page experiences — layered behind readable HTML after intro */
+
+.has-subject-scene {
+  --scene-navy: #070b14;
+  --scene-cyan: #5eead4;
+  --scene-blue: #4a8fd4;
+  --scene-ink: #050508;
+}
+
+.has-subject-scene .subject-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  overflow: hidden;
+  background: var(--scene-bg, var(--scene-navy));
+}
+
+.has-subject-scene .subject-scene__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.has-subject-scene .subject-scene__splash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 45%,
+      color-mix(in srgb, var(--scene-accent, var(--scene-cyan)) 55%, transparent) 0%,
+      transparent 42%),
+    radial-gradient(circle at 50% 50%,
+      color-mix(in srgb, var(--scene-blue) 35%, transparent) 0%,
+      transparent 58%);
+  opacity: 0;
+  transform: scale(0.55);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.has-subject-scene .subject-scene__skip {
+  position: absolute;
+  right: var(--gutter, 24px);
+  bottom: 28px;
+  z-index: 2;
+  pointer-events: auto;
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--white) 28%, transparent);
+  background: color-mix(in srgb, var(--black) 55%, transparent);
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 12px 16px;
+  min-height: var(--hit);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.has-subject-scene .subject-scene__skip:hover,
+.has-subject-scene .subject-scene__skip:focus-visible {
+  border-color: var(--scene-accent, var(--blue-bright));
+  color: var(--scene-accent, var(--blue-bright));
+  outline: none;
+}
+
+.has-subject-scene .subject-scene__skip:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Hide chrome during cinematic open */
+.has-subject-scene.subject-intro-active .nav,
+.has-subject-scene.subject-intro-active .page,
+.has-subject-scene.subject-intro-active .foot {
+  opacity: 0;
+  visibility: hidden;
+  transition: none;
+}
+
+.has-subject-scene.subject-intro-active {
+  overflow: hidden;
+}
+
+.has-subject-scene .nav,
+.has-subject-scene .page,
+.has-subject-scene .foot {
+  transition: opacity 0.85s var(--ease), visibility 0.85s var(--ease);
+}
+
+/* After splash: calm persistent field behind content */
+.has-subject-scene .subject-scene.is-persistent {
+  z-index: 0;
+  background: transparent;
+  opacity: 1;
+}
+
+.has-subject-scene .subject-scene.is-persistent .subject-scene__splash,
+.has-subject-scene .subject-scene.is-persistent .subject-scene__skip {
+  display: none;
+}
+
+.has-subject-scene.subject-intro-done .nav,
+.has-subject-scene.subject-intro-done .page,
+.has-subject-scene.subject-intro-done .foot {
+  opacity: 1;
+  visibility: visible;
+}
+
+.has-subject-scene.subject-intro-done .page,
+.has-subject-scene.subject-intro-done .foot {
+  z-index: 2;
+}
+
+.has-subject-scene.subject-intro-done .page {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--scene-page-top, var(--bg-page)) 82%, transparent) 0%,
+    color-mix(in srgb, var(--scene-page-mid, var(--bg-page-mid)) 88%, transparent) 52%,
+    color-mix(in srgb, var(--bg-foot) 94%, transparent) 100%
+  );
+}
+
+.has-subject-scene.subject-intro-done .page::after {
+  opacity: 0.75;
+}
+
+.has-subject-scene.subject-intro-done .foot {
+  background: color-mix(in srgb, var(--bg-foot) 92%, transparent);
+}
+
+/* Per-subject tint tokens */
+.has-subject-scene[data-subject-scene="cs"] {
+  --scene-bg: #070b14;
+  --scene-accent: #5eead4;
+  --scene-page-top: #0a1220;
+  --scene-page-mid: #0c1528;
+}
+
+.has-subject-scene[data-subject-scene="maths"] {
+  --scene-bg: #0c0818;
+  --scene-accent: #c4b5fd;
+  --scene-page-top: #160e2c;
+  --scene-page-mid: #120a24;
+}
+
+.has-subject-scene[data-subject-scene="physics"] {
+  --scene-bg: #050a14;
+  --scene-accent: #7dd3fc;
+  --scene-page-top: #0a1424;
+  --scene-page-mid: #0a1220;
+}
+
+.has-subject-scene[data-subject-scene="chemistry"] {
+  --scene-bg: #0a1010;
+  --scene-accent: #86efac;
+  --scene-page-top: #0c1814;
+  --scene-page-mid: #0a1412;
+}
+
+.has-subject-scene[data-subject-scene="biology"] {
+  --scene-bg: #081210;
+  --scene-accent: #6ee7b7;
+  --scene-page-top: #0c1a16;
+  --scene-page-mid: #0a1612;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .has-subject-scene .subject-scene__splash {
+    transform: none;
+  }
+
+  .has-subject-scene .nav,
+  .has-subject-scene .page,
+  .has-subject-scene .foot {
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+  }
+}
