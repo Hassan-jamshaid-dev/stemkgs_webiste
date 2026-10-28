@@ -61,8 +61,10 @@ function start() {
   const id = document.body.getAttribute("data-subject-scene");
   if (!id || !FACTORIES[id]) return;
 
-  // Accessibility: skip cinematic WebGL entirely
-  if (prefersReducedMotion()) {
+  const reduced = prefersReducedMotion();
+  // Accessibility: skip cinematic WebGL for most subjects.
+  // Biology still mounts a short settle + cheap persistent field.
+  if (reduced && id !== "biology") {
     document.body.classList.remove("subject-intro-active");
     document.body.classList.add("subject-intro-done");
     return;
@@ -83,15 +85,21 @@ function start() {
 
   const dom = ensureDom(id);
   const factory = FACTORIES[id];
-  const failSafe = window.setTimeout(function () {
-    document.body.classList.remove("subject-intro-active");
-    document.body.classList.add("subject-intro-done");
-    const sceneRoot = document.getElementById("subject-scene");
-    if (sceneRoot) sceneRoot.classList.add("is-persistent");
-  }, 9000);
+  let failSafe = 0;
 
   try {
     factory(function (config) {
+      const failMs =
+        typeof config.failSafeMs === "number" && config.failSafeMs > 0
+          ? config.failSafeMs
+          : 9000;
+      failSafe = window.setTimeout(function () {
+        document.body.classList.remove("subject-intro-active");
+        document.body.classList.add("subject-intro-done");
+        const sceneRoot = document.getElementById("subject-scene");
+        if (sceneRoot) sceneRoot.classList.add("is-persistent");
+      }, failMs);
+
       const handle = mountSubjectScene({
         id: config.id || id,
         root: dom.root,
@@ -114,7 +122,7 @@ function start() {
       return handle;
     });
   } catch (err) {
-    window.clearTimeout(failSafe);
+    if (failSafe) window.clearTimeout(failSafe);
     document.body.classList.remove("subject-intro-active");
     document.body.classList.add("subject-intro-done");
     if (dom.root && dom.root.parentNode) dom.root.remove();
