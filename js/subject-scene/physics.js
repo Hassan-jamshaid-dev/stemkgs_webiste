@@ -1,375 +1,339 @@
 /**
- * Physics: cinematic 1D block collision — big mass drives a small block into a wall;
- * after a burst of elastic bounces the small block knocks the big one back, then the page unlocks.
- * Persistent: cheap dimmed silhouettes on purple-black #0c0814.
+ * Physics: Newton's cradle — classic 5 polished spheres on a metal frame.
+ * Left ball swings in; page unlocks on first impact (≤ ~2.5s, fail-safe 4s).
+ * Persistent: dimmed static cradle on purple-black #0c0814.
  * Reduced-motion: boot skips WebGL → short CSS fade (subject-scene.css).
  */
 import { THREE, gsap } from "./core.js";
 
 const BG = 0x0c0814;
-const WALL_X = -5.55;
-const FLOOR_Y = -1.9;
-const M_BIG = 100;
-const M_SMALL = 1;
-const W_BIG = 2.2;
-const H_BIG = 2.2;
-const W_SMALL = 0.55;
-const H_SMALL = 0.55;
-const HALF_SUM = (W_BIG + W_SMALL) * 0.5;
-const EPS = 1e-9;
-const X_BIG0 = 4.85;
-const X_SMALL0 = -3.05;
-const V_BIG0 = -2.85;
+const N = 5;
+const R = 0.42;
+const GAP = R * 2;
+const L = 3.35;
+const PIVOT_Y = 1.55;
+const START_ANG = -0.92;
+const IMPACT_T = 2.15;
 
-function elastic(m1, m2, v1, v2) {
-  const inv = 1 / (m1 + m2);
-  return [
-    ((m1 - m2) * v1 + 2 * m2 * v2) * inv,
-    ((m2 - m1) * v2 + 2 * m1 * v1) * inv,
-  ];
-}
-
-/**
- * Event-based 1D elastic sim (wall ↔ small ↔ big). Sparse keyframes only —
- * ~31 clacks for 100:1, then GSAP drives time (no per-frame collision search).
- */
-function bakeCollisions(xBig0, xSmall0, vBig0) {
-  let x1 = xBig0;
-  let x2 = xSmall0;
-  let v1 = vBig0;
-  let v2 = 0;
-  let t = 0;
-  const frames = [{ t: 0, x1, x2, v1, v2, kind: "start" }];
-
-  for (let n = 0; n < 80; n++) {
-    let tWall = Infinity;
-    let tBlock = Infinity;
-
-    const smallLeft = x2 - W_SMALL * 0.5;
-    if (v2 < -EPS) {
-      const dist = smallLeft - WALL_X;
-      tWall = dist > 0 ? dist / -v2 : 0;
-    }
-
-    const gap = x1 - x2 - HALF_SUM;
-    const closing = v2 - v1;
-    if (closing > EPS) {
-      tBlock = gap > 0 ? gap / closing : 0;
-    }
-
-    const dt = Math.min(tWall, tBlock);
-    if (!isFinite(dt) || dt === Infinity) break;
-
-    const step = Math.max(dt, 0);
-    t += step;
-    x1 += v1 * step;
-    x2 += v2 * step;
-
-    if (tWall <= tBlock) {
-      v2 = -v2;
-      x2 = WALL_X + W_SMALL * 0.5 + 1e-6;
-      frames.push({ t, x1, x2, v1, v2, kind: "wall" });
-    } else {
-      const next = elastic(M_BIG, M_SMALL, v1, v2);
-      v1 = next[0];
-      v2 = next[1];
-      x1 = x2 + HALF_SUM + 1e-6;
-      frames.push({ t, x1, x2, v1, v2, kind: "block" });
-    }
-  }
-
-  // Coast so the heavy block’s rebound reads clearly before unlock
-  if (frames.length > 1) {
-    const coast = 0.85;
-    t += coast;
-    x1 += v1 * coast;
-    x2 += v2 * coast;
-    frames.push({ t, x1, x2, v1, v2, kind: "coast" });
-  }
-
-  return frames;
-}
-
-function frameIndexAt(frames, simT) {
-  let lo = 0;
-  let hi = frames.length - 1;
-  if (simT <= frames[0].t) return 0;
-  if (simT >= frames[hi].t) return hi;
-  while (lo < hi - 1) {
-    const mid = (lo + hi) >> 1;
-    if (frames[mid].t <= simT) lo = mid;
-    else hi = mid;
-  }
-  return lo;
-}
-
-function lerpFrame(frames, simT) {
-  const last = frames[frames.length - 1];
-  if (simT <= frames[0].t) return Object.assign({ idx: 0 }, frames[0]);
-  if (simT >= last.t) return Object.assign({ idx: frames.length - 1 }, last);
-  const lo = frameIndexAt(frames, simT);
-  const hi = Math.min(lo + 1, frames.length - 1);
-  const a = frames[lo];
-  const b = frames[hi];
-  const span = b.t - a.t || 1;
-  const u = (simT - a.t) / span;
-  return {
-    t: simT,
-    idx: lo,
-    x1: a.x1 + (b.x1 - a.x1) * u,
-    x2: a.x2 + (b.x2 - a.x2) * u,
-    v1: a.v1,
-    v2: a.v2,
-    kind: u < 0.5 ? a.kind : b.kind,
-  };
-}
-
-/** Cheap face label so mass ratio reads at a glance. */
-function makeLabelMap(text, fill, ink) {
+function makeChromeMap(size) {
+  const s = size || 256;
   const c = document.createElement("canvas");
-  c.width = 256;
-  c.height = 256;
+  c.width = s;
+  c.height = s;
   const g = c.getContext("2d");
-  g.clearRect(0, 0, 256, 256);
-  g.fillStyle = fill;
-  g.fillRect(18, 18, 220, 220);
-  g.strokeStyle = "rgba(255,255,255,0.22)";
-  g.lineWidth = 4;
-  g.strokeRect(28, 28, 200, 200);
-  g.fillStyle = ink;
-  g.font = "700 92px \"Fraunces\", \"Times New Roman\", serif";
-  g.textAlign = "center";
-  g.textBaseline = "middle";
-  g.fillText(text, 128, 122);
-  g.font = "600 28px \"DM Sans\", system-ui, sans-serif";
-  g.fillStyle = "rgba(255,255,255,0.55)";
-  g.fillText("m", 128, 188);
+  const cx = s * 0.5;
+  const cy = s * 0.5;
+  const r = s * 0.5;
+
+  const body = g.createRadialGradient(cx - r * 0.28, cy - r * 0.32, r * 0.04, cx, cy, r);
+  body.addColorStop(0, "#ffffff");
+  body.addColorStop(0.1, "#f4f7fb");
+  body.addColorStop(0.28, "#c8d2de");
+  body.addColorStop(0.5, "#8a97a8");
+  body.addColorStop(0.72, "#4e5866");
+  body.addColorStop(1, "#1c222c");
+  g.fillStyle = body;
+  g.fillRect(0, 0, s, s);
+
+  const spec = g.createRadialGradient(
+    cx - r * 0.34,
+    cy - r * 0.4,
+    0,
+    cx - r * 0.22,
+    cy - r * 0.28,
+    r * 0.55
+  );
+  spec.addColorStop(0, "rgba(255,255,255,1)");
+  spec.addColorStop(0.2, "rgba(255,255,255,0.7)");
+  spec.addColorStop(0.5, "rgba(210,230,255,0.14)");
+  spec.addColorStop(1, "rgba(200,220,255,0)");
+  g.fillStyle = spec;
+  g.fillRect(0, 0, s, s);
+
+  // Secondary highlight band (polished chrome cue)
+  g.strokeStyle = "rgba(255,255,255,0.55)";
+  g.lineWidth = s * 0.035;
+  g.lineCap = "round";
+  g.beginPath();
+  g.arc(cx - r * 0.06, cy - r * 0.08, r * 0.62, -2.4, -0.85);
+  g.stroke();
+
+  const rim = g.createRadialGradient(cx, cy, r * 0.72, cx, cy, r);
+  rim.addColorStop(0, "rgba(0,0,0,0)");
+  rim.addColorStop(0.7, "rgba(0,0,0,0)");
+  rim.addColorStop(1, "rgba(8,10,16,0.4)");
+  g.fillStyle = rim;
+  g.fillRect(0, 0, s, s);
+
+  // Cool violet edge catch — ties to #0c0814 field
+  g.globalCompositeOperation = "screen";
+  g.strokeStyle = "rgba(190,165,255,0.28)";
+  g.lineWidth = s * 0.04;
+  g.beginPath();
+  g.arc(cx + r * 0.08, cy + r * 0.12, r * 0.78, 0.4, 2.2);
+  g.stroke();
+  g.globalCompositeOperation = "source-over";
+
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.needsUpdate = true;
   return tex;
 }
 
-function addEdges(mesh, color, opacity) {
-  const edges = new THREE.LineSegments(
-    new THREE.EdgesGeometry(mesh.geometry, 28),
-    new THREE.LineBasicMaterial({
-      color: color,
-      transparent: true,
-      opacity: opacity,
-      toneMapped: false,
-    })
-  );
-  mesh.add(edges);
-  return edges;
+function makeMetalBarMat(color) {
+  return new THREE.MeshStandardMaterial({
+    color: color,
+    metalness: 0.88,
+    roughness: 0.28,
+    emissive: 0x1a1228,
+    emissiveIntensity: 0.15,
+  });
+}
+
+function ballPos(i, angle, originX) {
+  const px = originX + i * GAP;
+  const a = angle || 0;
+  return {
+    x: px + Math.sin(a) * L,
+    y: PIVOT_Y - Math.cos(a) * L,
+    px: px,
+  };
 }
 
 export function createPhysicsExperience(mount) {
-  let big = null;
-  let small = null;
-  let wall = null;
-  let floor = null;
+  let cradle = null;
+  let balls = [];
+  let wires = [];
   let flash = null;
-  let bigEdges = null;
-  let smallEdges = null;
-  let frames = null;
-  let simEnd = 1;
+  let chromeMap = null;
+  let unlocked = false;
 
   const state = {
-    simT: 0,
+    ang0: START_ANG,
+    ang4: 0,
     dim: 0,
-    camX: 0.2,
-    camY: 0.42,
-    camZ: 11.4,
     flash: 0,
-    lookX: -0.55,
-    lastIdx: 0,
+    camZ: 9.2,
+    camY: 0.55,
+    camX: 0.15,
   };
 
-  function applyPose(frame) {
-    if (big) big.position.x = frame.x1;
-    if (small) small.position.x = frame.x2;
+  function setWires(i, ang) {
+    const w = wires[i];
+    if (!w) return;
+    const p = ballPos(i, ang, cradle._originX);
+    const pivL = w.pivL;
+    const pivR = w.pivR;
+    const mid = balls[i].position;
+
+    function placeLine(line, from, to) {
+      const pos = line.geometry.attributes.position;
+      pos.setXYZ(0, from.x, from.y, from.z);
+      pos.setXYZ(1, to.x, to.y, to.z);
+      pos.needsUpdate = true;
+    }
+
+    placeLine(w.left, pivL, mid);
+    placeLine(w.right, pivR, mid);
+  }
+
+  function applyAngles() {
+    if (!cradle) return;
+    for (let i = 0; i < N; i++) {
+      let a = 0;
+      if (i === 0) a = state.ang0;
+      else if (i === N - 1) a = state.ang4;
+      const p = ballPos(i, a, cradle._originX);
+      balls[i].position.set(p.x, p.y, 0);
+      setWires(i, a);
+    }
   }
 
   function setCamera(ctx) {
     ctx.camera.position.set(state.camX, state.camY, state.camZ);
-    ctx.camera.lookAt(state.lookX, -0.2, 0);
+    ctx.camera.lookAt(0, 0.15, 0);
+  }
+
+  function dimScene(amount) {
+    const oBall = 1 * (1 - amount) + 0.14 * amount;
+    const oWire = 0.72 * (1 - amount) + 0.1 * amount;
+    const oFrame = 1 * (1 - amount) + 0.12 * amount;
+    balls.forEach(function (b) {
+      if (b.material) b.material.opacity = oBall;
+    });
+    wires.forEach(function (w) {
+      if (w.left && w.left.material) w.left.material.opacity = oWire;
+      if (w.right && w.right.material) w.right.material.opacity = oWire;
+    });
+    if (cradle && cradle._frameMats) {
+      cradle._frameMats.forEach(function (m) {
+        if (m) m.opacity = oFrame;
+      });
+    }
   }
 
   function settlePersistent(ctx) {
-    const last = frames && frames.length ? frames[frames.length - 1] : null;
-    if (last) applyPose(last);
+    state.ang0 = 0;
+    state.ang4 = 0;
     state.dim = 1;
     state.flash = 0;
-    state.camX = 0.1;
-    state.camY = 0.35;
-    state.camZ = 12.6;
-    state.lookX = -0.35;
-    if (big && big.material) {
-      if (Array.isArray(big.material)) {
-        big.material.forEach(function (m) {
-          if (m && m.opacity != null) m.opacity = 0.12;
-        });
-      } else {
-        big.material.opacity = 0.12;
-      }
-    }
-    if (small && small.material) {
-      if (Array.isArray(small.material)) {
-        small.material.forEach(function (m) {
-          if (m && m.opacity != null) m.opacity = 0.14;
-        });
-      } else {
-        small.material.opacity = 0.14;
-      }
-    }
-    if (bigEdges && bigEdges.material) bigEdges.material.opacity = 0.08;
-    if (smallEdges && smallEdges.material) smallEdges.material.opacity = 0.1;
-    if (wall && wall.material) wall.material.opacity = 0.09;
-    if (floor && floor.material) floor.material.opacity = 0.1;
+    state.camX = 0.05;
+    state.camY = 0.45;
+    state.camZ = 11.4;
+    applyAngles();
+    dimScene(1);
     if (flash && flash.material) flash.material.opacity = 0;
     setCamera(ctx);
     if (ctx.scene.fog) {
-      ctx.scene.fog.near = 14;
-      ctx.scene.fog.far = 42;
+      ctx.scene.fog.near = 12;
+      ctx.scene.fog.far = 36;
     }
-  }
-
-  function dimMaterials(amount) {
-    const oBig = 0.96 * (1 - amount) + 0.12 * amount;
-    const oSmall = 0.98 * (1 - amount) + 0.14 * amount;
-    const oEdgeBig = 0.55 * (1 - amount) + 0.08 * amount;
-    const oEdgeSmall = 0.7 * (1 - amount) + 0.1 * amount;
-    const oWall = 0.78 * (1 - amount) + 0.09 * amount;
-    const oFloor = 0.5 * (1 - amount) + 0.1 * amount;
-    function setOp(mat, o) {
-      if (!mat) return;
-      if (Array.isArray(mat)) mat.forEach(function (m) { if (m) m.opacity = o; });
-      else mat.opacity = o;
-    }
-    if (big) setOp(big.material, oBig);
-    if (small) setOp(small.material, oSmall);
-    if (bigEdges) bigEdges.material.opacity = oEdgeBig;
-    if (smallEdges) smallEdges.material.opacity = oEdgeSmall;
-    if (wall) wall.material.opacity = oWall;
-    if (floor) floor.material.opacity = oFloor;
   }
 
   return mount({
     id: "physics",
     clearColor: BG,
     fogColor: BG,
-    fogNear: 11,
-    fogFar: 38,
-    failSafeMs: 14000,
+    fogNear: 8,
+    fogFar: 28,
+    failSafeMs: 4000,
     build(ctx) {
-      const group = new THREE.Group();
-      ctx.scene.add(group);
-      ctx.track(group);
+      cradle = new THREE.Group();
+      ctx.scene.add(cradle);
+      ctx.track(cradle);
 
-      wall = new THREE.Mesh(
-        new THREE.BoxGeometry(0.28, 4.8, 1.55),
-        new THREE.MeshBasicMaterial({
-          color: 0x4a3568,
-          transparent: true,
-          opacity: 0.78,
-          toneMapped: false,
-        })
-      );
-      wall.position.set(WALL_X - 0.14, FLOOR_Y + 2.4, 0);
-      group.add(wall);
-      ctx.track(wall);
+      const originX = -((N - 1) * GAP) * 0.5;
+      cradle._originX = originX;
 
-      // Soft wall face glow — reads as the impact surface
-      const wallFace = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.02, 4.6),
-        new THREE.MeshBasicMaterial({
-          color: 0xc4b5fd,
-          transparent: true,
-          opacity: 0.28,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false,
-          toneMapped: false,
-        })
-      );
-      wallFace.position.set(WALL_X + 0.01, FLOOR_Y + 2.35, 0.02);
-      group.add(wallFace);
-      ctx.track(wallFace);
+      const segs = ctx.weak || ctx.mobile ? 20 : 36;
+      chromeMap = makeChromeMap(ctx.weak ? 128 : 256);
+      ctx.track(chromeMap);
 
-      floor = new THREE.Mesh(
-        new THREE.BoxGeometry(17, 0.05, 1.6),
-        new THREE.MeshBasicMaterial({
-          color: 0x6b5a88,
-          transparent: true,
-          opacity: 0.5,
-          toneMapped: false,
-        })
-      );
-      floor.position.set(0.55, FLOOR_Y, 0);
-      group.add(floor);
-      ctx.track(floor);
-
-      const bigLabel = makeLabelMap("100", "#6d4fc4", "#f5f0ff");
-      const smallLabel = makeLabelMap("1", "#7eb8d8", "#071018");
-      ctx.track(bigLabel);
-      ctx.track(smallLabel);
-
-      const bigMatSide = new THREE.MeshBasicMaterial({
-        color: 0x7c5ecf,
+      const ballMat = new THREE.MeshStandardMaterial({
+        map: chromeMap,
+        color: 0xeef2f7,
+        metalness: 0.92,
+        roughness: 0.14,
+        emissive: 0x3a2a58,
+        emissiveIntensity: 0.18,
         transparent: true,
-        opacity: 0.96,
+        opacity: 1,
+      });
+      ctx.track(ballMat);
+
+      const wireMat = new THREE.LineBasicMaterial({
+        color: 0xdce3ec,
+        transparent: true,
+        opacity: 0.85,
         toneMapped: false,
       });
-      const bigMatFace = new THREE.MeshBasicMaterial({
-        map: bigLabel,
-        transparent: true,
-        opacity: 0.96,
-        toneMapped: false,
-      });
-      big = new THREE.Mesh(
-        new THREE.BoxGeometry(W_BIG, H_BIG, W_BIG * 0.7),
-        [
-          bigMatSide, bigMatSide, bigMatSide, bigMatSide,
-          bigMatFace, // front (+z)
-          bigMatSide,
-        ]
-      );
-      big.position.set(X_BIG0, FLOOR_Y + H_BIG * 0.5, 0);
-      group.add(big);
-      ctx.track(big);
-      bigEdges = addEdges(big, 0xd4c4ff, 0.55);
-      ctx.track(bigEdges);
+      ctx.track(wireMat);
 
-      const smallMatSide = new THREE.MeshBasicMaterial({
-        color: 0x9ad4ef,
-        transparent: true,
-        opacity: 0.98,
-        toneMapped: false,
-      });
-      const smallMatFace = new THREE.MeshBasicMaterial({
-        map: smallLabel,
-        transparent: true,
-        opacity: 0.98,
-        toneMapped: false,
-      });
-      small = new THREE.Mesh(
-        new THREE.BoxGeometry(W_SMALL, H_SMALL, W_SMALL * 0.7),
-        [
-          smallMatSide, smallMatSide, smallMatSide, smallMatSide,
-          smallMatFace,
-          smallMatSide,
-        ]
+      const frameMats = [];
+      cradle._frameMats = frameMats;
+
+      function trackMat(m) {
+        frameMats.push(m);
+        ctx.track(m);
+        m.transparent = true;
+        m.opacity = 1;
+        return m;
+      }
+
+      const barMat = trackMat(makeMetalBarMat(0xb0b8c6));
+      const postMat = trackMat(makeMetalBarMat(0x8e96a4));
+      const baseMat = trackMat(makeMetalBarMat(0x5c5668));
+
+      const barW = (N - 1) * GAP + R * 2.4;
+      const topBar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.055, 0.055, barW, 12),
+        barMat
       );
-      small.position.set(X_SMALL0, FLOOR_Y + H_SMALL * 0.5, 0);
-      group.add(small);
-      ctx.track(small);
-      smallEdges = addEdges(small, 0xe8f7ff, 0.7);
-      ctx.track(smallEdges);
+      topBar.rotation.z = Math.PI / 2;
+      topBar.position.set(0, PIVOT_Y + 0.02, 0);
+      cradle.add(topBar);
+
+      const cross = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.04, 1.15, 10),
+        barMat
+      );
+      cross.rotation.x = Math.PI / 2;
+      cross.position.set(0, PIVOT_Y + 0.02, 0);
+      cradle.add(cross);
+
+      const half = barW * 0.5;
+      [-1, 1].forEach(function (side) {
+        const post = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.07, 0.085, PIVOT_Y + 1.35, 12),
+          postMat
+        );
+        post.position.set(side * half, (PIVOT_Y - 1.15) * 0.5, 0);
+        cradle.add(post);
+
+        // A-frame rear brace
+        const brace = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.045, 0.045, 2.05, 8),
+          postMat
+        );
+        brace.position.set(side * half, 0.15, 0.55);
+        brace.rotation.x = 0.48;
+        cradle.add(brace);
+
+        const braceF = brace.clone();
+        braceF.position.z = -0.55;
+        braceF.rotation.x = -0.48;
+        cradle.add(braceF);
+      });
+
+      const base = new THREE.Mesh(
+        new THREE.BoxGeometry(barW + 0.9, 0.12, 1.55),
+        baseMat
+      );
+      base.position.set(0, -1.55, 0);
+      cradle.add(base);
+
+      const baseLip = new THREE.Mesh(
+        new THREE.BoxGeometry(barW + 1.05, 0.04, 1.7),
+        trackMat(makeMetalBarMat(0x3a3548))
+      );
+      baseLip.position.set(0, -1.62, 0);
+      cradle.add(baseLip);
+
+      for (let i = 0; i < N; i++) {
+        const mesh = new THREE.Mesh(
+          new THREE.SphereGeometry(R, segs, segs),
+          ballMat.clone()
+        );
+        ctx.track(mesh.material);
+        const p = ballPos(i, i === 0 ? START_ANG : 0, originX);
+        mesh.position.set(p.x, p.y, 0);
+        cradle.add(mesh);
+        balls.push(mesh);
+
+        const px = originX + i * GAP;
+        const pivL = new THREE.Vector3(px - 0.07, PIVOT_Y, 0);
+        const pivR = new THREE.Vector3(px + 0.07, PIVOT_Y, 0);
+        const geoL = new THREE.BufferGeometry().setFromPoints([
+          pivL.clone(),
+          mesh.position.clone(),
+        ]);
+        const geoR = new THREE.BufferGeometry().setFromPoints([
+          pivR.clone(),
+          mesh.position.clone(),
+        ]);
+        const left = new THREE.Line(geoL, wireMat.clone());
+        const right = new THREE.Line(geoR, wireMat.clone());
+        ctx.track(left.material);
+        ctx.track(right.material);
+        cradle.add(left);
+        cradle.add(right);
+        wires.push({ left, right, pivL, pivR });
+      }
 
       flash = new THREE.Mesh(
-        new THREE.PlaneGeometry(1.6, 1.6),
+        new THREE.PlaneGeometry(1.4, 1.4),
         new THREE.MeshBasicMaterial({
-          color: 0xe9d5ff,
+          color: 0xe8e0ff,
           transparent: true,
           opacity: 0,
           blending: THREE.AdditiveBlending,
@@ -377,14 +341,30 @@ export function createPhysicsExperience(mount) {
           toneMapped: false,
         })
       );
-      flash.position.set(X_SMALL0, FLOOR_Y + 0.65, 0.6);
-      group.add(flash);
+      flash.position.set(originX + R, PIVOT_Y - L, 0.55);
+      cradle.add(flash);
       ctx.track(flash);
 
-      frames = bakeCollisions(X_BIG0, X_SMALL0, V_BIG0);
-      simEnd = frames[frames.length - 1].t || 1;
+      const key = new THREE.DirectionalLight(0xf5f8ff, 1.85);
+      key.position.set(4.5, 6.5, 5.5);
+      ctx.scene.add(key);
+      ctx.track(key);
 
-      applyPose(frames[0]);
+      const fill = new THREE.DirectionalLight(0xb49ae0, 0.75);
+      fill.position.set(-5, 2, -3);
+      ctx.scene.add(fill);
+      ctx.track(fill);
+
+      const rim = new THREE.PointLight(0xd4c4ff, 1.45, 24);
+      rim.position.set(0, 2.2, 4.5);
+      ctx.scene.add(rim);
+      ctx.track(rim);
+
+      const amb = new THREE.AmbientLight(0x3a3050, 0.72);
+      ctx.scene.add(amb);
+      ctx.track(amb);
+
+      applyAngles();
       setCamera(ctx);
     },
     intro(ctx) {
@@ -395,152 +375,88 @@ export function createPhysicsExperience(mount) {
         return tl;
       }
 
+      // Instant start — raised ball already in motion on first frame.
       const tl = gsap.timeline();
-      const endT = simEnd;
 
-      // Establish: big block sliding in from the right
-      tl.to(state, { simT: endT * 0.035, duration: 0.5, ease: "power1.out" }, 0);
-      tl.to(state, { camZ: 9.4, camX: -0.25, camY: 0.35, duration: 0.85, ease: "power2.inOut" }, 0);
-
-      // First contact + shove toward the wall (readable beat)
       tl.to(
         state,
         {
-          simT: endT * 0.2,
-          duration: 1.25,
-          ease: "power1.inOut",
-          onUpdate() {
-            const f = lerpFrame(frames, state.simT);
-            state.lookX = (f.x1 + f.x2) * 0.5 * 0.32 - 0.55;
-            setCamera(ctx);
-          },
-        },
-        0.4
-      );
-
-      // Bounce storm — many clacks, slightly compressed but still countable
-      tl.to(
-        state,
-        {
-          simT: endT * 0.86,
-          duration: 3.15,
+          ang0: 0,
+          duration: IMPACT_T,
           ease: "power2.in",
           onUpdate() {
-            const f = lerpFrame(frames, state.simT);
-            state.lookX = (f.x1 + f.x2) * 0.5 * 0.26 - 0.4;
-            state.camX = THREE.MathUtils.lerp(state.camX, f.x2 * 0.1 - 0.15, 0.1);
+            applyAngles();
+            // Subtle push-in as the ball falls
+            const u = 1 - state.ang0 / START_ANG;
+            state.camZ = 9.2 - u * 0.85;
+            state.camY = 0.55 - u * 0.08;
             setCamera(ctx);
           },
         },
-        1.55
+        0
       );
 
-      // Final knock-back — small block reverses the big one
-      tl.to(
-        state,
-        {
-          simT: endT,
-          duration: 1.25,
-          ease: "power2.out",
-          onUpdate() {
-            const f = lerpFrame(frames, state.simT);
-            state.lookX = (f.x1 + f.x2) * 0.5 * 0.2 - 0.15;
-            state.camX = THREE.MathUtils.lerp(state.camX, 0.15, 0.06);
-            setCamera(ctx);
-          },
-        },
-        4.65
-      );
-
-      tl.to(state, { camZ: 11.6, camY: 0.4, camX: 0.18, duration: 1.05, ease: "power2.inOut" }, 5.15);
-
+      // First impact — unlock immediately (timeline ends here).
       tl.add(function () {
-        if (!ctx.splash) return;
-        gsap.fromTo(
-          ctx.splash,
-          { opacity: 0, scale: 0.5 },
-          { opacity: 0.88, scale: 1.28, duration: 0.36, ease: "power2.out" }
-        );
-      }, 5.55);
-      tl.to(ctx.splash || { opacity: 0 }, { opacity: 0, duration: 0.45 }, 5.95);
+        state.flash = 1;
+        if (flash) {
+          const hit = ballPos(0, 0, cradle._originX);
+          flash.position.set(hit.x + R * 0.85, hit.y, 0.55);
+        }
+        if (ctx.splash) {
+          gsap.fromTo(
+            ctx.splash,
+            { opacity: 0, scale: 0.55 },
+            { opacity: 0.9, scale: 1.2, duration: 0.28, ease: "power2.out" }
+          );
+        }
+      }, IMPACT_T);
 
-      tl.to(
-        state,
-        {
-          dim: 1,
-          flash: 0,
-          duration: 0.85,
-          ease: "power2.inOut",
-          onUpdate() {
-            dimMaterials(state.dim);
-          },
-        },
-        5.85
-      );
+      tl.to(ctx.splash || { opacity: 0 }, { opacity: 0, duration: 0.22 }, IMPACT_T + 0.02);
 
-      tl.to(
-        state,
-        {
-          camZ: 12.6,
-          camY: 0.35,
-          camX: 0.1,
-          lookX: -0.35,
-          duration: 0.9,
-          ease: "power2.inOut",
-          onUpdate() {
-            setCamera(ctx);
-          },
-        },
-        5.9
-      );
-
-      if (ctx.scene.fog) {
-        tl.to(ctx.scene.fog, { near: 14, far: 42, duration: 0.85 }, 5.9);
-      }
+      // Tiny settle so splash registers; total still well under 4s.
+      tl.to({}, { duration: 0.08 }, IMPACT_T);
 
       return tl;
     },
     onPersistent(ctx) {
-      settlePersistent(ctx);
+      unlocked = true;
+      // Cheap dimmed cradle — no long post-collision sequence.
+      state.ang0 = 0;
+      state.ang4 = 0;
+      applyAngles();
+      gsap.to(state, {
+        dim: 1,
+        camZ: 11.4,
+        camY: 0.45,
+        camX: 0.05,
+        duration: 0.9,
+        ease: "power2.out",
+        onUpdate() {
+          dimScene(state.dim);
+          setCamera(ctx);
+        },
+      });
+      if (ctx.scene.fog) {
+        gsap.to(ctx.scene.fog, { near: 12, far: 36, duration: 0.9 });
+      }
     },
     update(ctx, dt) {
-      if (frames && state.dim < 0.95) {
-        const f = lerpFrame(frames, state.simT);
-        applyPose(f);
-        if (f.idx > state.lastIdx) {
-          let hitKind = null;
-          let hx = f.x2;
-          for (let i = state.lastIdx + 1; i <= f.idx; i++) {
-            const crossed = frames[i];
-            if (crossed && crossed.kind !== "start" && crossed.kind !== "coast") {
-              hitKind = crossed.kind;
-              hx =
-                crossed.kind === "wall"
-                  ? WALL_X + 0.4
-                  : (crossed.x1 + crossed.x2) * 0.5;
-            }
-          }
-          if (hitKind) {
-            state.flash = 1;
-            if (flash) {
-              flash.position.x = hx;
-              flash.position.y = FLOOR_Y + H_SMALL * 0.7;
-            }
-          }
-          state.lastIdx = f.idx;
-        }
+      if (!cradle) return;
+
+      if (!unlocked) {
+        applyAngles();
       }
 
-      state.flash = Math.max(0, state.flash - dt * 6);
+      state.flash = Math.max(0, state.flash - dt * 5.5);
       if (flash && flash.material) {
-        flash.material.opacity = state.flash * 0.6 * (1 - state.dim * 0.9);
-        flash.rotation.z += dt * 0.4;
+        flash.material.opacity = state.flash * 0.65 * (1 - state.dim * 0.85);
+        flash.rotation.z += dt * 0.5;
       }
 
-      if (state.dim > 0.85 && big && small) {
-        const breath = Math.sin(ctx.clock.elapsedTime * 0.5) * 0.01;
-        big.position.y = FLOOR_Y + H_BIG * 0.5 + breath;
-        small.position.y = FLOOR_Y + H_SMALL * 0.5 - breath * 0.55;
+      if (state.dim > 0.85) {
+        const breath = Math.sin(ctx.clock.elapsedTime * 0.45) * 0.012;
+        cradle.rotation.y = breath;
       }
     },
   });
