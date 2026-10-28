@@ -1,0 +1,20 @@
+---
+description: Local preview required; never deploy to Vercel/Netlify without explicit ask
+alwaysApply: true
+---
+
+# Preview & Deploy Preferences
+
+## Save hosting credits
+
+1. **NEVER** deploy to Vercel or Netlify unless the user **explicitly** asks to deploy to that host.
+2. **ALWAYS** preview on localhost without asking for confirmation — spin up a local static server (e.g. `npx --yes serve . -p 4173` or `python -m http.server`) when verifying UI changes.
+
+## Current hosting note
+
+- Netlify is currently **credit-blocked** — do not attempt Netlify deploys or suggest them as a workaround.
+
+## Git authorship (Hassan only)
+
+- Commits must be authored as **Hassan** `<294511593+Hassan-jamshaid-dev@users.noreply.github.com>` only.
+- **Never** add `Co-authored-by` trailers (or any co-author attribution) to commits.
