@@ -340,12 +340,17 @@ export function startCsTerminal() {
 
   async function run() {
     if (reduced) {
-      await sleep(220, ac.signal);
+      // Short reduced-motion path — unlock on next frame, no artificial hold.
+      await new Promise(function (resolve) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(resolve);
+        });
+      });
       finish(true);
       return;
     }
 
-    await sleep(280, ac.signal);
+    // Typing begins immediately — no leading setTimeout before the first line.
     for (let i = 0; i < SCRIPT.length; i++) {
       if (ac.signal.aborted) return;
       const step = SCRIPT[i];
@@ -387,8 +392,5 @@ function autoBoot() {
   startCsTerminal();
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", autoBoot, { once: true });
-} else {
-  autoBoot();
-}
+// Module scripts are deferred — DOM is ready; no DOMContentLoaded wait.
+autoBoot();

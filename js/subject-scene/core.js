@@ -171,7 +171,7 @@ export function mountSubjectScene(options) {
     powerPreference: weak ? "low-power" : "high-performance",
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
-  renderer.setClearColor(options.clearColor ?? 0x0c0814, 1);
+  renderer.setClearColor(options.clearColor ?? 0x140828, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
@@ -253,7 +253,9 @@ export function mountSubjectScene(options) {
 
   function syncRunning() {
     if (disposed) return;
-    setRunning(docVisible && canvasVisible);
+    // Never stall the intro on a late IntersectionObserver callback —
+    // keep rendering until unlock→content handoff completes.
+    setRunning(docVisible && (canvasVisible || !introDone));
   }
 
   function setRunning(next) {
@@ -303,7 +305,7 @@ export function mountSubjectScene(options) {
     }
     if (skipBtn) skipBtn.hidden = true;
     root.classList.add("is-persistent");
-    renderer.setClearColor(options.clearColor ?? 0x0c0814, 0);
+    renderer.setClearColor(options.clearColor ?? 0x140828, 0);
     if (scene.fog) {
       scene.fog.near = Math.max(scene.fog.near, 12);
       scene.fog.far = Math.max(scene.fog.far, 44);
@@ -396,16 +398,36 @@ export function mountSubjectScene(options) {
 
   syncRunning();
 
-  Promise.resolve()
-    .then(function () {
-      if (disposed) return;
+  // Start intro in this turn (no Promise/idle/timeout gate). At most one rAF
+  // if the browser is mid-paint; otherwise same frame as mount.
+  function beginIntro() {
+    if (disposed) return;
+    try {
+      // Reduced-motion: let scene intro handle a short path when provided
+      // (e.g. biology settle); otherwise unlock content immediately.
       if (reduced) {
+        const reducedResult = options.intro ? options.intro(ctx) : null;
+        if (reducedResult && typeof reducedResult.then === "function") {
+          reducedResult
+            .then(function () { finishIntro(false); })
+            .catch(function () { finishIntro(true); });
+          return;
+        }
+        if (reducedResult && reducedResult.eventCallback) {
+          introTl = reducedResult;
+          reducedResult.eventCallback("onComplete", function () { finishIntro(false); });
+          return;
+        }
         finishIntro(true);
         return;
       }
+
       const result = options.intro(ctx);
       if (result && typeof result.then === "function") {
-        return result.then(function () { finishIntro(false); });
+        result
+          .then(function () { finishIntro(false); })
+          .catch(function () { finishIntro(true); });
+        return;
       }
       if (result && result.eventCallback) {
         introTl = result;
@@ -413,10 +435,12 @@ export function mountSubjectScene(options) {
         return;
       }
       finishIntro(false);
-    })
-    .catch(function () {
+    } catch (_) {
       finishIntro(true);
-    });
+    }
+  }
+
+  beginIntro();
 
   return { dispose, ctx };
 }

@@ -109,8 +109,8 @@ export function createCrimeExperience(mount) {
 
   return mount({
     id: "crime",
-    clearColor: 0x0c0814,
-    fogColor: 0x0c0814,
+    clearColor: 0x140828,
+    fogColor: 0x140828,
     fogNear: 7,
     fogFar: 32,
     build(ctx) {

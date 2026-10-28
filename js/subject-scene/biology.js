@@ -88,8 +88,8 @@ export function createBiologyExperience(mount) {
 
   return mount({
     id: "biology",
-    clearColor: 0x0c0814,
-    fogColor: 0x0c0814,
+    clearColor: 0x140828,
+    fogColor: 0x140828,
     fogNear: 6,
     fogFar: 28,
     /** Longer than default boot fail-safe so the ~12s journey can finish. */
@@ -230,7 +230,7 @@ export function createBiologyExperience(mount) {
       ctx._bioKey = key;
     },
     intro(ctx) {
-      // Reduced-motion: brief settle into cheap persistent field (~1.2s)
+      // Reduced-motion: brief settle into cheap persistent field (short path)
       if (ctx.reduced) {
         const tl = gsap.timeline();
         if (gutMat) gutMat.opacity = 0.12;
@@ -245,7 +245,7 @@ export function createBiologyExperience(mount) {
         state.dim = 1;
         state.pulse = 0.28;
         setPersistentLook(ctx);
-        tl.to({}, { duration: 1.15 });
+        tl.to({}, { duration: 0.28 });
         return tl;
       }
 

@@ -1,21 +1,40 @@
 /**
  * Subject-scene bootstrap — reads data-subject-scene and mounts the experience.
+ * Loads only the active subject module (no eager import of all six).
  */
 import { mountSubjectScene, prefersReducedMotion } from "./core.js";
-import { createCsExperience } from "./cs.js";
-import { createMathsExperience } from "./maths.js";
-import { createPhysicsExperience } from "./physics.js";
-import { createChemistryExperience } from "./chemistry.js";
-import { createBiologyExperience } from "./biology.js";
-import { createCrimeExperience } from "./crime.js";
 
-const FACTORIES = {
-  cs: createCsExperience,
-  maths: createMathsExperience,
-  physics: createPhysicsExperience,
-  chemistry: createChemistryExperience,
-  biology: createBiologyExperience,
-  crime: createCrimeExperience,
+const LOADERS = {
+  cs: function () {
+    return import("./cs.js").then(function (m) {
+      return m.createCsExperience;
+    });
+  },
+  maths: function () {
+    return import("./maths.js").then(function (m) {
+      return m.createMathsExperience;
+    });
+  },
+  physics: function () {
+    return import("./physics.js").then(function (m) {
+      return m.createPhysicsExperience;
+    });
+  },
+  chemistry: function () {
+    return import("./chemistry.js").then(function (m) {
+      return m.createChemistryExperience;
+    });
+  },
+  biology: function () {
+    return import("./biology.js").then(function (m) {
+      return m.createBiologyExperience;
+    });
+  },
+  crime: function () {
+    return import("./crime.js").then(function (m) {
+      return m.createCrimeExperience;
+    });
+  },
 };
 
 function ensureDom(id) {
@@ -59,7 +78,14 @@ function ensureDom(id) {
 
 function start() {
   const id = document.body.getAttribute("data-subject-scene");
-  if (!id || !FACTORIES[id]) return;
+  if (!id || !LOADERS[id]) return;
+
+  // Lock chrome on the first boot tick — before async subject import resolves.
+  document.body.classList.add("subject-intro-active");
+  document.body.classList.remove("subject-intro-done");
+
+  // Kick the subject module fetch immediately (overlaps WebGL probe / DOM ensure).
+  const factoryPromise = LOADERS[id]();
 
   const reduced = prefersReducedMotion();
   // Accessibility: skip cinematic WebGL for most subjects.
@@ -75,62 +101,63 @@ function start() {
     const test = document.createElement("canvas");
     const gl = test.getContext("webgl") || test.getContext("experimental-webgl");
     if (!gl) {
+      document.body.classList.remove("subject-intro-active");
       document.body.classList.add("subject-intro-done");
       return;
     }
   } catch (_) {
+    document.body.classList.remove("subject-intro-active");
     document.body.classList.add("subject-intro-done");
     return;
   }
 
   const dom = ensureDom(id);
-  const factory = FACTORIES[id];
   let failSafe = 0;
 
-  try {
-    factory(function (config) {
-      const failMs =
-        typeof config.failSafeMs === "number" && config.failSafeMs > 0
-          ? config.failSafeMs
-          : 9000;
-      failSafe = window.setTimeout(function () {
-        document.body.classList.remove("subject-intro-active");
-        document.body.classList.add("subject-intro-done");
-        const sceneRoot = document.getElementById("subject-scene");
-        if (sceneRoot) sceneRoot.classList.add("is-persistent");
-      }, failMs);
+  factoryPromise
+    .then(function (factory) {
+      factory(function (config) {
+        const failMs =
+          typeof config.failSafeMs === "number" && config.failSafeMs > 0
+            ? config.failSafeMs
+            : 9000;
+        // Fail-safe only forces unlock if intro never completes — not a start offset.
+        failSafe = window.setTimeout(function () {
+          document.body.classList.remove("subject-intro-active");
+          document.body.classList.add("subject-intro-done");
+          const sceneRoot = document.getElementById("subject-scene");
+          if (sceneRoot) sceneRoot.classList.add("is-persistent");
+        }, failMs);
 
-      const handle = mountSubjectScene({
-        id: config.id || id,
-        root: dom.root,
-        canvas: dom.canvas,
-        splash: dom.splash,
-        skip: dom.skip,
-        clearColor: config.clearColor,
-        fogColor: config.fogColor,
-        fogNear: config.fogNear,
-        fogFar: config.fogFar,
-        build: config.build,
-        intro: config.intro,
-        update: config.update,
-        onPersistent: function (ctx, meta) {
-          window.clearTimeout(failSafe);
-          if (config.onPersistent) config.onPersistent(ctx, meta);
-        },
-        disposeExtra: config.disposeExtra,
+        const handle = mountSubjectScene({
+          id: config.id || id,
+          root: dom.root,
+          canvas: dom.canvas,
+          splash: dom.splash,
+          skip: dom.skip,
+          clearColor: config.clearColor,
+          fogColor: config.fogColor,
+          fogNear: config.fogNear,
+          fogFar: config.fogFar,
+          build: config.build,
+          intro: config.intro,
+          update: config.update,
+          onPersistent: function (ctx, meta) {
+            window.clearTimeout(failSafe);
+            if (config.onPersistent) config.onPersistent(ctx, meta);
+          },
+          disposeExtra: config.disposeExtra,
+        });
+        return handle;
       });
-      return handle;
+    })
+    .catch(function () {
+      if (failSafe) window.clearTimeout(failSafe);
+      document.body.classList.remove("subject-intro-active");
+      document.body.classList.add("subject-intro-done");
+      if (dom.root && dom.root.parentNode) dom.root.remove();
     });
-  } catch (err) {
-    if (failSafe) window.clearTimeout(failSafe);
-    document.body.classList.remove("subject-intro-active");
-    document.body.classList.add("subject-intro-done");
-    if (dom.root && dom.root.parentNode) dom.root.remove();
-  }
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", start, { once: true });
-} else {
-  start();
-}
+// Module scripts are deferred — DOM is ready when this runs. No DOMContentLoaded wait.
+start();

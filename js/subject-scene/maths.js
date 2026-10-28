@@ -1,7 +1,8 @@
 /**
  * Mathematics: ride a glowing quadratic curve (y = ax²), then drop into the page.
  * Persistent: calm faint parabola + light grid — cheap Line / LineSegments / Points only.
- * Palette: navy / cool white / blue. Reduced-motion: boot skips WebGL → short CSS fade.
+ * Palette: deep purple-black field / cool white / soft lilac accents.
+ * Reduced-motion: boot skips WebGL → short CSS fade.
  */
 import { THREE, gsap, budgetCount } from "./core.js";
 
@@ -96,8 +97,8 @@ export function createMathsExperience(mount) {
 
   return mount({
     id: "maths",
-    clearColor: 0x0c0814,
-    fogColor: 0x0c0814,
+    clearColor: 0x140828,
+    fogColor: 0x140828,
     fogNear: 14,
     fogFar: 48,
     build(ctx) {
@@ -129,7 +130,7 @@ export function createMathsExperience(mount) {
       curveGlow = new THREE.Line(
         glowGeo,
         new THREE.LineBasicMaterial({
-          color: 0x4a8fd4,
+          color: 0x7c6bb5,
           transparent: true,
           opacity: 0.45,
           blending: THREE.AdditiveBlending,
@@ -156,7 +157,7 @@ export function createMathsExperience(mount) {
       beads = new THREE.Points(
         beadGeo,
         new THREE.PointsMaterial({
-          color: 0x93c5fd,
+          color: 0xb8a9e8,
           size: ctx.mobile ? 0.08 : 0.11,
           transparent: true,
           opacity: 0.75,
@@ -184,7 +185,7 @@ export function createMathsExperience(mount) {
       grid = new THREE.LineSegments(
         gGeo,
         new THREE.LineBasicMaterial({
-          color: 0x2a4a78,
+          color: 0x3a2860,
           transparent: true,
           opacity: 0,
           toneMapped: false,
