@@ -1,9 +1,9 @@
 /**
  * Mathematics: ride a glowing quadratic curve (y = ax²), then drop into the page.
- * Persistent: calm faint parabola + light grid — cheap LineSegments only.
- * Palette: navy / cool white / blue.
+ * Persistent: calm faint parabola + light grid — cheap Line / LineSegments / Points only.
+ * Palette: navy / cool white / blue. Reduced-motion: boot skips WebGL → short CSS fade.
  */
-import { THREE, gsap } from "./core.js";
+import { THREE, gsap, budgetCount } from "./core.js";
 
 /** Sample y = a x² in the x–y plane, with a soft z wobble for light 3D. */
 function sampleParabola(a, xMin, xMax, segments, zAmp) {
@@ -61,7 +61,6 @@ export function createMathsExperience(mount) {
     camLift: 0.55,
     glow: 1,
     gridFade: 0,
-    spin: 0,
   };
 
   function setCameraFromRide(ctx) {
@@ -106,7 +105,7 @@ export function createMathsExperience(mount) {
       ctx.scene.add(rideGroup);
       ctx.track(rideGroup);
 
-      const segs = ctx.mobile ? 64 : 96;
+      const segs = budgetCount(96, 64, 40);
       const pts = sampleParabola(A, X_MIN, X_MAX, segs, Z_AMP);
 
       const coreGeo = new THREE.BufferGeometry();
@@ -123,7 +122,7 @@ export function createMathsExperience(mount) {
       rideGroup.add(curveCore);
       ctx.track(curveCore);
 
-      // Soft glow: slightly offset duplicate lines (cheap faux bloom)
+      // Soft glow: slightly offset duplicate line (cheap faux bloom — no post FX)
       const glowPts = sampleParabola(A, X_MIN, X_MAX, segs, Z_AMP * 1.05);
       const glowGeo = new THREE.BufferGeometry();
       glowGeo.setAttribute("position", new THREE.BufferAttribute(glowPts, 3));
@@ -143,10 +142,10 @@ export function createMathsExperience(mount) {
       ctx.track(curveGlow);
 
       // Sparse beads along the curve for depth cues
-      const beadCount = ctx.mobile ? 18 : 28;
+      const beadCount = budgetCount(28, 18, 12);
       const beadPos = new Float32Array(beadCount * 3);
       for (let i = 0; i < beadCount; i++) {
-        const u = i / (beadCount - 1);
+        const u = i / Math.max(1, beadCount - 1);
         const p = pointOnParabola(A, X_MIN, X_MAX, u, Z_AMP);
         beadPos[i * 3] = p.x;
         beadPos[i * 3 + 1] = p.y;
@@ -171,15 +170,13 @@ export function createMathsExperience(mount) {
       ctx.track(beads);
 
       // Calm cartesian grid (built once; faded in for persistent)
-      const gridLines = ctx.mobile ? 7 : 11;
+      const gridLines = budgetCount(11, 7, 5);
       const gridExtent = 11;
       const gPos = [];
       for (let i = 0; i < gridLines; i++) {
-        const t = i / (gridLines - 1);
+        const t = i / Math.max(1, gridLines - 1);
         const v = -gridExtent + 2 * gridExtent * t;
-        // horizontal (const y)
         gPos.push(-gridExtent, v, -0.8, gridExtent, v, -0.8);
-        // vertical (const x)
         gPos.push(v, -1.5, -0.8, v, A * gridExtent * gridExtent + 1.5, -0.8);
       }
       const gGeo = new THREE.BufferGeometry();
@@ -202,24 +199,42 @@ export function createMathsExperience(mount) {
     },
 
     intro(ctx) {
+      // Reduced-motion: core finishes immediately → page short-fades in via CSS
+      if (ctx.reduced) {
+        state.u = 0.5;
+        state.drop = 1;
+        state.glow = 0.22;
+        state.gridFade = 1;
+        setCameraFromRide(ctx);
+        return;
+      }
+
       const tl = gsap.timeline({ defaults: { ease: "none" } });
 
       // Phase 1 — slide down the parabola (high → vertex → far side)
-      tl.to(state, {
-        u: 0.92,
-        duration: 2.55,
-        ease: "power1.inOut",
-        onUpdate() {
-          setCameraFromRide(ctx);
+      tl.to(
+        state,
+        {
+          u: 0.92,
+          duration: 2.55,
+          ease: "power1.inOut",
+          onUpdate() {
+            setCameraFromRide(ctx);
+          },
         },
-      }, 0);
+        0
+      );
 
-      tl.to(state, {
-        camDist: 2.6,
-        camLift: 0.35,
-        duration: 2.55,
-        ease: "power1.inOut",
-      }, 0);
+      tl.to(
+        state,
+        {
+          camDist: 2.6,
+          camLift: 0.35,
+          duration: 2.55,
+          ease: "power1.inOut",
+        },
+        0
+      );
 
       // Soft glow pulse while riding
       tl.to(state, { glow: 1.15, duration: 1.2, ease: "sine.inOut" }, 0.2);
@@ -236,33 +251,45 @@ export function createMathsExperience(mount) {
       }, 2.35);
 
       // Phase 2 — drop / settle into the page
-      tl.to(state, {
-        drop: 1,
-        duration: 1.05,
-        ease: "power3.in",
-        onUpdate() {
-          setCameraFromRide(ctx);
+      tl.to(
+        state,
+        {
+          drop: 1,
+          duration: 1.05,
+          ease: "power3.in",
+          onUpdate() {
+            setCameraFromRide(ctx);
+          },
         },
-      }, 2.5);
+        2.5
+      );
 
-      tl.to(state, {
-        glow: 0.35,
-        gridFade: 1,
-        duration: 0.9,
-        ease: "power2.out",
-      }, 2.55);
+      tl.to(
+        state,
+        {
+          glow: 0.22,
+          gridFade: 1,
+          duration: 0.9,
+          ease: "power2.out",
+        },
+        2.55
+      );
 
       tl.to(ctx.splash || { opacity: 0 }, { opacity: 0, duration: 0.45 }, 2.85);
 
       // Ease out camera settle
-      tl.to(state, {
-        drop: 1,
-        duration: 0.35,
-        ease: "power2.out",
-        onUpdate() {
-          setCameraFromRide(ctx);
+      tl.to(
+        state,
+        {
+          drop: 1,
+          duration: 0.35,
+          ease: "power2.out",
+          onUpdate() {
+            setCameraFromRide(ctx);
+          },
         },
-      }, 3.45);
+        3.45
+      );
 
       return tl;
     },
@@ -270,13 +297,12 @@ export function createMathsExperience(mount) {
     onPersistent(ctx) {
       state.u = 0.5;
       state.drop = 1;
-      state.glow = 0.28;
+      state.glow = 0.22;
       state.gridFade = 1;
-      state.spin = 0.04;
-      if (curveCore) curveCore.material.opacity = 0.22;
-      if (curveGlow) curveGlow.material.opacity = 0.12;
-      if (beads) beads.material.opacity = 0.14;
-      if (grid) grid.material.opacity = 0.09;
+      if (curveCore) curveCore.material.opacity = 0.18;
+      if (curveGlow) curveGlow.material.opacity = 0.08;
+      if (beads) beads.material.opacity = 0.1;
+      if (grid) grid.material.opacity = 0.07;
       ctx.camera.position.set(0, 2.2, 14.5);
       ctx.camera.lookAt(0, 1.2, 0);
     },
@@ -284,23 +310,34 @@ export function createMathsExperience(mount) {
     update(ctx, dt, t) {
       if (!rideGroup) return;
 
+      const calm = state.drop >= 0.99;
+
+      if (calm) {
+        // Cheap calm field — low static opacities + tiny drift
+        if (curveCore) curveCore.material.opacity = 0.16 + state.glow * 0.08;
+        if (curveGlow) {
+          curveGlow.material.opacity =
+            0.06 + 0.04 * (0.5 + 0.5 * Math.sin(t * 0.55));
+        }
+        if (beads) beads.material.opacity = 0.08 + state.glow * 0.06;
+        if (grid) grid.material.opacity = 0.065 * state.gridFade;
+        rideGroup.rotation.y = Math.sin(t * 0.12) * 0.04;
+        rideGroup.rotation.x = Math.sin(t * 0.09) * 0.02;
+        return;
+      }
+
       if (curveCore) {
         curveCore.material.opacity = Math.min(1, 0.35 + state.glow * 0.55);
       }
       if (curveGlow) {
-        curveGlow.material.opacity = 0.12 + state.glow * 0.32 * (0.7 + 0.3 * Math.sin(t * 1.4));
+        curveGlow.material.opacity =
+          0.12 + state.glow * 0.32 * (0.7 + 0.3 * Math.sin(t * 1.4));
       }
       if (beads) {
         beads.material.opacity = 0.12 + state.glow * 0.5;
       }
       if (grid) {
         grid.material.opacity = 0.085 * state.gridFade;
-      }
-
-      // Persistent: tiny drift only — no heavy spin
-      if (state.drop >= 0.99) {
-        rideGroup.rotation.y = Math.sin(t * 0.12) * 0.04;
-        rideGroup.rotation.x = Math.sin(t * 0.09) * 0.02;
       }
     },
   });
