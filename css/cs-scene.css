@@ -1,0 +1,163 @@
+/* CS terminal unlock — DOM overlay + cheap canvas field */
+
+.has-subject-scene[data-subject-scene="cs"] .subject-scene.cs-terminal {
+  background: #070b14;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__panel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(640px, calc(100vw - 40px));
+  max-height: min(420px, calc(100vh - 96px));
+  display: flex;
+  flex-direction: column;
+  border: 1px solid color-mix(in srgb, #5eead4 28%, transparent);
+  background: color-mix(in srgb, #05080f 92%, #0a1628);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #4a8fd4 12%, transparent),
+    0 24px 64px color-mix(in srgb, #000 55%, transparent);
+  font-family: "DM Mono", "Cascadia Code", Consolas, "Courier New", monospace;
+  overflow: hidden;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  z-index: 1;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__panel.is-exit {
+  opacity: 0;
+  transform: translate(-50%, -48%) scale(1.04);
+  pointer-events: none;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__chrome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid color-mix(in srgb, #5eead4 16%, transparent);
+  background: color-mix(in srgb, #0a1220 88%, transparent);
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: color-mix(in srgb, #94a3b8 55%, transparent);
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__dot:nth-child(1) {
+  background: #f87171;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__dot:nth-child(2) {
+  background: #fbbf24;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__dot:nth-child(3) {
+  background: #4ade80;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__title {
+  margin-left: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: color-mix(in srgb, #a5f3fc 70%, #64748b);
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__output {
+  margin: 0;
+  padding: 16px 18px 20px;
+  flex: 1;
+  overflow: auto;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #cbd5e1;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__line {
+  min-height: 1.55em;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__prompt {
+  color: #5eead4;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__typed {
+  color: #e2e8f0;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__caret {
+  display: inline-block;
+  margin-left: 1px;
+  color: #5eead4;
+  animation: cs-caret 0.85s steps(1) infinite;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__muted {
+  color: #64748b;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__ok {
+  color: #4ade80;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__flash {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, #5eead4 35%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transition: opacity 0.08s linear;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .cs-terminal__flash.is-on {
+  opacity: 1;
+}
+
+/* After unlock: quiet field behind readable HTML */
+.has-subject-scene[data-subject-scene="cs"] .subject-scene.cs-terminal.is-persistent {
+  z-index: 0;
+  background: transparent;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .subject-scene.cs-terminal.is-persistent .cs-terminal__bg {
+  opacity: 0.22;
+}
+
+.has-subject-scene[data-subject-scene="cs"] .subject-scene.cs-terminal.is-persistent .cs-terminal__panel,
+.has-subject-scene[data-subject-scene="cs"] .subject-scene.cs-terminal.is-persistent .subject-scene__skip {
+  display: none;
+}
+
+@keyframes cs-caret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .has-subject-scene[data-subject-scene="cs"] .cs-terminal__panel {
+    transition: opacity 0.28s ease;
+  }
+
+  .has-subject-scene[data-subject-scene="cs"] .cs-terminal__panel.is-exit {
+    transform: translate(-50%, -50%);
+  }
+
+  .has-subject-scene[data-subject-scene="cs"] .cs-terminal__caret {
+    animation: none;
+  }
+}

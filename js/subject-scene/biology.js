@@ -1,198 +1,359 @@
-/**
- * Biology: cellular bloom — membrane, nucleus, drifting ribbons & vesicles.
- * Palette: deep forest teal, soft mint, warm chlorophyll green.
- */
-import { THREE, gsap } from "./core.js";
-
-export function createBiologyExperience(mount) {
-  let cell = null;
-  let membrane = null;
-  let organelles = [];
-  const state = { pulse: 0.5, open: 0 };
-
-  return mount({
-    id: "biology",
-    clearColor: 0x081210,
-    fogColor: 0x081210,
-    fogNear: 8,
-    fogFar: 34,
-    build(ctx) {
-      cell = new THREE.Group();
-      ctx.scene.add(cell);
-      ctx.track(cell);
-
-      const nucleus = new THREE.Mesh(
-        new THREE.SphereGeometry(1.1, 32, 24),
-        new THREE.MeshStandardMaterial({
-          color: 0x34d399,
-          emissive: 0x064e3b,
-          emissiveIntensity: 0.5,
-          roughness: 0.45,
-          metalness: 0.1,
-          transparent: true,
-          opacity: 0.92,
-        })
-      );
-      nucleus.scale.setScalar(0.15);
-      cell.add(nucleus);
-      ctx.track(nucleus);
-      organelles.push(nucleus);
-
-      const core = new THREE.Mesh(
-        new THREE.SphereGeometry(0.42, 20, 16),
-        new THREE.MeshStandardMaterial({
-          color: 0xa7f3d0,
-          emissive: 0x10b981,
-          emissiveIntensity: 0.65,
-          roughness: 0.3,
-        })
-      );
-      cell.add(core);
-      ctx.track(core);
-      organelles.push(core);
-
-      membrane = new THREE.Mesh(
-        new THREE.SphereGeometry(2.65, 36, 28),
-        new THREE.MeshBasicMaterial({
-          color: 0x6ee7b7,
-          wireframe: true,
-          transparent: true,
-          opacity: 0.3,
-          toneMapped: false,
-        })
-      );
-      membrane.scale.setScalar(0.12);
-      cell.add(membrane);
-      ctx.track(membrane);
-
-      const ribbonCount = ctx.mobile ? 4 : 7;
-      for (let i = 0; i < ribbonCount; i++) {
-        const curve = new THREE.CatmullRomCurve3([
-          new THREE.Vector3(-3.1, Math.sin(i) * 1.25, i * 0.18),
-          new THREE.Vector3(-1.1, Math.cos(i) * 1.55, -0.85),
-          new THREE.Vector3(1.25, Math.sin(i + 1) * 1.45, 0.95),
-          new THREE.Vector3(3.3, Math.cos(i * 0.7) * 0.85, -0.28),
-        ]);
-        const tube = new THREE.Mesh(
-          new THREE.TubeGeometry(curve, 48, 0.048, 6, false),
-          new THREE.MeshStandardMaterial({
-            color: i % 2 ? 0x34d399 : 0x2dd4bf,
-            emissive: 0x065f46,
-            emissiveIntensity: 0.38,
-            transparent: true,
-            opacity: 0,
-          })
-        );
-        tube.rotation.y = (i / ribbonCount) * Math.PI * 2;
-        tube.userData.speed = 0.18 + i * 0.045;
-        cell.add(tube);
-        organelles.push(tube);
-        ctx.track(tube);
-      }
-
-      const n = ctx.mobile ? 240 : 420;
-      const pos = new Float32Array(n * 3);
-      for (let i = 0; i < n; i++) {
-        const r = 3 + Math.random() * 8;
-        const th = Math.random() * Math.PI * 2;
-        const ph = Math.acos(2 * Math.random() - 1);
-        pos[i * 3] = r * Math.sin(ph) * Math.cos(th);
-        pos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
-        pos[i * 3 + 2] = r * Math.cos(ph);
-      }
-      const vesicles = new THREE.Points(
-        new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(pos, 3)),
-        new THREE.PointsMaterial({
-          color: 0x6ee7b7,
-          size: 0.085,
-          transparent: true,
-          opacity: 0.58,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false,
-          toneMapped: false,
-        })
-      );
-      ctx.scene.add(vesicles);
-      ctx.track(vesicles);
-      ctx._bioVesicles = vesicles;
-
-      const key = new THREE.PointLight(0x6ee7b7, 1.35, 40);
-      key.position.set(3, 4, 5);
-      ctx.scene.add(key);
-      ctx.track(key);
-      const amb = new THREE.AmbientLight(0x14352c, 0.6);
-      ctx.scene.add(amb);
-      ctx.track(amb);
-
-      ctx.camera.position.set(0, 0.4, 13.2);
-      ctx.camera.lookAt(0, 0, 0);
-    },
-    intro(ctx) {
-      const tl = gsap.timeline();
-      tl.to(membrane.scale, { x: 1, y: 1, z: 1, duration: 1.55, ease: "elastic.out(1, 0.55)" }, 0);
-      tl.to(organelles[0].scale, { x: 1, y: 1, z: 1, duration: 1.2, ease: "back.out(1.4)" }, 0.15);
-      organelles.forEach(function (o) {
-        if (o.userData && o.userData.speed && o.material) {
-          tl.to(o.material, { opacity: 0.78, duration: 0.7 }, 0.45);
-        }
-      });
-      tl.to(state, { open: 1, pulse: 1.25, duration: 2.05 }, 0);
-      tl.to(ctx.camera.position, {
-        z: 7.2,
-        y: 0.55,
-        duration: 2.15,
-        ease: "power2.inOut",
-        onUpdate() { ctx.camera.lookAt(0, 0, 0); },
-      }, 0);
-      tl.add(function () {
-        if (!ctx.splash) return;
-        gsap.fromTo(
-          ctx.splash,
-          { opacity: 0, scale: 0.5 },
-          { opacity: 0.88, scale: 1.35, duration: 0.4, ease: "power2.out" }
-        );
-      }, 2.15);
-      tl.to(ctx.splash || { opacity: 0 }, { opacity: 0, duration: 0.5 }, 2.5);
-      tl.to(ctx.camera.position, {
-        z: 11.9,
-        duration: 0.95,
-        onUpdate() { ctx.camera.lookAt(0, 0, 0); },
-      }, 2.5);
-      tl.to(state, { pulse: 0.5, duration: 0.85 }, 2.5);
-      return tl;
-    },
-    onPersistent() {
-      state.pulse = 0.38;
-      state.open = 1;
-      if (membrane) membrane.material.opacity = 0.12;
-      organelles.forEach(function (o) {
-        if (o.material && o.material.opacity != null) {
-          o.material.opacity = Math.min(o.material.opacity, 0.48);
-        }
-      });
-    },
-    update(ctx, dt, t) {
-      if (!cell) return;
-      cell.rotation.y += dt * 0.11;
-      const s = 1 + Math.sin(t * 1.35) * 0.045 * state.pulse;
-      if (organelles[0]) organelles[0].scale.setScalar(s);
-      if (membrane) {
-        membrane.rotation.y -= dt * 0.075;
-        membrane.rotation.z = Math.sin(t * 0.48) * 0.09;
-        const mPulse = 1 + Math.sin(t * 1.1) * 0.02 * state.pulse;
-        membrane.scale.setScalar(mPulse);
-      }
-      organelles.forEach(function (o) {
-        if (o.userData && o.userData.speed) {
-          o.rotation.y += dt * o.userData.speed * (0.45 + state.pulse * 0.55);
-        }
-      });
-      if (ctx._bioVesicles) {
-        ctx._bioVesicles.rotation.y = t * 0.038;
-        ctx._bioVesicles.rotation.x = Math.sin(t * 0.2) * 0.1;
-        ctx._bioVesicles.material.opacity = 0.22 + state.open * 0.18;
-      }
-    },
-  });
-}
-
+/**
+ * Biology: digestive journey — schematic GI tract, food bolus travels into the page.
+ * Longer cinematic intro (~11s); calm cheap organic field after.
+ * Palette: deep forest teal, soft mint, warm chlorophyll green.
+ */
+import { THREE, gsap } from "./core.js";
+
+/** Side-view GI schematic: esophagus → stomach → coils → deeper into +Z. */
+function buildGutCurve() {
+  return new THREE.CatmullRomCurve3(
+    [
+      new THREE.Vector3(-6.4, 3.4, -2.2),
+      new THREE.Vector3(-5.6, 2.2, -1.4),
+      new THREE.Vector3(-4.4, 0.55, -0.35),
+      new THREE.Vector3(-2.9, -0.85, 0.55),
+      new THREE.Vector3(-1.1, -1.55, 1.35),
+      new THREE.Vector3(0.55, -0.35, 2.45),
+      new THREE.Vector3(1.85, 1.05, 3.55),
+      new THREE.Vector3(0.65, 1.85, 4.85),
+      new THREE.Vector3(-1.35, 0.75, 6.1),
+      new THREE.Vector3(-0.25, -1.15, 7.4),
+      new THREE.Vector3(1.65, -0.55, 8.9),
+      new THREE.Vector3(2.4, 0.85, 10.6),
+      new THREE.Vector3(1.1, 1.45, 12.4),
+      new THREE.Vector3(-0.4, 0.35, 14.2),
+    ],
+    false,
+    "catmullrom",
+    0.42
+  );
+}
+
+export function createBiologyExperience(mount) {
+  let gut = null;
+  let gutMat = null;
+  let lumenMat = null;
+  let bolus = null;
+  let bolusGlow = null;
+  let motes = null;
+  let curve = null;
+  let lookTarget = null;
+  const progress = { u: 0 };
+  const state = { pulse: 0.45, dim: 0, camLag: 0 };
+
+  const tmpPos = new THREE.Vector3();
+  const tmpTan = new THREE.Vector3();
+  const tmpLook = new THREE.Vector3();
+  const tmpCam = new THREE.Vector3();
+  const tmpUp = new THREE.Vector3(0, 1, 0);
+
+  function placeAlongPath(u, camFollow) {
+    if (!curve || !bolus) return;
+    const t = THREE.MathUtils.clamp(u, 0, 1);
+    curve.getPointAt(t, tmpPos);
+    curve.getTangentAt(t, tmpTan).normalize();
+    bolus.position.copy(tmpPos);
+    if (bolusGlow) bolusGlow.position.copy(tmpPos);
+
+    const ahead = Math.min(t + 0.04, 1);
+    curve.getPointAt(ahead, tmpLook);
+    lookTarget.copy(tmpLook);
+
+    if (camFollow) {
+      const side = new THREE.Vector3()
+        .crossVectors(tmpTan, tmpUp)
+        .normalize()
+        .multiplyScalar(1.15);
+      tmpCam
+        .copy(tmpPos)
+        .addScaledVector(tmpTan, -2.85)
+        .add(side)
+        .y += 0.55 + Math.sin(t * Math.PI * 2) * 0.12;
+      camFollow.position.lerp(tmpCam, 0.22 + state.camLag * 0.35);
+      camFollow.lookAt(lookTarget);
+    }
+  }
+
+  return mount({
+    id: "biology",
+    clearColor: 0x081210,
+    fogColor: 0x081210,
+    fogNear: 6,
+    fogFar: 28,
+    build(ctx) {
+      curve = buildGutCurve();
+      lookTarget = new THREE.Vector3();
+
+      const tubular = ctx.mobile ? 72 : 110;
+      const radial = ctx.mobile ? 5 : 7;
+
+      gut = new THREE.Group();
+      ctx.scene.add(gut);
+      ctx.track(gut);
+
+      gutMat = new THREE.MeshStandardMaterial({
+        color: 0x2a6b58,
+        emissive: 0x0a3d32,
+        emissiveIntensity: 0.35,
+        roughness: 0.72,
+        metalness: 0.05,
+        transparent: true,
+        opacity: 0,
+        side: THREE.DoubleSide,
+      });
+      const wall = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, tubular, 0.42, radial, false),
+        gutMat
+      );
+      gut.add(wall);
+      ctx.track(wall);
+
+      lumenMat = new THREE.MeshBasicMaterial({
+        color: 0x6ee7b7,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        toneMapped: false,
+        side: THREE.BackSide,
+      });
+      const lumen = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, tubular, 0.28, Math.max(4, radial - 1), false),
+        lumenMat
+      );
+      gut.add(lumen);
+      ctx.track(lumen);
+
+      // Soft schematic rings along the path (cheap markers, not anatomy)
+      const ringCount = ctx.mobile ? 5 : 8;
+      for (let i = 0; i < ringCount; i++) {
+        const u = (i + 0.5) / ringCount;
+        curve.getPointAt(u, tmpPos);
+        curve.getTangentAt(u, tmpTan).normalize();
+        const ring = new THREE.Mesh(
+          new THREE.TorusGeometry(0.52, 0.018, 6, 20),
+          new THREE.MeshBasicMaterial({
+            color: i % 2 ? 0x34d399 : 0x5eead4,
+            transparent: true,
+            opacity: 0,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            toneMapped: false,
+          })
+        );
+        ring.position.copy(tmpPos);
+        ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), tmpTan);
+        ring.userData.isRing = true;
+        gut.add(ring);
+        ctx.track(ring);
+      }
+
+      bolus = new THREE.Mesh(
+        new THREE.SphereGeometry(0.22, 12, 10),
+        new THREE.MeshStandardMaterial({
+          color: 0xd9f99d,
+          emissive: 0x65a30d,
+          emissiveIntensity: 0.55,
+          roughness: 0.4,
+          metalness: 0.05,
+          transparent: true,
+          opacity: 0,
+        })
+      );
+      ctx.scene.add(bolus);
+      ctx.track(bolus);
+
+      bolusGlow = new THREE.Mesh(
+        new THREE.SphereGeometry(0.38, 10, 8),
+        new THREE.MeshBasicMaterial({
+          color: 0xa3e635,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          toneMapped: false,
+        })
+      );
+      ctx.scene.add(bolusGlow);
+      ctx.track(bolusGlow);
+
+      const n = ctx.mobile ? 90 : 160;
+      const pos = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) {
+        const along = Math.random();
+        curve.getPointAt(along, tmpPos);
+        pos[i * 3] = tmpPos.x + (Math.random() - 0.5) * 5.5;
+        pos[i * 3 + 1] = tmpPos.y + (Math.random() - 0.5) * 4.2;
+        pos[i * 3 + 2] = tmpPos.z + (Math.random() - 0.5) * 3.5;
+      }
+      motes = new THREE.Points(
+        new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(pos, 3)),
+        new THREE.PointsMaterial({
+          color: 0x6ee7b7,
+          size: 0.06,
+          transparent: true,
+          opacity: 0.22,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          toneMapped: false,
+          sizeAttenuation: true,
+        })
+      );
+      ctx.scene.add(motes);
+      ctx.track(motes);
+
+      const key = new THREE.PointLight(0x6ee7b7, 1.1, 28);
+      key.position.set(-2, 4, 2);
+      ctx.scene.add(key);
+      ctx.track(key);
+      const fill = new THREE.PointLight(0xa7f3d0, 0.45, 36);
+      fill.position.set(4, -1, 10);
+      ctx.scene.add(fill);
+      ctx.track(fill);
+      const amb = new THREE.AmbientLight(0x14352c, 0.55);
+      ctx.scene.add(amb);
+      ctx.track(amb);
+
+      progress.u = 0;
+      placeAlongPath(0, null);
+      ctx.camera.position.set(-8.2, 4.2, -5.5);
+      ctx.camera.lookAt(-5.5, 2.5, -1.5);
+      ctx._bioKey = key;
+      ctx._bioFill = fill;
+    },
+    intro(ctx) {
+      const tl = gsap.timeline();
+      const rings = [];
+      gut.traverse(function (o) {
+        if (o.userData && o.userData.isRing) rings.push(o);
+      });
+
+      // Reveal tract
+      tl.to(gutMat, { opacity: 0.72, duration: 1.1, ease: "power2.out" }, 0);
+      tl.to(lumenMat, { opacity: 0.16, duration: 1.2, ease: "power2.out" }, 0.15);
+      rings.forEach(function (r, i) {
+        tl.to(r.material, { opacity: 0.42, duration: 0.55 }, 0.35 + i * 0.08);
+      });
+      tl.to(bolus.material, { opacity: 0.95, duration: 0.55 }, 0.55);
+      tl.to(bolusGlow.material, { opacity: 0.28, duration: 0.55 }, 0.55);
+      tl.to(motes.material, { opacity: 0.38, duration: 1.0 }, 0.2);
+      tl.to(state, { pulse: 1, camLag: 1, duration: 1.0 }, 0);
+
+      // Journey along the tract (~9s travel inside ~11s total)
+      tl.to(
+        progress,
+        {
+          u: 1,
+          duration: 9.2,
+          ease: "power1.inOut",
+          onUpdate() {
+            placeAlongPath(progress.u, ctx.camera);
+            if (ctx._bioKey) {
+              ctx._bioKey.position.lerp(bolus.position, 0.08);
+              ctx._bioKey.position.y += 1.2;
+            }
+          },
+        },
+        0.9
+      );
+
+      // Soft mid-journey pulse
+      tl.to(state, { pulse: 1.25, duration: 2.4, ease: "sine.inOut" }, 3.2);
+      tl.to(state, { pulse: 0.9, duration: 2.2, ease: "sine.inOut" }, 5.6);
+
+      // Arrival splash → settle into page
+      tl.add(function () {
+        if (!ctx.splash) return;
+        gsap.fromTo(
+          ctx.splash,
+          { opacity: 0, scale: 0.55 },
+          { opacity: 0.9, scale: 1.32, duration: 0.45, ease: "power2.out" }
+        );
+      }, 9.6);
+      tl.to(ctx.splash || { opacity: 0 }, { opacity: 0, duration: 0.55 }, 10.15);
+
+      tl.to(gutMat, { opacity: 0.18, duration: 1.1, ease: "power2.inOut" }, 9.7);
+      tl.to(lumenMat, { opacity: 0.05, duration: 1.1 }, 9.7);
+      rings.forEach(function (r) {
+        tl.to(r.material, { opacity: 0.08, duration: 1.0 }, 9.75);
+      });
+      tl.to(bolus.material, { opacity: 0.15, duration: 1.0 }, 9.8);
+      tl.to(bolusGlow.material, { opacity: 0.04, duration: 1.0 }, 9.8);
+      tl.to(motes.material, { opacity: 0.16, duration: 1.0 }, 9.8);
+      tl.to(state, { pulse: 0.35, camLag: 0.2, dim: 1, duration: 1.15 }, 9.7);
+
+      tl.to(
+        ctx.camera.position,
+        {
+          x: 1.2,
+          y: 1.8,
+          z: 8.5,
+          duration: 1.35,
+          ease: "power2.inOut",
+          onUpdate() {
+            ctx.camera.lookAt(0.4, 0.2, 12.5);
+          },
+        },
+        9.85
+      );
+
+      if (ctx.scene.fog) {
+        tl.to(ctx.scene.fog, { near: 10, far: 36, duration: 1.2 }, 9.8);
+      }
+
+      return tl;
+    },
+    onPersistent(ctx) {
+      state.pulse = 0.28;
+      state.dim = 1;
+      state.camLag = 0;
+      progress.u = 1;
+      if (gutMat) gutMat.opacity = 0.1;
+      if (lumenMat) lumenMat.opacity = 0.03;
+      if (bolus && bolus.material) bolus.material.opacity = 0.08;
+      if (bolusGlow && bolusGlow.material) bolusGlow.material.opacity = 0.02;
+      if (motes && motes.material) motes.material.opacity = 0.12;
+      gut.traverse(function (o) {
+        if (o.userData && o.userData.isRing && o.material) {
+          o.material.opacity = 0.05;
+        }
+      });
+      placeAlongPath(1, null);
+      ctx.camera.position.set(1.2, 1.8, 8.5);
+      ctx.camera.lookAt(0.4, 0.2, 12.5);
+      if (ctx.scene.fog) {
+        ctx.scene.fog.near = 12;
+        ctx.scene.fog.far = 40;
+      }
+    },
+    update(ctx, dt, t) {
+      if (!gut) return;
+      const breathe = 1 + Math.sin(t * 0.85) * 0.012 * state.pulse;
+      gut.scale.setScalar(breathe);
+
+      if (bolus && !state.dim) {
+        const s = 1 + Math.sin(t * 3.2) * 0.06 * state.pulse;
+        bolus.scale.setScalar(s);
+        if (bolusGlow) {
+          bolusGlow.scale.setScalar(1.05 + Math.sin(t * 2.4) * 0.08);
+          bolusGlow.rotation.y += dt * 0.4;
+        }
+      } else if (bolus) {
+        bolus.rotation.y += dt * 0.15;
+        if (bolusGlow) bolusGlow.rotation.y -= dt * 0.1;
+      }
+
+      gut.traverse(function (o) {
+        if (o.userData && o.userData.isRing) {
+          o.rotation.z += dt * 0.25 * (0.4 + state.pulse * 0.6);
+        }
+      });
+
+      if (motes) {
+        motes.rotation.y = Math.sin(t * 0.08) * 0.04;
+        motes.position.y = Math.sin(t * 0.22) * 0.08;
+      }
+    },
+  });
+}

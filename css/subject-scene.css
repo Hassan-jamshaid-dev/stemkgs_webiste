@@ -14,6 +14,7 @@
   pointer-events: none;
   overflow: hidden;
   background: var(--scene-bg, var(--scene-navy));
+  contain: layout paint style;
 }
 
 .has-subject-scene .subject-scene__canvas {
@@ -21,6 +22,7 @@
   width: 100%;
   height: 100%;
   touch-action: none;
+  contain: strict;
 }
 
 .has-subject-scene .subject-scene__splash {
@@ -95,6 +97,9 @@
   z-index: 0;
   background: transparent;
   opacity: 1;
+  /* Keep GL layer out of layout/paint when scrolled away / covered */
+  content-visibility: auto;
+  contain-intrinsic-size: 100vw 100vh;
 }
 
 .has-subject-scene .subject-scene.is-persistent .subject-scene__splash,
@@ -166,6 +171,14 @@
   --scene-blue: #f9a8d4;
   --scene-page-top: #0a1a14;
   --scene-page-mid: #081612;
+}
+
+.has-subject-scene[data-subject-scene="crime"] {
+  --scene-bg: #100810;
+  --scene-accent: #fbbf24;
+  --scene-blue: #67e8f9;
+  --scene-page-top: #1a0c14;
+  --scene-page-mid: #140a12;
 }
 
 @media (prefers-reduced-motion: reduce) {

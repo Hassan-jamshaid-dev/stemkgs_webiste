@@ -7,6 +7,7 @@ import { createMathsExperience } from "./maths.js";
 import { createPhysicsExperience } from "./physics.js";
 import { createChemistryExperience } from "./chemistry.js";
 import { createBiologyExperience } from "./biology.js";
+import { createCrimeExperience } from "./crime.js";
 
 const FACTORIES = {
   cs: createCsExperience,
@@ -14,6 +15,7 @@ const FACTORIES = {
   physics: createPhysicsExperience,
   chemistry: createChemistryExperience,
   biology: createBiologyExperience,
+  crime: createCrimeExperience,
 };
 
 function ensureDom(id) {
