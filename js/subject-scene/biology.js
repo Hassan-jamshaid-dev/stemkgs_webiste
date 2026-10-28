@@ -1,62 +1,22 @@
 /**
- * Biology: food-through-intestines journey into the page.
- * Tasteful anatomical lighting/materials (soft mucosa, warm bolus) — not gore.
- * Longer cinematic path; calm cheap field after. Clear: purple-black #0c0814.
+ * Biology: plant photosynthesizing — leaf, sunlight beams, chlorophyll glow.
+ * Tasteful cinematic (not intestine). Instant start; short reduced-motion path.
+ * Clear: purple-black #0c0814. Cheap persistent field after unlock.
  */
 import { THREE, gsap, budgetCount } from "./core.js";
 
 const CLEAR = 0x0c0814;
 
-/** Side-view GI path: mouth → esophagus → stomach → coils → deep +Z into page. */
-function buildGutCurve() {
-  return new THREE.CatmullRomCurve3(
-    [
-      // Oral entry / pharynx
-      new THREE.Vector3(-7.2, 4.05, -3.4),
-      new THREE.Vector3(-6.55, 3.35, -2.55),
-      // Esophagus drop
-      new THREE.Vector3(-5.85, 2.15, -1.65),
-      new THREE.Vector3(-5.2, 0.55, -0.75),
-      new THREE.Vector3(-4.55, -0.85, 0.05),
-      // Cardia → stomach pouch
-      new THREE.Vector3(-3.55, -1.55, 0.85),
-      new THREE.Vector3(-2.25, -1.95, 1.55),
-      new THREE.Vector3(-0.85, -1.45, 2.15),
-      // Pylorus / duodenal flexure
-      new THREE.Vector3(0.35, -0.55, 2.85),
-      new THREE.Vector3(1.25, 0.55, 3.55),
-      // Jejunal coils — longer meander
-      new THREE.Vector3(1.95, 1.45, 4.45),
-      new THREE.Vector3(1.15, 2.05, 5.45),
-      new THREE.Vector3(-0.35, 1.55, 6.35),
-      new THREE.Vector3(-1.55, 0.45, 7.15),
-      new THREE.Vector3(-1.25, -0.85, 8.05),
-      new THREE.Vector3(0.15, -1.45, 8.95),
-      new THREE.Vector3(1.55, -0.75, 9.85),
-      new THREE.Vector3(2.15, 0.55, 10.85),
-      // Ileum deepening into the page
-      new THREE.Vector3(1.35, 1.55, 12.0),
-      new THREE.Vector3(-0.15, 1.25, 13.25),
-      new THREE.Vector3(-1.05, 0.15, 14.55),
-      new THREE.Vector3(0.25, -0.65, 15.85),
-      new THREE.Vector3(1.45, 0.15, 17.2),
-      new THREE.Vector3(0.85, 0.95, 18.6),
-    ],
-    false,
-    "catmullrom",
-    0.38
-  );
-}
-
-/** Tiny procedural mucosa mottling — cheap, isotropic, no image fetch. */
-function makeMucosaMap(size) {
-  const s = size || 64;
+/** Soft chlorophyll leaf albedo (opaque RGB). */
+function makeLeafMap(size) {
+  const s = size || 256;
   const canvas = document.createElement("canvas");
   canvas.width = s;
   canvas.height = s;
   const c = canvas.getContext("2d", { alpha: false });
   const img = c.createImageData(s, s);
   const d = img.data;
+
   function hash(ix, iy) {
     const n = Math.sin(ix * 127.1 + iy * 311.7) * 43758.5453;
     return n - Math.floor(n);
@@ -74,57 +34,131 @@ function makeMucosaMap(size) {
     const f = hash(x0 + 1, y0 + 1);
     return a + (b - a) * ux + (e - a) * uy + (a - b - e + f) * ux * uy;
   }
+
+  const mid = s * 0.5;
   for (let i = 0; i < s * s; i++) {
     const x = i % s;
     const y = (i / s) | 0;
+    const nx = (x - mid) / mid;
+    const ny = (y - mid) / mid;
     const n =
-      valueNoise(x * 0.18, y * 0.18) * 0.55 +
-      valueNoise(x * 0.45, y * 0.45) * 0.3 +
-      valueNoise(x * 0.9, y * 0.9) * 0.15;
-    // Soft rose mucosa mottling — warm, never blood-red
-    const v = 0.62 + n * 0.38;
+      valueNoise(x * 0.08, y * 0.08) * 0.45 +
+      valueNoise(x * 0.26, y * 0.26) * 0.35 +
+      valueNoise(x * 0.65, y * 0.65) * 0.2;
+    const midrib = Math.exp(-Math.abs(nx) * 20) * (0.7 + (1 - Math.abs(ny)) * 0.2);
+    const vein =
+      Math.exp(-Math.abs(nx - ny * 0.4) * 15) * 0.3 +
+      Math.exp(-Math.abs(nx + ny * 0.45) * 17) * 0.24 +
+      Math.exp(-Math.abs(nx - ny * 0.9) * 19) * 0.14;
+    const v = 0.4 + n * 0.48 + midrib * 0.38 + vein;
     const o = i * 4;
-    d[o] = Math.min(255, (210 * v) | 0);
-    d[o + 1] = Math.min(255, (155 * v) | 0);
-    d[o + 2] = Math.min(255, (140 * v) | 0);
+    d[o] = Math.min(255, (32 + v * 75 + midrib * 50) | 0);
+    d[o + 1] = Math.min(255, (85 + v * 125 + midrib * 55) | 0);
+    d[o + 2] = Math.min(255, (40 + v * 50 + n * 18) | 0);
     d[o + 3] = 255;
   }
   c.putImageData(img, 0, 0);
+  c.globalCompositeOperation = "screen";
+  const sheen = c.createRadialGradient(s * 0.36, s * 0.3, 0, s * 0.4, s * 0.36, s * 0.48);
+  sheen.addColorStop(0, "rgba(230, 255, 200, 0.5)");
+  sheen.addColorStop(0.4, "rgba(160, 220, 140, 0.15)");
+  sheen.addColorStop(1, "rgba(100, 160, 80, 0)");
+  c.fillStyle = sheen;
+  c.fillRect(0, 0, s, s);
+  c.globalCompositeOperation = "source-over";
+
   const tex = new THREE.CanvasTexture(canvas);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(4.5, 3.2);
   tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 2;
+  tex.anisotropy = 4;
   tex.needsUpdate = true;
   return tex;
 }
 
-function foldRadiusAt(u) {
-  // Match visual tube radius for mucosal fold rings.
-  if (u < 0.18) return 0.34;
-  if (u > 0.22 && u < 0.36) return 0.78;
-  return 0.4 + Math.sin(u * Math.PI * 6) * 0.03;
+/** Leaf silhouette alpha for plane cutout. */
+function makeLeafAlpha(size) {
+  const s = size || 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const c = canvas.getContext("2d", { alpha: true });
+  c.clearRect(0, 0, s, s);
+  // Hard-ish body so alphaTest keeps leaf solid (not glassy)
+  c.fillStyle = "#fff";
+  c.beginPath();
+  c.moveTo(s * 0.5, s * 0.04);
+  c.bezierCurveTo(s * 0.88, s * 0.24, s * 0.94, s * 0.58, s * 0.5, s * 0.96);
+  c.bezierCurveTo(s * 0.06, s * 0.58, s * 0.12, s * 0.24, s * 0.5, s * 0.04);
+  c.closePath();
+  c.fill();
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.needsUpdate = true;
+  return tex;
 }
 
-/** Tiny equirect env so clearcoat/spec reads without HDR assets. */
+function makeSoftDisc(size, stops) {
+  const s = size || 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const c = canvas.getContext("2d", { alpha: true });
+  const g = c.createRadialGradient(s * 0.5, s * 0.5, 0, s * 0.5, s * 0.5, s * 0.5);
+  (stops || [
+    [0, "rgba(255,255,255,1)"],
+    [0.35, "rgba(255,255,255,0.5)"],
+    [1, "rgba(255,255,255,0)"],
+  ]).forEach(function (st) {
+    g.addColorStop(st[0], st[1]);
+  });
+  c.fillStyle = g;
+  c.fillRect(0, 0, s, s);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+/** Radial falloff for open cones — soft volumetric shafts. */
+function makeConeMap(size) {
+  const s = size || 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const c = canvas.getContext("2d", { alpha: true });
+  // U wraps around cone; V along length
+  for (let y = 0; y < s; y++) {
+    const along = 1 - y / (s - 1);
+    for (let x = 0; x < s; x++) {
+      const u = x / (s - 1);
+      const radial = 1 - Math.abs(u - 0.5) * 2;
+      const a = Math.pow(Math.max(0, radial), 1.6) * Math.pow(along, 0.55);
+      const v = (a * 255) | 0;
+      c.fillStyle = "rgba(255,245,210," + a.toFixed(3) + ")";
+      c.fillRect(x, y, 1, 1);
+    }
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.needsUpdate = true;
+  return tex;
+}
+
 function makeSoftEnv(renderer) {
   const c = document.createElement("canvas");
   c.width = 64;
   c.height = 32;
   const g = c.getContext("2d", { alpha: false });
   const grd = g.createLinearGradient(0, 0, 0, 32);
-  grd.addColorStop(0, "#4a3048");
-  grd.addColorStop(0.4, "#1c101c");
+  grd.addColorStop(0, "#3a2848");
+  grd.addColorStop(0.35, "#1a1220");
   grd.addColorStop(1, "#0c0814");
   g.fillStyle = grd;
   g.fillRect(0, 0, 64, 32);
-  g.fillStyle = "rgba(255, 214, 170, 0.65)";
+  g.fillStyle = "rgba(255, 220, 140, 0.9)";
   g.beginPath();
-  g.arc(50, 9, 9, 0, Math.PI * 2);
+  g.arc(52, 7, 10, 0, Math.PI * 2);
   g.fill();
-  g.fillStyle = "rgba(200, 140, 170, 0.35)";
+  g.fillStyle = "rgba(90, 170, 110, 0.42)";
   g.beginPath();
-  g.arc(14, 20, 7, 0, Math.PI * 2);
+  g.arc(16, 22, 8, 0, Math.PI * 2);
   g.fill();
   const tex = new THREE.CanvasTexture(c);
   tex.mapping = THREE.EquirectangularReflectionMapping;
@@ -137,77 +171,106 @@ function makeSoftEnv(renderer) {
   return envRT.texture;
 }
 
-export function createBiologyExperience(mount) {
-  let gut = null;
-  let gutMat = null;
-  let lumenMat = null;
-  let stomach = null;
-  let stomachMat = null;
-  let bolus = null;
-  let bolusGlow = null;
-  let bolusCore = null;
-  let motes = null;
-  let curve = null;
-  let lookTarget = null;
-  let folds = [];
-  let mucosaMap = null;
-  const progress = { u: 0 };
-  const state = { pulse: 0.45, dim: 0, camLag: 0 };
-
-  const tmpPos = new THREE.Vector3();
-  const tmpTan = new THREE.Vector3();
-  const tmpLook = new THREE.Vector3();
-  const tmpCam = new THREE.Vector3();
-  const tmpSide = new THREE.Vector3();
-  const tmpUp = new THREE.Vector3(0, 1, 0);
-
-  function placeAlongPath(u, camFollow) {
-    if (!curve || !bolus) return;
-    const t = THREE.MathUtils.clamp(u, 0, 1);
-    curve.getPointAt(t, tmpPos);
-    curve.getTangentAt(t, tmpTan).normalize();
-    bolus.position.copy(tmpPos);
-    if (bolusGlow) bolusGlow.position.copy(tmpPos);
-    if (bolusCore) bolusCore.position.copy(tmpPos);
-
-    const ahead = Math.min(t + 0.038, 1);
-    curve.getPointAt(ahead, tmpLook);
-    lookTarget.copy(tmpLook);
-
-    if (camFollow) {
-      // Ride beside the tract so coils read clearly (not a dark tunnel peephole)
-      tmpSide.crossVectors(tmpTan, tmpUp).normalize();
-      if (tmpSide.lengthSq() < 0.01) tmpSide.set(1, 0, 0);
-      tmpSide.multiplyScalar(1.35 + Math.sin(t * Math.PI * 2) * 0.15);
-      tmpCam
-        .copy(tmpPos)
-        .addScaledVector(tmpTan, -2.85)
-        .add(tmpSide);
-      tmpCam.y += 0.55 + Math.sin(t * Math.PI * 2.2) * 0.14;
-      const blend = 0.14 + state.camLag * 0.36;
-      camFollow.position.lerp(tmpCam, blend);
-      // Look ahead along the path + slight pull toward the bolus
-      tmpLook.lerp(tmpPos, 0.22);
-      camFollow.lookAt(tmpLook);
-      if (camFollow.isPerspectiveCamera) {
-        const targetFov = t > 0.2 && t < 0.38 ? 56 : 48;
-        camFollow.fov += (targetFov - camFollow.fov) * 0.035;
-        camFollow.updateProjectionMatrix();
-      }
-    }
+function makeLeafMesh(map, alpha, Phys, w, h, segs) {
+  const mat = new Phys({
+    color: 0x8ed484,
+    map: map,
+    alphaMap: alpha,
+    alphaTest: 0.42,
+    transparent: true,
+    opacity: 0,
+    roughness: 0.46,
+    metalness: 0.02,
+    emissive: 0x226638,
+    emissiveIntensity: 0.48,
+    side: THREE.DoubleSide,
+    depthWrite: true,
+  });
+  if ("sheen" in mat) {
+    mat.sheen = 0.5;
+    mat.sheenRoughness = 0.45;
+    mat.sheenColor = new THREE.Color(0xc8f0a8);
   }
+  if ("clearcoat" in mat) {
+    mat.clearcoat = 0.25;
+    mat.clearcoatRoughness = 0.42;
+  }
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h, segs, segs), mat);
+  const pos = mesh.geometry.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i);
+    const y = pos.getY(i);
+    pos.setZ(i, Math.sin(y * 1.5) * 0.08 + x * x * 0.06 - Math.abs(x) * 0.025);
+  }
+  pos.needsUpdate = true;
+  mesh.geometry.computeVertexNormals();
+  return mesh;
+}
+
+export function createBiologyExperience(mount) {
+  let plant = null;
+  let leaves = [];
+  let leafMats = [];
+  let stem = null;
+  let stemMat = null;
+  let sunCore = null;
+  let sunHalo = null;
+  let sunBloom = null;
+  let beams = [];
+  let beamMats = [];
+  let shaftPlanes = [];
+  let shaftMats = [];
+  let motes = null;
+  let sparkles = null;
+  let leafMap = null;
+  let leafAlpha = null;
+  let moteMap = null;
+  let glowMap = null;
+  let coneMap = null;
+  const beamDirs = [];
+
+  const state = { pulse: 0.4, dim: 0, photo: 0, camLag: 0 };
+  const look = new THREE.Vector3(0.15, 0.55, 0);
+  const tmpCamDir = new THREE.Vector3();
+  const tmpSide = new THREE.Vector3();
+  const tmpFacing = new THREE.Vector3();
+  const tmpBeamDir = new THREE.Vector3();
+  const tmpUp = new THREE.Vector3(0, 1, 0);
+  const tmpBasis = new THREE.Matrix4();
 
   function setPersistentLook(ctx) {
-    placeAlongPath(1, null);
-    ctx.camera.position.set(1.05, 1.55, 11.2);
-    ctx.camera.lookAt(0.45, 0.25, 16.4);
+    ctx.camera.position.set(0.35, 1.15, 6.4);
+    look.set(0.05, 0.45, 0);
+    ctx.camera.lookAt(look);
     if (ctx.camera.isPerspectiveCamera) {
-      ctx.camera.fov = 48;
+      ctx.camera.fov = 42;
       ctx.camera.updateProjectionMatrix();
     }
     if (ctx.scene.fog) {
-      ctx.scene.fog.near = 14;
-      ctx.scene.fog.far = 44;
+      ctx.scene.fog.near = 10;
+      ctx.scene.fog.far = 36;
+    }
+  }
+
+  function billboardSun(ctx) {
+    if (sunCore) sunCore.quaternion.copy(ctx.camera.quaternion);
+    if (sunHalo) sunHalo.quaternion.copy(ctx.camera.quaternion);
+    if (sunBloom) sunBloom.quaternion.copy(ctx.camera.quaternion);
+  }
+
+  /** Keep soft shaft planes facing the camera around their beam axis. */
+  function orientShafts(ctx) {
+    ctx.camera.getWorldDirection(tmpCamDir);
+    for (let i = 0; i < shaftPlanes.length; i++) {
+      const plane = shaftPlanes[i];
+      const dir = beamDirs[i];
+      if (!plane || !dir) continue;
+      tmpBeamDir.copy(dir).normalize();
+      tmpSide.crossVectors(tmpBeamDir, tmpCamDir).normalize();
+      if (tmpSide.lengthSq() < 1e-4) tmpSide.crossVectors(tmpBeamDir, tmpUp).normalize();
+      tmpFacing.crossVectors(tmpBeamDir, tmpSide).normalize();
+      tmpBasis.makeBasis(tmpSide, tmpBeamDir, tmpFacing);
+      plane.quaternion.setFromRotationMatrix(tmpBasis);
     }
   }
 
@@ -215,27 +278,42 @@ export function createBiologyExperience(mount) {
     id: "biology",
     clearColor: CLEAR,
     fogColor: CLEAR,
-    fogNear: 5,
-    fogFar: 26,
-    /** Journey ~15s + settle; fail-safe past unlock. */
-    failSafeMs: 22000,
+    fogNear: 4,
+    fogFar: 22,
+    failSafeMs: 14000,
     build(ctx) {
-      curve = buildGutCurve();
-      lookTarget = new THREE.Vector3();
-      folds = [];
+      leaves = [];
+      leafMats = [];
+      beams = [];
+      beamMats = [];
+      shaftPlanes = [];
+      shaftMats = [];
+      beamDirs.length = 0;
 
-      // Prefer smoother walls — faceted open ends read as low-poly otherwise
-      const tubular = budgetCount(160, 110, 64);
-      const radial = budgetCount(24, 16, 12);
+      plant = new THREE.Group();
+      ctx.scene.add(plant);
+      ctx.track(plant);
 
-      gut = new THREE.Group();
-      ctx.scene.add(gut);
-      ctx.track(gut);
+      const mapSize = ctx.weak ? 128 : 256;
+      leafMap = makeLeafMap(mapSize);
+      leafAlpha = makeLeafAlpha(mapSize);
+      moteMap = makeSoftDisc(64, [
+        [0, "rgba(210,255,180,1)"],
+        [0.35, "rgba(150,230,130,0.45)"],
+        [1, "rgba(80,160,90,0)"],
+      ]);
+      glowMap = makeSoftDisc(96, [
+        [0, "rgba(255,250,230,1)"],
+        [0.3, "rgba(255,225,150,0.55)"],
+        [1, "rgba(255,180,80,0)"],
+      ]);
+      coneMap = makeConeMap(64);
+      ctx.track(leafMap);
+      ctx.track(leafAlpha);
+      ctx.track(moteMap);
+      ctx.track(glowMap);
+      ctx.track(coneMap);
 
-      mucosaMap = makeMucosaMap(ctx.weak ? 64 : 128);
-      ctx.track(mucosaMap);
-
-      // Soft env for wet clearcoat highlights (no HDR fetch)
       if (!ctx.weak) {
         const env = makeSoftEnv(ctx.renderer);
         ctx.scene.environment = env;
@@ -243,183 +321,52 @@ export function createBiologyExperience(mount) {
         ctx.track(env);
       }
 
-      // Soft living mucosa — dusty rose / warm taupe + light clearcoat (wet, not gore)
       const Phys = THREE.MeshPhysicalMaterial || THREE.MeshStandardMaterial;
-      gutMat = new Phys({
-        color: 0xe2b8a8,
-        map: mucosaMap,
-        roughness: 0.48,
-        metalness: 0.02,
-        emissive: 0x5a3028,
-        emissiveIntensity: 0.38,
-        clearcoat: 0.42,
-        clearcoatRoughness: 0.38,
-        sheen: 0.35,
-        sheenRoughness: 0.55,
-        sheenColor: new THREE.Color(0xf8dcc8),
-        transparent: true,
-        opacity: 0,
-        side: THREE.DoubleSide,
-        depthWrite: true,
-      });
-      const wall = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, tubular, 0.44, radial, false),
-        gutMat
-      );
-      gut.add(wall);
-      ctx.track(wall);
+      const segs = ctx.mobile ? 8 : 14;
 
-      // Soft outer serosa shell — volume without second texture fetch
-      const serosa = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, Math.max(48, Math.floor(tubular * 0.55)), 0.56, Math.max(8, radial - 6), false),
-        new THREE.MeshStandardMaterial({
-          color: 0x9a7468,
-          roughness: 0.88,
-          metalness: 0,
-          emissive: 0x1c0e12,
-          emissiveIntensity: 0.18,
-          transparent: true,
-          opacity: 0,
-          side: THREE.FrontSide,
-          depthWrite: false,
-        })
-      );
-      gut.add(serosa);
-      ctx.track(serosa);
-      ctx._bioSerosa = serosa.material;
-
-      // Inner lumen sheen (warm peach — lit from within, tasteful)
-      lumenMat = new Phys({
-        color: 0xfae4d8,
-        emissive: 0xe8b0a0,
-        emissiveIntensity: 0.55,
-        roughness: 0.32,
+      stemMat = new THREE.MeshStandardMaterial({
+        color: 0x3a6838,
+        roughness: 0.8,
         metalness: 0,
-        clearcoat: 0.55,
-        clearcoatRoughness: 0.28,
+        emissive: 0x0e2412,
+        emissiveIntensity: 0.28,
         transparent: true,
         opacity: 0,
-        side: THREE.BackSide,
-        depthWrite: false,
       });
-      const lumen = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, tubular, 0.3, Math.max(10, radial - 4), false),
-        lumenMat
+      stem = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.07, 2.5, ctx.mobile ? 8 : 14),
+        stemMat
       );
-      gut.add(lumen);
-      ctx.track(lumen);
+      stem.position.set(0, -0.22, 0);
+      plant.add(stem);
+      ctx.track(stem);
 
-      // Cap the oral entry so the open TubeGeometry polygon is hidden
-      curve.getPointAt(0, tmpPos);
-      curve.getTangentAt(0, tmpTan).normalize();
-      const mouth = new THREE.Mesh(
-        new THREE.TorusGeometry(0.46, 0.07, 8, radial),
-        new Phys({
-          color: 0xd4a090,
-          roughness: 0.45,
-          metalness: 0.03,
-          emissive: 0x4a2820,
-          emissiveIntensity: 0.3,
-          clearcoat: 0.4,
-          clearcoatRoughness: 0.35,
-          transparent: true,
-          opacity: 0,
-        })
-      );
-      mouth.position.copy(tmpPos);
-      mouth.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), tmpTan);
-      gut.add(mouth);
-      ctx.track(mouth);
-      ctx._bioMouth = mouth.material;
-
-      // Stomach pouch accent (soft ellipsoid at cardia/fundus region)
-      stomachMat = new Phys({
-        color: 0xd4a090,
-        map: mucosaMap,
-        roughness: 0.5,
-        metalness: 0.04,
-        emissive: 0x422820,
-        emissiveIntensity: 0.4,
-        clearcoat: 0.38,
-        clearcoatRoughness: 0.4,
-        sheen: 0.3,
-        sheenColor: new THREE.Color(0xf5d0c0),
-        transparent: true,
-        opacity: 0,
-        side: THREE.DoubleSide,
-        depthWrite: true,
-      });
-      stomach = new THREE.Mesh(
-        new THREE.SphereGeometry(1.2, ctx.mobile ? 20 : 32, ctx.mobile ? 16 : 24),
-        stomachMat
-      );
-      curve.getPointAt(0.28, tmpPos);
-      stomach.position.copy(tmpPos);
-      stomach.scale.set(1.28, 0.8, 0.98);
-      gut.add(stomach);
-      ctx.track(stomach);
-
-      // Mucosal fold rings — soft circularis cues, not schematic neon
-      const foldCount = budgetCount(9, 6, 4);
-      for (let i = 0; i < foldCount; i++) {
-        const u = 0.08 + (i / (foldCount - 1 || 1)) * 0.86;
-        curve.getPointAt(u, tmpPos);
-        curve.getTangentAt(u, tmpTan).normalize();
-        const rr = foldRadiusAt(u);
-        const fold = new THREE.Mesh(
-          new THREE.TorusGeometry(rr, 0.018, 5, ctx.mobile ? 16 : 22),
-          new THREE.MeshStandardMaterial({
-            color: 0xd4b0a0,
-            emissive: 0x5c3a32,
-            emissiveIntensity: 0.18,
-            roughness: 0.7,
-            transparent: true,
-            opacity: 0,
-            depthWrite: false,
-          })
-        );
-        fold.position.copy(tmpPos);
-        fold.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), tmpTan);
-        gut.add(fold);
-        ctx.track(fold);
-        folds.push(fold);
+      const leafSpecs = [
+        { x: 0.4, y: 0.9, z: 0.12, rx: -0.5, ry: 0.6, rz: 0.3, w: 1.7, h: 2.3, s: 1 },
+        { x: -0.48, y: 0.58, z: -0.14, rx: -0.36, ry: -0.74, rz: -0.4, w: 1.48, h: 2.05, s: 0.95 },
+        { x: 0.2, y: 0.1, z: 0.26, rx: -0.9, ry: 0.3, rz: 0.1, w: 1.32, h: 1.8, s: 0.88 },
+        { x: -0.16, y: 1.25, z: -0.02, rx: -0.2, ry: -0.15, rz: -0.16, w: 1.2, h: 1.65, s: 0.82 },
+      ];
+      const count = ctx.weak ? 3 : leafSpecs.length;
+      for (let i = 0; i < count; i++) {
+        const sp = leafSpecs[i];
+        const leaf = makeLeafMesh(leafMap, leafAlpha, Phys, sp.w, sp.h, segs);
+        leaf.position.set(sp.x, sp.y, sp.z);
+        leaf.rotation.set(sp.rx, sp.ry, sp.rz);
+        leaf.scale.setScalar(sp.s);
+        plant.add(leaf);
+        ctx.track(leaf);
+        leaves.push(leaf);
+        leafMats.push(leaf.material);
       }
 
-      // Warm food bolus — toasted grain / soft apricot (never red/gore)
-      const bolusSeg = ctx.mobile ? 16 : 24;
-      bolus = new THREE.Mesh(
-        new THREE.SphereGeometry(0.24, bolusSeg, Math.max(12, bolusSeg - 4)),
-        new THREE.MeshStandardMaterial({
-          color: 0xf5d6a0,
-          emissive: 0xc89030,
-          emissiveIntensity: 0.85,
-          roughness: 0.4,
-          metalness: 0.06,
-          transparent: true,
-          opacity: 0,
-        })
-      );
-      // Slightly irregular food shape
-      bolus.scale.set(1.1, 0.84, 0.96);
-      ctx.scene.add(bolus);
-      ctx.track(bolus);
+      const sunPos = new THREE.Vector3(3.9, 3.6, -1.4);
 
-      bolusCore = new THREE.Mesh(
-        new THREE.SphereGeometry(0.11, 10, 8),
+      sunCore = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.05, 1.05),
         new THREE.MeshBasicMaterial({
-          color: 0xfff0d0,
-          transparent: true,
-          opacity: 0,
-          toneMapped: false,
-        })
-      );
-      ctx.scene.add(bolusCore);
-      ctx.track(bolusCore);
-
-      bolusGlow = new THREE.Mesh(
-        new THREE.SphereGeometry(0.58, 12, 10),
-        new THREE.MeshBasicMaterial({
-          color: 0xffd878,
+          map: glowMap,
+          color: 0xfff6d8,
           transparent: true,
           opacity: 0,
           blending: THREE.AdditiveBlending,
@@ -427,27 +374,122 @@ export function createBiologyExperience(mount) {
           toneMapped: false,
         })
       );
-      ctx.scene.add(bolusGlow);
-      ctx.track(bolusGlow);
+      sunCore.position.copy(sunPos);
+      ctx.scene.add(sunCore);
+      ctx.track(sunCore);
 
-      // Soft floating chyme / enzyme motes
-      const n = budgetCount(160, 90, 52);
+      sunHalo = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.6, 2.6),
+        new THREE.MeshBasicMaterial({
+          map: glowMap,
+          color: 0xffd070,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          toneMapped: false,
+        })
+      );
+      sunHalo.position.copy(sunPos);
+      ctx.scene.add(sunHalo);
+      ctx.track(sunHalo);
+
+      sunBloom = new THREE.Mesh(
+        new THREE.PlaneGeometry(5.2, 5.2),
+        new THREE.MeshBasicMaterial({
+          map: glowMap,
+          color: 0xffb848,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          toneMapped: false,
+        })
+      );
+      sunBloom.position.copy(sunPos);
+      ctx.scene.add(sunBloom);
+      ctx.track(sunBloom);
+
+      const plantFocus = new THREE.Vector3(0.15, 0.75, 0.05);
+
+      // Volumetric soft cones (readable from any angle)
+      const coneCount = budgetCount(4, 3, 2);
+      for (let i = 0; i < coneCount; i++) {
+        const mat = new THREE.MeshBasicMaterial({
+          map: coneMap,
+          color: i % 2 ? 0xffe6a0 : 0xfff3cc,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+          toneMapped: false,
+        });
+        const len = 5.4 + i * 0.35;
+        const cone = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.04, 0.55 + i * 0.12, len, 16, 1, true),
+          mat
+        );
+        const target = plantFocus.clone().add(
+          new THREE.Vector3(
+            (i - (coneCount - 1) * 0.5) * 0.38,
+            (i % 3 - 1) * 0.22,
+            ((i % 2) - 0.5) * 0.2
+          )
+        );
+        const dir = target.clone().sub(sunPos).normalize();
+        const mid = sunPos.clone().addScaledVector(dir, len * 0.5);
+        cone.position.copy(mid);
+        cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+        ctx.scene.add(cone);
+        ctx.track(cone);
+        beams.push(cone);
+        beamMats.push(mat);
+      }
+
+      // Extra soft shaft planes (camera-facing around beam axis)
+      const shaftCount = budgetCount(3, 2, 2);
+      for (let i = 0; i < shaftCount; i++) {
+        const mat = new THREE.MeshBasicMaterial({
+          map: coneMap,
+          color: 0xffefc0,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+          toneMapped: false,
+        });
+        const len = 5.8;
+        const plane = new THREE.Mesh(new THREE.PlaneGeometry(0.85 + i * 0.2, len), mat);
+        const target = plantFocus.clone().add(
+          new THREE.Vector3((i - 1) * 0.25, (i % 2) * 0.15, 0)
+        );
+        const dir = target.clone().sub(sunPos).normalize();
+        plane.position.copy(sunPos).addScaledVector(dir, len * 0.48);
+        beamDirs.push(dir);
+        ctx.scene.add(plane);
+        ctx.track(plane);
+        shaftPlanes.push(plane);
+        shaftMats.push(mat);
+        beamMats.push(mat);
+      }
+
+      const n = budgetCount(110, 64, 40);
       const pos = new Float32Array(n * 3);
       for (let i = 0; i < n; i++) {
-        const along = Math.random();
-        curve.getPointAt(along, tmpPos);
-        const spread = 0.35 + Math.random() * 2.8;
-        pos[i * 3] = tmpPos.x + (Math.random() - 0.5) * spread;
-        pos[i * 3 + 1] = tmpPos.y + (Math.random() - 0.5) * spread * 0.7;
-        pos[i * 3 + 2] = tmpPos.z + (Math.random() - 0.5) * spread * 0.55;
+        pos[i * 3] = (Math.random() - 0.5) * 7.5;
+        pos[i * 3 + 1] = (Math.random() - 0.3) * 5.2;
+        pos[i * 3 + 2] = (Math.random() - 0.5) * 5.2;
       }
       motes = new THREE.Points(
         new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(pos, 3)),
         new THREE.PointsMaterial({
-          color: 0xe8c4a8,
-          size: ctx.mobile ? 0.04 : 0.05,
+          map: moteMap,
+          color: 0xc8f0a0,
+          size: ctx.mobile ? 0.1 : 0.13,
           transparent: true,
-          opacity: 0.14,
+          opacity: 0.1,
           blending: THREE.AdditiveBlending,
           depthWrite: false,
           toneMapped: false,
@@ -457,203 +499,308 @@ export function createBiologyExperience(mount) {
       ctx.scene.add(motes);
       ctx.track(motes);
 
-      // Lighting: warm key rides the bolus, soft mauve fill, hemi catch — no shadows
-      const key = new THREE.PointLight(0xffe8c8, 2.2, 14, 1.6);
-      key.position.set(-6, 3.5, -2);
+      const sn = budgetCount(36, 22, 12);
+      const spos = new Float32Array(sn * 3);
+      for (let i = 0; i < sn; i++) {
+        const t = Math.random();
+        spos[i * 3] = THREE.MathUtils.lerp(sunPos.x, 0.2, t) + (Math.random() - 0.5) * 0.45;
+        spos[i * 3 + 1] = THREE.MathUtils.lerp(sunPos.y, 0.7, t) + (Math.random() - 0.5) * 0.3;
+        spos[i * 3 + 2] = THREE.MathUtils.lerp(sunPos.z, 0, t) + (Math.random() - 0.5) * 0.3;
+      }
+      sparkles = new THREE.Points(
+        new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(spos, 3)),
+        new THREE.PointsMaterial({
+          map: glowMap,
+          color: 0xfff2c8,
+          size: ctx.mobile ? 0.12 : 0.16,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          toneMapped: false,
+          sizeAttenuation: true,
+        })
+      );
+      ctx.scene.add(sparkles);
+      ctx.track(sparkles);
+
+      const key = new THREE.DirectionalLight(0xffe8c0, 2.15);
+      key.position.copy(sunPos);
       ctx.scene.add(key);
       ctx.track(key);
 
-      const fill = new THREE.PointLight(0xc898b0, 0.7, 32, 2);
-      fill.position.set(3.5, 2.2, 9);
+      const fill = new THREE.PointLight(0x7a96c8, 0.42, 28, 2);
+      fill.position.set(-3.4, 0.9, 3.6);
       ctx.scene.add(fill);
       ctx.track(fill);
 
-      const hemi = new THREE.HemisphereLight(0xfff0e4, 0x120810, 0.72);
+      const leafGlow = new THREE.PointLight(0x78d882, 0.7, 9, 1.7);
+      leafGlow.position.set(0.35, 0.95, 0.7);
+      ctx.scene.add(leafGlow);
+      ctx.track(leafGlow);
+
+      const hemi = new THREE.HemisphereLight(0xfff2e0, 0x120818, 0.6);
       ctx.scene.add(hemi);
       ctx.track(hemi);
 
-      progress.u = 0;
-      placeAlongPath(0, null);
-      ctx.camera.position.set(-9.1, 4.6, -6.2);
-      ctx.camera.lookAt(-6.2, 3.2, -2.4);
       ctx._bioKey = key;
       ctx._bioFill = fill;
+      ctx._bioLeafGlow = leafGlow;
+
+      ctx.camera.position.set(-1.15, 1.48, 2.7);
+      look.set(0.4, 0.95, 0.05);
+      ctx.camera.lookAt(look);
+      if (ctx.camera.isPerspectiveCamera) {
+        ctx.camera.fov = 48;
+        ctx.camera.updateProjectionMatrix();
+      }
+      billboardSun(ctx);
+      orientShafts(ctx);
     },
     intro(ctx) {
-      // Reduced-motion: brief settle into cheap persistent field (short path)
       if (ctx.reduced) {
         const tl = gsap.timeline();
-          if (gutMat) gutMat.opacity = 0.18;
-        if (ctx._bioSerosa) ctx._bioSerosa.opacity = 0.06;
-        if (ctx._bioMouth) ctx._bioMouth.opacity = 0.1;
-        if (lumenMat) lumenMat.opacity = 0.08;
-        if (stomachMat) stomachMat.opacity = 0.12;
-        if (motes && motes.material) motes.material.opacity = 0.1;
-        if (bolus && bolus.material) bolus.material.opacity = 0.12;
-        if (bolusGlow && bolusGlow.material) bolusGlow.material.opacity = 0.04;
-        if (bolusCore && bolusCore.material) bolusCore.material.opacity = 0.08;
-        folds.forEach(function (f) {
-          if (f.material) f.material.opacity = 0.08;
+        leafMats.forEach(function (m) {
+          if (m) m.opacity = 0.18;
         });
-        progress.u = 1;
+        if (stemMat) stemMat.opacity = 0.14;
+        beamMats.forEach(function (m) {
+          if (m) m.opacity = 0.07;
+        });
+        if (sunCore && sunCore.material) sunCore.material.opacity = 0.6;
+        if (sunHalo && sunHalo.material) sunHalo.material.opacity = 0.2;
+        if (sunBloom && sunBloom.material) sunBloom.material.opacity = 0.07;
+        if (motes && motes.material) motes.material.opacity = 0.12;
+        if (sparkles && sparkles.material) sparkles.material.opacity = 0.06;
         state.dim = 1;
-        state.pulse = 0.28;
+        state.pulse = 0.25;
+        state.photo = 0.3;
         setPersistentLook(ctx);
+        billboardSun(ctx);
+        orientShafts(ctx);
         tl.to({}, { duration: 0.28 });
         return tl;
       }
 
       const tl = gsap.timeline();
 
-      // Instant start — tract reveals while camera already tracking entry
-      tl.to(gutMat, { opacity: 0.96, duration: 1.1, ease: "power2.out" }, 0);
-      if (ctx._bioSerosa) tl.to(ctx._bioSerosa, { opacity: 0.32, duration: 1.25, ease: "power2.out" }, 0.05);
-      if (ctx._bioMouth) tl.to(ctx._bioMouth, { opacity: 0.92, duration: 0.9, ease: "power2.out" }, 0.05);
-      tl.to(lumenMat, { opacity: 0.48, duration: 1.25, ease: "power2.out" }, 0.08);
-      tl.to(stomachMat, { opacity: 0.92, duration: 1.1, ease: "power2.out" }, 0.18);
-      folds.forEach(function (f, i) {
-        tl.to(f.material, { opacity: 0.42, duration: 0.55 }, 0.25 + i * 0.06);
+      leafMats.forEach(function (m, i) {
+        tl.to(m, { opacity: 1, duration: 0.75, ease: "power2.out" }, i * 0.04);
       });
-      tl.to(bolus.material, { opacity: 1, duration: 0.4 }, 0.12);
-      tl.to(bolusGlow.material, { opacity: 0.48, duration: 0.45 }, 0.12);
-      tl.to(bolusCore.material, { opacity: 0.85, duration: 0.4 }, 0.15);
-      tl.to(motes.material, { opacity: 0.28, duration: 1.1 }, 0.1);
-      tl.to(state, { pulse: 1, camLag: 1, duration: 0.9 }, 0);
+      tl.to(stemMat, { opacity: 1, duration: 0.65, ease: "power2.out" }, 0);
+      tl.to(sunCore.material, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0);
+      tl.to(sunHalo.material, { opacity: 0.78, duration: 0.8, ease: "power2.out" }, 0.04);
+      tl.to(sunBloom.material, { opacity: 0.32, duration: 0.95, ease: "power2.out" }, 0.06);
 
-      // Longer journey along the tract (~13.8s travel; total ~16.5–17s)
+      // Cones + shafts
+      for (let i = 0; i < beams.length; i++) {
+        tl.to(beamMats[i], { opacity: 0.28 + (i % 2) * 0.06, duration: 1.0, ease: "power2.out" }, 0.1 + i * 0.05);
+      }
+      shaftMats.forEach(function (m, i) {
+        tl.to(m, { opacity: 0.38 + i * 0.04, duration: 1.05, ease: "power2.out" }, 0.14 + i * 0.06);
+      });
+
+      tl.to(motes.material, { opacity: 0.4, duration: 0.9 }, 0.08);
+      tl.to(sparkles.material, { opacity: 0.72, duration: 1.05 }, 0.16);
+      tl.to(state, { pulse: 1, photo: 1, camLag: 1, duration: 0.9 }, 0);
+
       tl.to(
-        progress,
+        ctx.camera.position,
         {
-          u: 1,
-          duration: 13.8,
+          x: 0.55,
+          y: 1.28,
+          z: 4.85,
+          duration: 5.5,
           ease: "power1.inOut",
           onUpdate() {
-            placeAlongPath(progress.u, ctx.camera);
-            if (ctx._bioKey && bolus) {
-              ctx._bioKey.position.lerp(bolus.position, 0.1);
-              ctx._bioKey.position.y += 0.85;
-            }
-            // Stomach lights up as bolus passes
-            if (stomachMat && progress.u > 0.2 && progress.u < 0.42) {
-              const peak = 1 - Math.abs(progress.u - 0.3) / 0.12;
-              stomachMat.emissiveIntensity = 0.28 + peak * 0.35;
-            }
+            look.set(0.14, 0.68, 0);
+            ctx.camera.lookAt(look);
+            billboardSun(ctx);
+            orientShafts(ctx);
           },
         },
-        0.35
+        0.12
       );
 
-      // Soft peristaltic breath mid-journey (calm, not pulse-horror)
-      tl.to(state, { pulse: 1.18, duration: 3.2, ease: "sine.inOut" }, 3.5);
-      tl.to(state, { pulse: 0.9, duration: 2.8, ease: "sine.inOut" }, 7.0);
-      tl.to(state, { pulse: 1.08, duration: 2.5, ease: "sine.inOut" }, 10.2);
+      if (ctx.camera.isPerspectiveCamera) {
+        tl.to(
+          ctx.camera,
+          {
+            fov: 44,
+            duration: 5.3,
+            ease: "sine.inOut",
+            onUpdate() {
+              ctx.camera.updateProjectionMatrix();
+            },
+          },
+          0.18
+        );
+      }
 
-      // Arrival splash → settle into page
-      const arrive = 13.6;
+      tl.to(state, { photo: 1.4, duration: 2.3, ease: "sine.inOut" }, 1.5);
+      tl.to(state, { photo: 1.05, duration: 2.0, ease: "sine.inOut" }, 3.9);
+      leafMats.forEach(function (m) {
+        if (!m) return;
+        tl.to(m, { emissiveIntensity: 0.9, duration: 2.1, ease: "sine.inOut" }, 1.7);
+        tl.to(m, { emissiveIntensity: 0.48, duration: 1.9, ease: "sine.inOut" }, 4.0);
+      });
+      if (ctx._bioLeafGlow) {
+        tl.to(ctx._bioLeafGlow, { intensity: 1.4, duration: 2.1, ease: "sine.inOut" }, 1.7);
+        tl.to(ctx._bioLeafGlow, { intensity: 0.55, duration: 1.9 }, 4.0);
+      }
+
+      beamMats.forEach(function (m, i) {
+        tl.to(m, { opacity: (m.opacity || 0.3) + 0.12, duration: 1.8, ease: "sine.inOut" }, 1.9 + i * 0.04);
+        tl.to(m, { opacity: 0.22, duration: 1.6, ease: "sine.inOut" }, 4.2);
+      });
+
+      const arrive = 5.8;
       tl.add(function () {
         if (!ctx.splash) return;
         gsap.fromTo(
           ctx.splash,
           { opacity: 0, scale: 0.55 },
-          { opacity: 0.82, scale: 1.32, duration: 0.48, ease: "power2.out" }
+          { opacity: 0.68, scale: 1.26, duration: 0.4, ease: "power2.out" }
         );
       }, arrive);
-      tl.to(ctx.splash || { opacity: 0 }, { opacity: 0, duration: 0.55 }, arrive + 0.55);
+      tl.to(ctx.splash || { opacity: 0 }, { opacity: 0, duration: 0.48 }, arrive + 0.48);
 
-      tl.to(gutMat, { opacity: 0.16, duration: 1.2, ease: "power2.inOut" }, arrive);
-      if (ctx._bioSerosa) tl.to(ctx._bioSerosa, { opacity: 0.05, duration: 1.2 }, arrive);
-      if (ctx._bioMouth) tl.to(ctx._bioMouth, { opacity: 0.08, duration: 1.1 }, arrive);
-      tl.to(lumenMat, { opacity: 0.06, duration: 1.2 }, arrive);
-      tl.to(stomachMat, { opacity: 0.1, duration: 1.15 }, arrive);
-      folds.forEach(function (f) {
-        tl.to(f.material, { opacity: 0.06, duration: 1.05 }, arrive + 0.05);
+      leafMats.forEach(function (m) {
+        tl.to(
+          m,
+          { opacity: 0.16, emissiveIntensity: 0.26, duration: 1.15, ease: "power2.inOut" },
+          arrive
+        );
       });
-      tl.to(bolus.material, { opacity: 0.1, duration: 1.05 }, arrive + 0.1);
-      tl.to(bolusGlow.material, { opacity: 0.03, duration: 1.05 }, arrive + 0.1);
-      tl.to(bolusCore.material, { opacity: 0.05, duration: 1.0 }, arrive + 0.1);
-      tl.to(motes.material, { opacity: 0.11, duration: 1.05 }, arrive + 0.1);
-      tl.to(state, { pulse: 0.3, camLag: 0.12, dim: 1, duration: 1.2 }, arrive);
+      tl.to(stemMat, { opacity: 0.1, duration: 1.1 }, arrive);
+      beamMats.forEach(function (m) {
+        tl.to(m, { opacity: 0.055, duration: 1.15 }, arrive);
+      });
+      tl.to(sunCore.material, { opacity: 0.48, duration: 1.1 }, arrive);
+      tl.to(sunHalo.material, { opacity: 0.15, duration: 1.1 }, arrive);
+      tl.to(sunBloom.material, { opacity: 0.05, duration: 1.1 }, arrive);
+      tl.to(motes.material, { opacity: 0.13, duration: 1.05 }, arrive + 0.05);
+      tl.to(sparkles.material, { opacity: 0.08, duration: 1.0 }, arrive + 0.05);
+      tl.to(state, { pulse: 0.28, camLag: 0.1, dim: 1, photo: 0.35, duration: 1.15 }, arrive);
 
       tl.to(
         ctx.camera.position,
         {
-          x: 1.05,
-          y: 1.55,
-          z: 11.2,
-          duration: 1.45,
+          x: 0.35,
+          y: 1.15,
+          z: 6.4,
+          duration: 1.35,
           ease: "power2.inOut",
           onUpdate() {
-            ctx.camera.lookAt(0.45, 0.25, 16.4);
+            look.set(0.05, 0.45, 0);
+            ctx.camera.lookAt(look);
+            billboardSun(ctx);
+            orientShafts(ctx);
           },
         },
-        arrive + 0.15
+        arrive + 0.1
       );
 
       if (ctx.camera.isPerspectiveCamera) {
-        tl.to(ctx.camera, { fov: 48, duration: 1.2, onUpdate() { ctx.camera.updateProjectionMatrix(); } }, arrive);
+        tl.to(
+          ctx.camera,
+          {
+            fov: 42,
+            duration: 1.2,
+            onUpdate() {
+              ctx.camera.updateProjectionMatrix();
+            },
+          },
+          arrive
+        );
       }
 
       if (ctx.scene.fog) {
-        tl.to(ctx.scene.fog, { near: 12, far: 40, duration: 1.25 }, arrive + 0.05);
+        tl.to(ctx.scene.fog, { near: 10, far: 36, duration: 1.2 }, arrive + 0.05);
       }
 
       return tl;
     },
     onPersistent(ctx) {
-      state.pulse = 0.26;
+      state.pulse = 0.24;
       state.dim = 1;
       state.camLag = 0;
-      progress.u = 1;
-      if (gutMat) gutMat.opacity = 0.12;
-      if (ctx._bioSerosa) ctx._bioSerosa.opacity = 0.04;
-      if (ctx._bioMouth) ctx._bioMouth.opacity = 0.06;
-      if (lumenMat) lumenMat.opacity = 0.045;
-      if (stomachMat) stomachMat.opacity = 0.07;
-      if (bolus && bolus.material) bolus.material.opacity = 0.08;
-      if (bolusGlow && bolusGlow.material) bolusGlow.material.opacity = 0.02;
-      if (bolusCore && bolusCore.material) bolusCore.material.opacity = 0.04;
-      if (motes && motes.material) motes.material.opacity = 0.09;
-      folds.forEach(function (f) {
-        if (f.material) f.material.opacity = 0.04;
+      state.photo = 0.3;
+      leafMats.forEach(function (m) {
+        if (!m) return;
+        m.opacity = 0.14;
+        m.emissiveIntensity = 0.22;
       });
+      if (stemMat) stemMat.opacity = 0.09;
+      beamMats.forEach(function (m) {
+        if (m) m.opacity = 0.05;
+      });
+      if (sunCore && sunCore.material) sunCore.material.opacity = 0.4;
+      if (sunHalo && sunHalo.material) sunHalo.material.opacity = 0.12;
+      if (sunBloom && sunBloom.material) sunBloom.material.opacity = 0.04;
+      if (motes && motes.material) motes.material.opacity = 0.11;
+      if (sparkles && sparkles.material) sparkles.material.opacity = 0.05;
+      if (ctx._bioLeafGlow) ctx._bioLeafGlow.intensity = 0.25;
+      if (ctx._bioKey) ctx._bioKey.intensity = 0.6;
       setPersistentLook(ctx);
+      billboardSun(ctx);
+      orientShafts(ctx);
     },
     update(ctx, dt, t) {
-      if (!gut) return;
-      // Soft peristalsis — gentle longitudinal breathe
-      const breathe = 1 + Math.sin(t * 0.68) * 0.012 * state.pulse;
-      gut.scale.set(breathe, 1 + Math.sin(t * 0.55 + 0.4) * 0.01 * state.pulse, breathe);
+      if (!plant) return;
 
-      if (bolus && !state.dim) {
-        const s = 1 + Math.sin(t * 2.4) * 0.045 * state.pulse;
-        bolus.scale.set(1.05 * s, 0.88 * s, 0.95 * s);
-        bolus.rotation.x += dt * 0.55;
-        bolus.rotation.y += dt * 0.35;
-        if (bolusGlow) {
-          bolusGlow.scale.setScalar(1.02 + Math.sin(t * 2.0) * 0.07);
-          bolusGlow.rotation.y += dt * 0.22;
+      const sway = state.pulse * (state.dim ? 0.35 : 1);
+      plant.rotation.y = Math.sin(t * 0.22) * 0.038 * sway;
+      plant.rotation.z = Math.sin(t * 0.18 + 0.5) * 0.016 * sway;
+
+      for (let i = 0; i < leaves.length; i++) {
+        const leaf = leaves[i];
+        const phase = i * 0.7;
+        leaf.rotation.z += Math.sin(t * 0.65 + phase) * 0.00032 * sway;
+        if (!state.dim && leafMats[i]) {
+          leafMats[i].emissiveIntensity =
+            0.42 + Math.sin(t * 1.05 + phase) * 0.1 * state.photo;
         }
-        if (bolusCore) bolusCore.rotation.y -= dt * 0.4;
-      } else if (bolus) {
-        bolus.rotation.y += dt * 0.1;
-        if (bolusGlow) bolusGlow.rotation.y -= dt * 0.06;
       }
 
-      for (let i = 0; i < folds.length; i++) {
-        folds[i].rotation.z += dt * 0.12 * (0.35 + state.pulse * 0.4) * (i % 2 ? 1 : -1);
+      billboardSun(ctx);
+      orientShafts(ctx);
+
+      if (sunHalo) {
+        sunHalo.scale.setScalar(1 + Math.sin(t * 0.85) * 0.045 * (state.dim ? 0.4 : 1));
+      }
+      if (sunBloom) {
+        sunBloom.scale.setScalar(1 + Math.sin(t * 0.6 + 0.4) * 0.03);
       }
 
       if (motes) {
-        motes.rotation.y = Math.sin(t * 0.06) * 0.03;
-        motes.position.y = Math.sin(t * 0.18) * 0.05;
+        motes.rotation.y = t * 0.032;
+        motes.position.y = Math.sin(t * 0.2) * 0.07;
+      }
+      if (sparkles && !state.dim) {
+        sparkles.material.opacity = 0.52 + Math.sin(t * 1.35) * 0.15 * state.photo;
       }
 
+      if (ctx._bioLeafGlow && !state.dim) {
+        ctx._bioLeafGlow.intensity = 0.55 + Math.sin(t * 0.85) * 0.22 * state.photo;
+      }
       if (ctx._bioFill && !state.dim) {
-        ctx._bioFill.intensity = 0.38 + Math.sin(t * 0.7) * 0.06 * state.pulse;
+        ctx._bioFill.intensity = 0.36 + Math.sin(t * 0.55) * 0.05;
       }
     },
     disposeExtra() {
-      mucosaMap = null;
+      leafMap = null;
+      leafAlpha = null;
+      moteMap = null;
+      glowMap = null;
+      coneMap = null;
+      leaves = [];
+      leafMats = [];
+      beams = [];
+      beamMats = [];
+      shaftPlanes = [];
+      shaftMats = [];
+      beamDirs.length = 0;
     },
   });
 }
