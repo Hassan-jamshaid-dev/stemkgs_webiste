@@ -88,8 +88,8 @@ export function createBiologyExperience(mount) {
 
   return mount({
     id: "biology",
-    clearColor: 0x081210,
-    fogColor: 0x081210,
+    clearColor: 0x0c0814,
+    fogColor: 0x0c0814,
     fogNear: 6,
     fogFar: 28,
     /** Longer than default boot fail-safe so the ~12s journey can finish. */

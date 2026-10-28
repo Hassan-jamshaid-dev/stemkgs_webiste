@@ -96,8 +96,8 @@ export function createMathsExperience(mount) {
 
   return mount({
     id: "maths",
-    clearColor: 0x08101c,
-    fogColor: 0x08101c,
+    clearColor: 0x0c0814,
+    fogColor: 0x0c0814,
     fogNear: 14,
     fogFar: 48,
     build(ctx) {

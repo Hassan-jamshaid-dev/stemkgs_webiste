@@ -13,8 +13,8 @@ export function createPhysicsExperience(mount) {
 
   return mount({
     id: "physics",
-    clearColor: 0x050a14,
-    fogColor: 0x050a14,
+    clearColor: 0x0c0814,
+    fogColor: 0x0c0814,
     fogNear: 8,
     fogFar: 38,
     build(ctx) {

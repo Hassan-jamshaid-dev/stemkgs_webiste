@@ -104,8 +104,8 @@ export function createChemistryExperience(mount) {
 
   return mount({
     id: "chemistry",
-    clearColor: 0x0a1010,
-    fogColor: 0x0a1010,
+    clearColor: 0x0c0814,
+    fogColor: 0x0c0814,
     fogNear: 9,
     fogFar: 36,
     build(ctx) {

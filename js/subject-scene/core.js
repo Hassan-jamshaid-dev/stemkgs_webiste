@@ -171,7 +171,7 @@ export function mountSubjectScene(options) {
     powerPreference: weak ? "low-power" : "high-performance",
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
-  renderer.setClearColor(options.clearColor ?? 0x070b14, 1);
+  renderer.setClearColor(options.clearColor ?? 0x0c0814, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
@@ -303,7 +303,7 @@ export function mountSubjectScene(options) {
     }
     if (skipBtn) skipBtn.hidden = true;
     root.classList.add("is-persistent");
-    renderer.setClearColor(options.clearColor ?? 0x070b14, 0);
+    renderer.setClearColor(options.clearColor ?? 0x0c0814, 0);
     if (scene.fog) {
       scene.fog.near = Math.max(scene.fog.near, 12);
       scene.fog.far = Math.max(scene.fog.far, 44);

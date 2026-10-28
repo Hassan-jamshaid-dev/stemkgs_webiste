@@ -1,10 +1,14 @@
 /* Cinematic subject-page experiences — layered behind readable HTML after intro */
 
 .has-subject-scene {
-  --scene-navy: #070b14;
+  /* Match coming-soon / home.css purple → black interior field */
+  --scene-navy: #0c0814;
   --scene-cyan: #5eead4;
   --scene-blue: #4a8fd4;
   --scene-ink: #050508;
+  --scene-bg: #0c0814;
+  --scene-page-top: var(--bg-page);
+  --scene-page-mid: var(--bg-page-mid);
 }
 
 .has-subject-scene .subject-scene {
@@ -120,11 +124,12 @@
 }
 
 .has-subject-scene.subject-intro-done .page {
+  /* Exact coming-soon / .page-dark purple → black fade */
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--scene-page-top, var(--bg-page)) 82%, transparent) 0%,
-    color-mix(in srgb, var(--scene-page-mid, var(--bg-page-mid)) 88%, transparent) 52%,
-    color-mix(in srgb, var(--bg-foot) 94%, transparent) 100%
+    var(--bg-page) 0%,
+    var(--bg-page-mid) 58%,
+    var(--bg-foot) 100%
   );
 }
 
@@ -136,49 +141,31 @@
   background: color-mix(in srgb, var(--bg-foot) 92%, transparent);
 }
 
-/* Per-subject tint tokens */
+/* Per-subject accent only — page/scene field stays brand purple-black */
 .has-subject-scene[data-subject-scene="cs"] {
-  --scene-bg: #070b14;
   --scene-accent: #5eead4;
-  --scene-page-top: #0a1220;
-  --scene-page-mid: #0c1528;
 }
 
 .has-subject-scene[data-subject-scene="maths"] {
-  --scene-bg: #08101c;
   --scene-accent: #93c5fd;
-  --scene-page-top: #0a1628;
-  --scene-page-mid: #0a1422;
 }
 
 .has-subject-scene[data-subject-scene="physics"] {
-  --scene-bg: #050a14;
   --scene-accent: #7dd3fc;
-  --scene-page-top: #0a1424;
-  --scene-page-mid: #0a1220;
 }
 
 .has-subject-scene[data-subject-scene="chemistry"] {
-  --scene-bg: #0a1010;
   --scene-accent: #86efac;
-  --scene-page-top: #0c1814;
-  --scene-page-mid: #0a1412;
 }
 
 .has-subject-scene[data-subject-scene="biology"] {
-  --scene-bg: #081210;
   --scene-accent: #4ade80;
   --scene-blue: #f9a8d4;
-  --scene-page-top: #0a1a14;
-  --scene-page-mid: #081612;
 }
 
 .has-subject-scene[data-subject-scene="crime"] {
-  --scene-bg: #100810;
   --scene-accent: #fbbf24;
   --scene-blue: #67e8f9;
-  --scene-page-top: #1a0c14;
-  --scene-page-mid: #140a12;
 }
 
 @media (prefers-reduced-motion: reduce) {

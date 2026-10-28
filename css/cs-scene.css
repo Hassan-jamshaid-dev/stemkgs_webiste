@@ -1,7 +1,7 @@
 /* CS terminal unlock — DOM overlay + cheap canvas field */
 
 .has-subject-scene[data-subject-scene="cs"] .subject-scene.cs-terminal {
-  background: #070b14;
+  background: #0c0814;
 }
 
 .has-subject-scene[data-subject-scene="cs"] .cs-terminal__bg {
