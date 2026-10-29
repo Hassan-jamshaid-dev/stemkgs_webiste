@@ -733,7 +733,7 @@
 }
 
 .cal-body .foot-credit {
-  color: color-mix(in srgb, var(--grey-600) 48%, transparent);
+  color: #111111;
 }
 
 .cal-body .foot a {
@@ -1034,7 +1034,7 @@
 }
 
 .cal-login-body .foot-credit {
-  color: color-mix(in srgb, var(--grey-600) 48%, transparent);
+  color: #111111;
 }
 
 .cal-login-body .foot a {
