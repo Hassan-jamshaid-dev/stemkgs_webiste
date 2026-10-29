@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calendar login — STEM Society</title>
+  <meta name="description" content="Logistics calendar sign-in for STEM Society presidents and vice presidents. Students can view the calendar without signing in.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="assets/images/logo.jpg" type="image/jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/home.css?v=27">
+  <link rel="stylesheet" href="css/calendar.css?v=1">
+</head>
+<body class="cal-body">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <a class="brand" href="index.html">
+      <img class="brand-mark" src="assets/images/logo.jpg" width="44" height="44" alt="STEM Society">
+      <span>STEM Society</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+      <span class="sr-only">Menu</span>
+      <span></span><span></span>
+    </button>
+    <nav id="site-nav" class="nav-links" aria-label="Primary">
+      <a href="index.html#about">About</a>
+      <a href="index.html#subjects">Subjects</a>
+      <a href="index.html#comps">Competitions</a>
+      <a href="gallery.html">Gallery</a>
+      <a class="nav-calendar" href="calendar-login.html" aria-current="page">Calendar</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main id="main" class="cal-main">
+    <div class="cal-shell">
+      <p class="cal-kicker">Logistics calendar</p>
+      <h1 class="cal-title">Only for presidents and vice presidents</h1>
+      <p class="cal-lead">Sign in with your KGS email to edit society events later. Students can open the view-only calendar below — no account needed.</p>
+
+      <div class="cal-card">
+        <form class="cal-form" id="cal-login-form" action="#" method="post" novalidate>
+          <div class="cal-field">
+            <label for="cal-email">KGS email</label>
+            <input id="cal-email" name="email" type="email" autocomplete="username" placeholder="name@kgs.edu.pk" required>
+          </div>
+          <div class="cal-field">
+            <label for="cal-password">Password</label>
+            <input id="cal-password" name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <div class="cal-field">
+            <label for="cal-society">Society</label>
+            <select id="cal-society" name="society" required>
+              <option value="" disabled selected>Select society</option>
+              <option value="maths">Mathematics</option>
+              <option value="physics">Physics</option>
+              <option value="chemistry">Chemistry</option>
+              <option value="computer-science">Computer Science</option>
+              <option value="biology">Biology</option>
+              <option value="robotics">Robotics</option>
+              <option value="astronomy">Astronomy</option>
+              <option value="crime">Crime</option>
+            </select>
+          </div>
+          <button class="cal-btn cal-btn-primary" type="submit">Sign in</button>
+        </form>
+        <p class="cal-note" id="cal-login-status" role="status" aria-live="polite">Sign-in connects when the backend is ready. This form is UI-only for now.</p>
+      </div>
+
+      <div class="cal-divider">Students</div>
+      <div class="cal-student">
+        <p>Browse the school-year logistics calendar in view-only mode — rooms, times, and events when data is available.</p>
+        <a class="cal-student-link" href="calendar.html">
+          View calendar
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="foot-meta">
+      <p>© 2026 STEM Society</p>
+      <p class="foot-credit">developed by Muhammad Hassan jamshaid</p>
+    </div>
+    <div class="foot-links">
+      <a href="terms.html">Terms and conditions</a>
+      <a href="privacy.html">Privacy policy</a>
+      <a href="index.html">Home</a>
+    </div>
+  </footer>
+
+  <script src="js/home.js" defer></script>
+  <script src="js/calendar.js" defer></script>
+</body>
+</html>

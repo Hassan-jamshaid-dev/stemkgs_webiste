@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logistics calendar — STEM Society</title>
+  <meta name="description" content="View-only STEM Society logistics calendar for school-year events, rooms, and times.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="assets/images/logo.jpg" type="image/jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/home.css?v=27">
+  <link rel="stylesheet" href="css/calendar.css?v=1">
+</head>
+<body class="cal-body">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <a class="brand" href="index.html">
+      <img class="brand-mark" src="assets/images/logo.jpg" width="44" height="44" alt="STEM Society">
+      <span>STEM Society</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+      <span class="sr-only">Menu</span>
+      <span></span><span></span>
+    </button>
+    <nav id="site-nav" class="nav-links" aria-label="Primary">
+      <a href="index.html#about">About</a>
+      <a href="index.html#subjects">Subjects</a>
+      <a href="index.html#comps">Competitions</a>
+      <a href="gallery.html">Gallery</a>
+      <a class="nav-calendar" href="calendar-login.html" aria-current="page">Calendar</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main id="main" class="cal-main">
+    <div class="cal-shell cal-shell-wide">
+      <div class="cal-toolbar">
+        <div class="cal-toolbar-left">
+          <span class="cal-mode-badge">View only</span>
+          <p class="cal-kicker">Logistics calendar</p>
+          <h1 class="cal-title">Society calendar</h1>
+          <p class="cal-lead">Event, room, and time slots will appear here by school year. Presidents and vice presidents edit after sign-in.</p>
+        </div>
+        <div class="cal-year">
+          <label for="cal-school-year">School year</label>
+          <select id="cal-school-year" name="school-year">
+            <option value="2025-2026">2025-2026</option>
+            <option value="2026-2027">2026-2027</option>
+            <option value="2027-2028" selected>2027-2028</option>
+            <option value="2028-2029">2028-2029</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="cal-board" aria-label="Month calendar placeholder">
+        <div class="cal-board-head" aria-hidden="true">
+          <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        </div>
+        <div class="cal-board-grid" id="cal-grid" role="list" aria-label="Calendar days">
+          <!-- Filled by js/calendar.js -->
+        </div>
+      </div>
+
+      <div class="cal-legend" aria-label="Legend">
+        <span class="cal-legend-item">
+          <span class="cal-legend-swatch" aria-hidden="true"></span>
+          Event · room · time
+        </span>
+        <span class="cal-legend-item">Empty cells are ready for scheduled logistics.</span>
+      </div>
+
+      <div class="cal-actions">
+        <a class="cal-btn cal-btn-ghost" href="calendar-login.html">President / VP sign-in</a>
+        <button class="cal-btn cal-btn-ghost" type="button" id="cal-refresh-stub" disabled title="Available when the backend is connected">Refresh events</button>
+      </div>
+      <p class="cal-note" id="cal-view-status" role="status" aria-live="polite">Showing placeholder layout for <strong>2027-2028</strong>. Live data arrives with the API.</p>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="foot-meta">
+      <p>© 2026 STEM Society</p>
+      <p class="foot-credit">developed by Muhammad Hassan jamshaid</p>
+    </div>
+    <div class="foot-links">
+      <a href="terms.html">Terms and conditions</a>
+      <a href="privacy.html">Privacy policy</a>
+      <a href="index.html">Home</a>
+    </div>
+  </footer>
+
+  <script src="js/home.js" defer></script>
+  <script src="js/calendar.js" defer></script>
+</body>
+</html>
