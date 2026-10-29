@@ -732,6 +732,10 @@
   color: var(--grey-600);
 }
 
+.cal-body .foot-credit {
+  color: color-mix(in srgb, var(--grey-600) 48%, transparent);
+}
+
 .cal-body .foot a {
   color: var(--purple);
 }
@@ -1027,6 +1031,10 @@
 .cal-login-body .foot {
   background: #f4f8fc;
   border-top: 1px solid color-mix(in srgb, var(--blue) 10%, var(--grey-200));
+}
+
+.cal-login-body .foot-credit {
+  color: color-mix(in srgb, var(--grey-600) 48%, transparent);
 }
 
 .cal-login-body .foot a {

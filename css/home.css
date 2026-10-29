@@ -858,9 +858,11 @@ a.subject:focus-visible {
   margin: 0;
 }
 .foot-credit {
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  color: color-mix(in srgb, var(--muted-on-dark) 68%, transparent);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--muted-on-dark) 42%, transparent);
 }
 .foot-links {
   display: flex;
