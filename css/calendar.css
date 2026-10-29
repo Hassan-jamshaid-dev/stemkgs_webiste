@@ -495,10 +495,18 @@
   border-radius: 999px;
 }
 
+.cal-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 12px;
+}
+
 .cal-year {
   display: grid;
   gap: 8px;
-  min-width: min(240px, 100%);
+  min-width: min(180px, 100%);
+  flex: 1 1 160px;
   padding: 14px 16px;
   border-radius: 14px;
   background: #ffffff;
@@ -764,7 +772,289 @@
     letter-spacing: 0.06em;
   }
 
+  .cal-controls {
+    width: 100%;
+  }
+
   .cal-year {
     width: 100%;
+    flex: 1 1 100%;
+  }
+}
+
+/* —— Login page: brand deep blue + blue, soft decorative circles —— */
+
+.cal-login-body {
+  background: #ffffff;
+  color: #152033;
+}
+
+.cal-login-body .nav {
+  background: color-mix(in srgb, #ffffff 92%, var(--blue-mid) 8%);
+  border-bottom: 1px solid color-mix(in srgb, var(--blue) 12%, var(--grey-200));
+}
+
+.cal-login-body .nav.is-scrolled {
+  background: #ffffff;
+  border-bottom-color: color-mix(in srgb, var(--blue-bright) 30%, var(--grey-200));
+  box-shadow: 0 8px 24px rgba(20, 44, 72, 0.07);
+}
+
+.cal-login-body .brand {
+  color: var(--blue);
+}
+
+.cal-login-body .brand:hover {
+  color: var(--blue-mid);
+}
+
+.cal-login-body .brand-mark {
+  border-color: color-mix(in srgb, var(--blue-mid) 35%, white);
+  box-shadow: 0 0 0 2px rgba(20, 44, 72, 0.06);
+}
+
+.cal-login-body .nav-links a:hover,
+.cal-login-body .nav-links a:focus-visible,
+.cal-login-body .nav-links a[aria-current="page"] {
+  color: var(--blue-mid);
+}
+
+.cal-login-body .nav-links a::after {
+  background: color-mix(in srgb, var(--blue-mid) 55%, var(--blue-bright));
+}
+
+.cal-login-body .nav-links a.nav-calendar,
+.cal-login-body .nav-links a.nav-calendar[aria-current="page"] {
+  color: var(--white);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--blue) 88%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-mid) 45%, var(--blue-bright))
+  );
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--blue) 22%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.18) inset;
+}
+
+.cal-login-body .nav-links a.nav-calendar:hover,
+.cal-login-body .nav-links a.nav-calendar:focus-visible {
+  color: var(--blue);
+  background: #ffffff;
+  border-color: color-mix(in srgb, var(--blue-mid) 22%, var(--grey-200));
+  box-shadow:
+    0 12px 28px rgba(20, 44, 72, 0.1),
+    0 0 0 1px color-mix(in srgb, var(--blue-bright) 28%, transparent);
+}
+
+.cal-login-body .nav-links a.nav-calendar[aria-current="page"] {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--blue-bright) 42%, transparent),
+    0 8px 20px color-mix(in srgb, var(--blue) 18%, transparent);
+}
+
+.cal-login-body .nav-toggle span:not(.sr-only) {
+  background: var(--blue);
+}
+
+.cal-login-main {
+  background:
+    radial-gradient(ellipse 62% 44% at 6% -2%, color-mix(in srgb, var(--blue) 9%, transparent), transparent 58%),
+    radial-gradient(ellipse 50% 40% at 98% 6%, color-mix(in srgb, var(--blue-bright) 16%, transparent), transparent 54%),
+    radial-gradient(ellipse 42% 28% at 48% 100%, color-mix(in srgb, var(--blue-mid) 6%, transparent), transparent 62%),
+    linear-gradient(180deg, #f7fafd 0%, #ffffff 46%, #f4f8fc 100%);
+}
+
+.cal-login-main::before {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--blue-mid) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--blue-mid) 4%, transparent) 1px, transparent 1px);
+}
+
+.cal-blobs {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cal-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0.42;
+}
+
+.cal-blob-1 {
+  width: min(280px, 42vw);
+  height: min(280px, 42vw);
+  top: 8%;
+  left: -6%;
+  background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--blue-bright) 38%, transparent), color-mix(in srgb, var(--blue-mid) 12%, transparent) 62%, transparent 78%);
+}
+
+.cal-blob-2 {
+  width: min(190px, 30vw);
+  height: min(190px, 30vw);
+  top: 18%;
+  right: 4%;
+  background: radial-gradient(circle at 40% 40%, color-mix(in srgb, var(--blue) 28%, transparent), transparent 72%);
+  opacity: 0.34;
+}
+
+.cal-blob-3 {
+  width: min(150px, 24vw);
+  height: min(150px, 24vw);
+  top: 52%;
+  left: 8%;
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--blue-bright) 30%, transparent), transparent 70%);
+  opacity: 0.3;
+}
+
+.cal-blob-4 {
+  width: min(220px, 34vw);
+  height: min(220px, 34vw);
+  bottom: 10%;
+  right: -4%;
+  background: radial-gradient(circle at 45% 40%, color-mix(in srgb, var(--blue-mid) 32%, transparent), transparent 74%);
+  opacity: 0.36;
+}
+
+.cal-blob-5 {
+  width: min(96px, 16vw);
+  height: min(96px, 16vw);
+  top: 34%;
+  left: 62%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--blue-bright) 26%, transparent), transparent 70%);
+  opacity: 0.28;
+}
+
+.cal-blob-6 {
+  width: min(130px, 20vw);
+  height: min(130px, 20vw);
+  bottom: 28%;
+  left: 28%;
+  background: radial-gradient(circle at 55% 45%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 72%);
+  opacity: 0.26;
+}
+
+.cal-blob-7 {
+  width: min(72px, 12vw);
+  height: min(72px, 12vw);
+  top: 72%;
+  right: 22%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--blue-bright) 34%, transparent), transparent 68%);
+  opacity: 0.32;
+}
+
+.cal-blob-8 {
+  width: min(110px, 18vw);
+  height: min(110px, 18vw);
+  top: 6%;
+  left: 42%;
+  background: radial-gradient(circle at 40% 50%, color-mix(in srgb, var(--blue-mid) 20%, transparent), transparent 70%);
+  opacity: 0.22;
+}
+
+.cal-login-body .cal-kicker {
+  color: color-mix(in srgb, var(--blue-mid) 55%, var(--grey-600));
+}
+
+.cal-login-body .cal-card {
+  border-color: color-mix(in srgb, var(--grey-200) 70%, var(--blue-mid));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 18px 40px rgba(20, 44, 72, 0.07),
+    0 4px 12px rgba(20, 44, 72, 0.03);
+}
+
+.cal-login-body .cal-card::before {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--blue) 85%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-bright) 75%, var(--blue-mid))
+  );
+}
+
+.cal-login-body .cal-field input,
+.cal-login-body .cal-field select {
+  background: #f4f8fc;
+}
+
+.cal-login-body .cal-field input:hover,
+.cal-login-body .cal-field select:hover {
+  border-color: color-mix(in srgb, var(--blue-mid) 30%, var(--grey-200));
+}
+
+.cal-login-body .cal-field input:focus,
+.cal-login-body .cal-field select:focus {
+  border-color: color-mix(in srgb, var(--blue-bright) 60%, var(--blue-mid));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue-bright) 18%, transparent);
+}
+
+.cal-login-body .cal-btn-primary {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--blue) 90%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-mid) 40%, var(--blue-bright))
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 10px 24px color-mix(in srgb, var(--blue) 26%, transparent);
+}
+
+.cal-login-body .cal-btn-primary:hover {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 16px 34px color-mix(in srgb, var(--blue-mid) 30%, transparent);
+}
+
+.cal-login-body .cal-divider::before,
+.cal-login-body .cal-divider::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--blue-mid) 22%, var(--grey-200)),
+    transparent
+  );
+}
+
+.cal-login-body .cal-student {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--blue) 4%, #ffffff), color-mix(in srgb, var(--blue-bright) 8%, #ffffff));
+  border-color: color-mix(in srgb, var(--blue-bright) 22%, var(--grey-200));
+}
+
+.cal-login-body .cal-student-label {
+  color: color-mix(in srgb, var(--blue-mid) 65%, var(--grey-600));
+}
+
+.cal-login-body .cal-student-link {
+  background: color-mix(in srgb, var(--blue-mid) 78%, var(--blue));
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--blue-mid) 24%, transparent);
+}
+
+.cal-login-body .cal-student-link:hover {
+  background: color-mix(in srgb, var(--blue) 55%, var(--blue-bright));
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--blue) 26%, transparent);
+}
+
+.cal-login-body .foot {
+  background: #f4f8fc;
+  border-top: 1px solid color-mix(in srgb, var(--blue) 10%, var(--grey-200));
+}
+
+.cal-login-body .foot a {
+  color: var(--blue-mid);
+}
+
+.cal-login-body .foot a:hover {
+  color: var(--blue-bright);
+}
+
+@media (max-width: 1100px) {
+  .cal-login-body .nav-links a:hover,
+  .cal-login-body .nav-links a:focus-visible {
+    color: var(--blue-mid);
   }
 }

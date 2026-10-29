@@ -2,10 +2,26 @@
   var loginForm = document.getElementById("cal-login-form");
   var loginStatus = document.getElementById("cal-login-status");
   var yearSelect = document.getElementById("cal-school-year");
+  var monthSelect = document.getElementById("cal-month");
   var viewStatus = document.getElementById("cal-view-status");
   var emptyBanner = document.getElementById("cal-empty-banner");
   var monthLabel = document.getElementById("cal-month-label");
   var grid = document.getElementById("cal-grid");
+
+  var MONTH_NAMES = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
 
   if (loginForm) {
     loginForm.addEventListener("submit", function (event) {
@@ -25,26 +41,49 @@
     });
   }
 
-  function renderPlaceholderGrid(yearLabel) {
+  function daysInMonth(year, monthIndex) {
+    return new Date(year, monthIndex + 1, 0).getDate();
+  }
+
+  function mondayBasedWeekday(date) {
+    var day = date.getDay();
+    return day === 0 ? 6 : day - 1;
+  }
+
+  function resolveCalendarYear(schoolYear, monthIndex) {
+    var parts = String(schoolYear || "2025-2026").split("-");
+    var startYear = parseInt(parts[0], 10) || 2025;
+    var endYear = parseInt(parts[1], 10) || startYear + 1;
+    /* School year months: Sep–Dec = start year; Jan–Aug = end year */
+    return monthIndex >= 8 ? startYear : endYear;
+  }
+
+  function renderPlaceholderGrid(periodLabel, calendarYear, monthIndex) {
     if (!grid) return;
 
-    /* Sample placeholder: one sample slot so the board looks ready for data */
     var sample = {
       index: 11,
       label: "Team meeting",
       meta: "Lab 2 · 15:30"
     };
 
+    var totalDays = daysInMonth(calendarYear, monthIndex);
+    var leading = mondayBasedWeekday(new Date(calendarYear, monthIndex, 1));
+    var prevMonthDays = daysInMonth(
+      monthIndex === 0 ? calendarYear - 1 : calendarYear,
+      monthIndex === 0 ? 11 : monthIndex - 1
+    );
+
     var days = [];
     var i;
-    for (i = 0; i < 2; i += 1) {
-      days.push({ muted: true, num: 30 + i, sample: false });
+    for (i = 0; i < leading; i += 1) {
+      days.push({ muted: true, num: prevMonthDays - leading + i + 1, sample: false });
     }
-    for (i = 1; i <= 31; i += 1) {
+    for (i = 1; i <= totalDays; i += 1) {
       days.push({ muted: false, num: i, sample: i === sample.index });
     }
     while (days.length % 7 !== 0) {
-      days.push({ muted: true, num: days.length - 32, sample: false });
+      days.push({ muted: true, num: days.length - leading - totalDays + 1, sample: false });
     }
 
     grid.innerHTML = "";
@@ -70,7 +109,7 @@
           "</strong><br>" +
           sample.meta +
           "<br><span style=\"opacity:.75\">" +
-          yearLabel +
+          periodLabel +
           "</span>";
         cell.appendChild(slot);
       } else if (!day.muted) {
@@ -84,30 +123,43 @@
     });
   }
 
-  function updateYearStatus() {
+  function updateCalendarView() {
     if (!yearSelect) return;
-    var year = yearSelect.value;
+
+    var year = yearSelect.value || "2025-2026";
+    var monthIndex = monthSelect ? parseInt(monthSelect.value, 10) : 8;
+    if (isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) {
+      monthIndex = 8;
+    }
+
+    var monthName = MONTH_NAMES[monthIndex];
+    var periodLabel = monthName + " · " + year;
+    var calendarYear = resolveCalendarYear(year, monthIndex);
+
     if (viewStatus) {
       viewStatus.innerHTML =
         "Showing placeholder layout for <strong>" +
-        year +
+        periodLabel +
         "</strong>. Live data arrives with the API.";
     }
     if (emptyBanner) {
       emptyBanner.innerHTML =
         "<strong>" +
-        year +
+        periodLabel +
         "</strong> — placeholder board. Live logistics load when the API is connected.";
     }
     if (monthLabel) {
-      monthLabel.textContent = "September · " + year;
+      monthLabel.textContent = periodLabel;
     }
-    renderPlaceholderGrid(year);
-    console.info("[calendar] school year selected", year);
+    renderPlaceholderGrid(periodLabel, calendarYear, monthIndex);
+    console.info("[calendar] period selected", { year: year, month: monthName });
   }
 
   if (yearSelect) {
-    yearSelect.addEventListener("change", updateYearStatus);
-    updateYearStatus();
+    yearSelect.addEventListener("change", updateCalendarView);
+    if (monthSelect) {
+      monthSelect.addEventListener("change", updateCalendarView);
+    }
+    updateCalendarView();
   }
 })();
