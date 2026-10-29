@@ -304,29 +304,27 @@
 .cal-btn-primary {
   width: 100%;
   margin-top: 6px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--purple) 88%, var(--blue-mid)),
-    color-mix(in srgb, var(--blue-mid) 45%, var(--blue-bright))
-  );
+  background: var(--purple);
   color: #ffffff;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 10px 24px color-mix(in srgb, var(--purple) 24%, transparent);
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 10px 24px color-mix(in srgb, var(--purple) 28%, transparent);
 }
 
 .cal-btn-primary:hover {
   transform: translateY(-2px);
-  filter: saturate(1.08) brightness(1.04);
+  background: color-mix(in srgb, var(--purple) 82%, #000000);
+  filter: none;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.22) inset,
-    0 16px 34px color-mix(in srgb, var(--purple) 30%, transparent);
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 16px 34px color-mix(in srgb, var(--purple) 34%, transparent);
 }
 
 .cal-btn-primary:active {
   transform: translateY(0);
+  background: color-mix(in srgb, var(--purple) 72%, #000000);
   filter: none;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--purple) 18%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--purple) 20%, transparent);
 }
 
 .cal-btn-primary:focus-visible {
@@ -881,8 +879,10 @@
 .cal-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(2px);
-  opacity: 0.42;
+  filter: none;
+  opacity: 0.34;
+  /* Disk fill + short edge falloff — readable rim, still page-faded */
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--blue-mid) 28%, transparent);
 }
 
 .cal-blob-1 {
@@ -890,7 +890,7 @@
   height: min(280px, 42vw);
   top: 8%;
   left: -6%;
-  background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--blue-bright) 38%, transparent), color-mix(in srgb, var(--blue-mid) 12%, transparent) 62%, transparent 78%);
+  background: radial-gradient(circle at 38% 36%, color-mix(in srgb, var(--blue-bright) 55%, white) 0%, color-mix(in srgb, var(--blue-mid) 42%, transparent) 52%, color-mix(in srgb, var(--blue-mid) 18%, transparent) 78%, transparent 92%);
 }
 
 .cal-blob-2 {
@@ -898,8 +898,8 @@
   height: min(190px, 30vw);
   top: 18%;
   right: 4%;
-  background: radial-gradient(circle at 40% 40%, color-mix(in srgb, var(--blue) 28%, transparent), transparent 72%);
-  opacity: 0.34;
+  background: radial-gradient(circle at 42% 40%, color-mix(in srgb, var(--blue) 48%, transparent) 0%, color-mix(in srgb, var(--blue) 22%, transparent) 70%, transparent 90%);
+  opacity: 0.3;
 }
 
 .cal-blob-3 {
@@ -907,8 +907,8 @@
   height: min(150px, 24vw);
   top: 52%;
   left: 8%;
-  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--blue-bright) 30%, transparent), transparent 70%);
-  opacity: 0.3;
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--blue-bright) 50%, transparent) 0%, color-mix(in srgb, var(--blue-bright) 20%, transparent) 68%, transparent 88%);
+  opacity: 0.28;
 }
 
 .cal-blob-4 {
@@ -916,8 +916,8 @@
   height: min(220px, 34vw);
   bottom: 10%;
   right: -4%;
-  background: radial-gradient(circle at 45% 40%, color-mix(in srgb, var(--blue-mid) 32%, transparent), transparent 74%);
-  opacity: 0.36;
+  background: radial-gradient(circle at 45% 40%, color-mix(in srgb, var(--blue-mid) 52%, transparent) 0%, color-mix(in srgb, var(--blue-mid) 24%, transparent) 72%, transparent 90%);
+  opacity: 0.32;
 }
 
 .cal-blob-5 {
@@ -925,8 +925,8 @@
   height: min(96px, 16vw);
   top: 34%;
   left: 62%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--blue-bright) 26%, transparent), transparent 70%);
-  opacity: 0.28;
+  background: radial-gradient(circle, color-mix(in srgb, var(--blue-bright) 48%, transparent) 0%, color-mix(in srgb, var(--blue-bright) 18%, transparent) 65%, transparent 86%);
+  opacity: 0.26;
 }
 
 .cal-blob-6 {
@@ -934,8 +934,8 @@
   height: min(130px, 20vw);
   bottom: 28%;
   left: 28%;
-  background: radial-gradient(circle at 55% 45%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 72%);
-  opacity: 0.26;
+  background: radial-gradient(circle at 55% 45%, color-mix(in srgb, var(--blue) 44%, transparent) 0%, color-mix(in srgb, var(--blue) 16%, transparent) 68%, transparent 88%);
+  opacity: 0.24;
 }
 
 .cal-blob-7 {
@@ -943,8 +943,8 @@
   height: min(72px, 12vw);
   top: 72%;
   right: 22%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--blue-bright) 34%, transparent), transparent 68%);
-  opacity: 0.32;
+  background: radial-gradient(circle, color-mix(in srgb, var(--blue-bright) 56%, transparent) 0%, color-mix(in srgb, var(--blue-bright) 22%, transparent) 62%, transparent 84%);
+  opacity: 0.3;
 }
 
 .cal-blob-8 {
@@ -952,7 +952,7 @@
   height: min(110px, 18vw);
   top: 6%;
   left: 42%;
-  background: radial-gradient(circle at 40% 50%, color-mix(in srgb, var(--blue-mid) 20%, transparent), transparent 70%);
+  background: radial-gradient(circle at 40% 50%, color-mix(in srgb, var(--blue-mid) 40%, transparent) 0%, color-mix(in srgb, var(--blue-mid) 14%, transparent) 66%, transparent 86%);
   opacity: 0.22;
 }
 
@@ -992,22 +992,7 @@
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue-bright) 18%, transparent);
 }
 
-.cal-login-body .cal-btn-primary {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--blue) 90%, var(--blue-mid)),
-    color-mix(in srgb, var(--blue-mid) 40%, var(--blue-bright))
-  );
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 10px 24px color-mix(in srgb, var(--blue) 26%, transparent);
-}
-
-.cal-login-body .cal-btn-primary:hover {
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.22) inset,
-    0 16px 34px color-mix(in srgb, var(--blue-mid) 30%, transparent);
-}
+/* Login primary CTA uses shared .cal-btn-primary (STEM deep purple) */
 
 .cal-login-body .cal-divider::before,
 .cal-login-body .cal-divider::after {
