@@ -226,20 +226,27 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .nav-links a:focus-visible::after { transform: scaleX(1); }
 
-/* Calendar — white chip on dark nav (every shared navbar) */
+/* Calendar — pill CTA, last in navbar */
 .nav-links a.nav-calendar {
   color: var(--purple);
   background: var(--white);
-  border: 1px solid color-mix(in srgb, var(--white) 88%, var(--grey-200));
-  padding: 0 12px;
-  margin-left: 2px;
-  box-shadow: 0 1px 0 rgba(5, 5, 8, 0.18);
+  border: 1px solid color-mix(in srgb, var(--white) 82%, var(--grey-200));
+  padding: 0 18px;
+  margin-left: 10px;
+  min-height: 36px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow:
+    0 1px 0 rgba(5, 5, 8, 0.12),
+    0 6px 16px rgba(5, 5, 8, 0.18);
   transition:
-    color var(--duration) var(--ease),
-    background var(--duration) var(--ease),
-    border-color var(--duration) var(--ease),
-    box-shadow var(--duration) var(--ease),
-    transform var(--duration) var(--ease);
+    color 0.32s var(--ease),
+    background 0.32s var(--ease),
+    border-color 0.32s var(--ease),
+    box-shadow 0.32s var(--ease),
+    transform 0.32s var(--ease),
+    filter 0.32s var(--ease);
 }
 .nav-links a.nav-calendar::after {
   display: none;
@@ -247,11 +254,24 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .nav-links a.nav-calendar:hover,
 .nav-links a.nav-calendar:focus-visible {
   color: var(--white);
-  background: color-mix(in srgb, var(--purple) 72%, var(--blue-mid));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--purple) 78%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-mid) 55%, var(--blue-bright))
+  );
   border-color: transparent;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(40, 20, 76, 0.35);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 4px 0 rgba(5, 5, 8, 0.08),
+    0 14px 32px rgba(40, 20, 76, 0.42),
+    0 0 0 1px color-mix(in srgb, var(--blue-bright) 35%, transparent);
+  filter: saturate(1.08);
   outline: none;
+}
+.nav-links a.nav-calendar:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 4px 12px rgba(40, 20, 76, 0.28);
+  filter: none;
 }
 .nav-links a.nav-calendar:focus-visible {
   outline: var(--focus-ring);
@@ -260,7 +280,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .nav-links a.nav-calendar[aria-current="page"] {
   color: var(--purple);
   background: var(--white);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--blue-bright) 45%, transparent);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--blue-bright) 50%, transparent),
+    0 8px 20px rgba(5, 5, 8, 0.2);
 }
 .nav-toggle {
   display: none;
@@ -1164,15 +1186,22 @@ main a:focus-visible {
   }
   .nav-links a.nav-calendar {
     margin-left: 0;
-    margin-top: 8px;
+    margin-top: 10px;
     justify-content: center;
     width: 100%;
-    box-shadow: none;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(5, 5, 8, 0.2);
   }
   .nav-links a.nav-calendar:hover,
   .nav-links a.nav-calendar:focus-visible {
     color: var(--white);
-    background: color-mix(in srgb, var(--purple) 72%, var(--blue-mid));
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--purple) 78%, var(--blue-mid)),
+      color-mix(in srgb, var(--blue-mid) 55%, var(--blue-bright))
+    );
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(40, 20, 76, 0.38);
   }
   .subjects-head { gap: 14px; }
   .hero {

@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Logistics calendar — STEM Society</title>
-  <meta name="description" content="View-only STEM Society logistics calendar for school-year events, rooms, and times.">
+  <title>KGS School Year Calendar — STEM Society</title>
+  <meta name="description" content="View-only KGS school year calendar for STEM Society logistics — events, rooms, and times.">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="assets/images/logo.jpg" type="image/jpeg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/home.css?v=27">
-  <link rel="stylesheet" href="css/calendar.css?v=1">
+  <link rel="stylesheet" href="css/home.css?v=28">
+  <link rel="stylesheet" href="css/calendar.css?v=2">
 </head>
 <body class="cal-body">
   <a class="skip" href="#main">Skip to content</a>
@@ -30,8 +30,8 @@
       <a href="index.html#subjects">Subjects</a>
       <a href="index.html#comps">Competitions</a>
       <a href="gallery.html">Gallery</a>
-      <a class="nav-calendar" href="calendar-login.html" aria-current="page">Calendar</a>
       <a href="index.html#contact">Contact</a>
+      <a class="nav-calendar" href="calendar-login.html" aria-current="page">Calendar</a>
     </nav>
   </header>
 
@@ -40,19 +40,27 @@
       <div class="cal-toolbar">
         <div class="cal-toolbar-left">
           <span class="cal-mode-badge">View only</span>
-          <p class="cal-kicker">Logistics calendar</p>
-          <h1 class="cal-title">Society calendar</h1>
-          <p class="cal-lead">Event, room, and time slots will appear here by school year. Presidents and vice presidents edit after sign-in.</p>
+          <p class="cal-kicker">STEM Society logistics</p>
+          <h1 class="cal-title">KGS School Year Calendar</h1>
+          <p class="cal-lead">Event, room, and time slots appear here by school year. Presidents and vice presidents edit after sign-in.</p>
         </div>
         <div class="cal-year">
           <label for="cal-school-year">School year</label>
           <select id="cal-school-year" name="school-year">
-            <option value="2025-2026">2025-2026</option>
-            <option value="2026-2027">2026-2027</option>
-            <option value="2027-2028" selected>2027-2028</option>
-            <option value="2028-2029">2028-2029</option>
+            <option value="2025-2026">2025–2026</option>
+            <option value="2026-2027">2026–2027</option>
+            <option value="2027-2028" selected>2027–2028</option>
+            <option value="2028-2029">2028–2029</option>
           </select>
         </div>
+      </div>
+
+      <div class="cal-month-bar">
+        <h2 class="cal-month-label" id="cal-month-label">September</h2>
+        <p class="cal-empty-banner" id="cal-empty-banner" role="status">
+          <strong>Placeholder board</strong>
+          Live logistics load when the API is connected.
+        </p>
       </div>
 
       <div class="cal-board" aria-label="Month calendar placeholder">

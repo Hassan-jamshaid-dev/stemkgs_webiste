@@ -6,7 +6,7 @@
 }
 
 .cal-body .nav {
-  background: color-mix(in srgb, #ffffff 92%, var(--purple) 8%);
+  background: color-mix(in srgb, #ffffff 90%, var(--purple) 10%);
   border-bottom: 1px solid var(--grey-200);
   backdrop-filter: blur(14px) saturate(1.05);
 }
@@ -45,26 +45,41 @@
   background: color-mix(in srgb, var(--purple) 55%, var(--blue-bright));
 }
 
-/* Keep Calendar chip readable on white calendar nav */
+/* Calendar pill on light calendar nav */
 .cal-body .nav-links a.nav-calendar {
   color: var(--white);
-  background: color-mix(in srgb, var(--purple) 82%, var(--blue-mid));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--purple) 86%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-mid) 50%, var(--blue-bright))
+  );
   border-color: transparent;
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--purple) 18%, transparent);
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--purple) 22%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.18) inset;
 }
 
 .cal-body .nav-links a.nav-calendar:hover,
 .cal-body .nav-links a.nav-calendar:focus-visible {
   color: var(--purple);
-  background: var(--white);
-  border-color: color-mix(in srgb, var(--purple) 28%, var(--grey-200));
-  box-shadow: 0 8px 20px rgba(20, 12, 40, 0.08);
+  background: #ffffff;
+  border-color: color-mix(in srgb, var(--purple) 22%, var(--grey-200));
+  box-shadow:
+    0 12px 28px rgba(20, 12, 40, 0.1),
+    0 0 0 1px color-mix(in srgb, var(--blue-bright) 28%, transparent);
+  filter: none;
 }
 
 .cal-body .nav-links a.nav-calendar[aria-current="page"] {
   color: var(--white);
-  background: color-mix(in srgb, var(--purple) 82%, var(--blue-mid));
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--blue-bright) 40%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--purple) 86%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-mid) 50%, var(--blue-bright))
+  );
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--blue-bright) 42%, transparent),
+    0 8px 20px color-mix(in srgb, var(--purple) 18%, transparent);
 }
 
 .cal-body .nav-toggle span:not(.sr-only) {
@@ -89,21 +104,38 @@
 
 .cal-main {
   position: relative;
-  padding: calc(var(--nav) + 48px) var(--gutter) clamp(64px, 10vh, 100px);
+  padding: calc(var(--nav) + 52px) var(--gutter) clamp(72px, 10vh, 112px);
   min-height: calc(100vh - 120px);
+  overflow: hidden;
   background:
-    radial-gradient(ellipse 70% 45% at 12% 0%, color-mix(in srgb, var(--purple) 7%, transparent), transparent 55%),
-    radial-gradient(ellipse 55% 40% at 92% 8%, color-mix(in srgb, var(--blue-bright) 10%, transparent), transparent 50%),
-    #ffffff;
+    radial-gradient(ellipse 68% 48% at 8% -4%, color-mix(in srgb, var(--purple) 10%, transparent), transparent 58%),
+    radial-gradient(ellipse 52% 42% at 96% 4%, color-mix(in srgb, var(--blue-bright) 14%, transparent), transparent 52%),
+    radial-gradient(ellipse 40% 30% at 50% 100%, color-mix(in srgb, var(--grey-100) 85%, transparent), transparent 60%),
+    linear-gradient(180deg, #fbfafc 0%, #ffffff 42%, #f7f6fa 100%);
+}
+
+.cal-main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--purple) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--purple) 4%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 70%);
+  opacity: 0.55;
 }
 
 .cal-shell {
-  width: min(520px, 100%);
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
   margin: 0 auto;
 }
 
 .cal-shell-wide {
-  width: min(1100px, 100%);
+  width: min(1120px, 100%);
 }
 
 .cal-kicker {
@@ -112,43 +144,92 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-weight: 600;
-  color: var(--grey-600);
+  color: color-mix(in srgb, var(--purple) 45%, var(--grey-600));
 }
 
 .cal-title {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(28px, 4.2vw, 40px);
+  font-size: clamp(30px, 4.4vw, 44px);
   letter-spacing: -0.03em;
-  line-height: 1.15;
+  line-height: 1.12;
   color: var(--ink);
+  max-width: 18ch;
+}
+
+.cal-shell-wide .cal-title {
   max-width: 22ch;
 }
 
 .cal-lead {
   margin: 0 0 28px;
   color: var(--grey-600);
-  font-size: 15px;
-  line-height: 1.55;
-  max-width: 42ch;
+  font-size: 15.5px;
+  line-height: 1.6;
+  max-width: 44ch;
 }
 
-.cal-card {
-  background: #ffffff;
-  border: 1px solid var(--grey-200);
-  padding: 28px 28px 24px;
-  box-shadow: 0 10px 32px rgba(20, 12, 40, 0.04);
-}
-
-.cal-form {
+.cal-panel {
   display: grid;
   gap: 18px;
 }
 
+.cal-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid color-mix(in srgb, var(--grey-200) 80%, var(--purple));
+  border-radius: 18px;
+  padding: 30px 30px 26px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 18px 40px rgba(20, 12, 40, 0.06),
+    0 4px 12px rgba(20, 12, 40, 0.03);
+  overflow: hidden;
+}
+
+.cal-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--purple) 80%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-bright) 70%, var(--purple))
+  );
+}
+
+.cal-card-head {
+  margin: 0 0 20px;
+}
+
+.cal-card-head h2 {
+  margin: 0 0 6px;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.cal-card-head p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--grey-600);
+  line-height: 1.5;
+}
+
+.cal-form {
+  display: grid;
+  gap: 16px;
+}
+
 .cal-field {
   display: grid;
-  gap: 7px;
+  gap: 8px;
 }
 
 .cal-field label {
@@ -163,17 +244,18 @@
 .cal-field select {
   width: 100%;
   min-height: var(--hit);
-  padding: 0 14px;
+  padding: 0 16px;
   border: 1px solid var(--grey-200);
-  background: #faf9fb;
+  background: #f7f6fa;
   color: var(--ink);
   font-family: var(--sans);
   font-size: 15px;
-  border-radius: 0;
+  border-radius: 12px;
   transition:
-    border-color var(--duration) var(--ease),
-    background var(--duration) var(--ease),
-    box-shadow var(--duration) var(--ease);
+    border-color 0.25s var(--ease),
+    background 0.25s var(--ease),
+    box-shadow 0.25s var(--ease),
+    transform 0.25s var(--ease);
 }
 
 .cal-field input::placeholder {
@@ -182,7 +264,7 @@
 
 .cal-field input:hover,
 .cal-field select:hover {
-  border-color: color-mix(in srgb, var(--purple) 28%, var(--grey-200));
+  border-color: color-mix(in srgb, var(--purple) 30%, var(--grey-200));
   background: #ffffff;
 }
 
@@ -191,7 +273,8 @@
   outline: none;
   border-color: color-mix(in srgb, var(--blue-bright) 55%, var(--purple));
   background: #ffffff;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue-bright) 18%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue-bright) 16%, transparent);
+  transform: translateY(-1px);
 }
 
 .cal-btn {
@@ -208,32 +291,42 @@
   letter-spacing: 0.04em;
   text-decoration: none;
   cursor: pointer;
-  border-radius: 0;
+  border-radius: 999px;
   transition:
-    background 0.25s var(--ease),
-    color 0.25s var(--ease),
-    border-color 0.25s var(--ease),
-    box-shadow 0.25s var(--ease),
-    transform 0.25s var(--ease);
+    background 0.3s var(--ease),
+    color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    box-shadow 0.3s var(--ease),
+    transform 0.3s var(--ease),
+    filter 0.3s var(--ease);
 }
 
 .cal-btn-primary {
   width: 100%;
-  margin-top: 4px;
-  background: color-mix(in srgb, var(--purple) 88%, var(--blue-mid));
+  margin-top: 6px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--purple) 88%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-mid) 45%, var(--blue-bright))
+  );
   color: #ffffff;
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--purple) 40%, transparent);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 10px 24px color-mix(in srgb, var(--purple) 24%, transparent);
 }
 
 .cal-btn-primary:hover {
-  background: color-mix(in srgb, var(--purple) 70%, var(--blue-bright));
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--purple) 22%, transparent);
+  transform: translateY(-2px);
+  filter: saturate(1.08) brightness(1.04);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 16px 34px color-mix(in srgb, var(--purple) 30%, transparent);
 }
 
 .cal-btn-primary:active {
   transform: translateY(0);
-  box-shadow: none;
+  filter: none;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--purple) 18%, transparent);
 }
 
 .cal-btn-primary:focus-visible {
@@ -244,14 +337,15 @@
 .cal-btn-ghost {
   background: #ffffff;
   color: var(--purple);
-  border-color: var(--grey-200);
+  border-color: color-mix(in srgb, var(--purple) 16%, var(--grey-200));
+  box-shadow: 0 2px 8px rgba(20, 12, 40, 0.03);
 }
 
 .cal-btn-ghost:hover {
-  background: var(--grey-100);
-  border-color: color-mix(in srgb, var(--purple) 25%, var(--grey-200));
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(20, 12, 40, 0.06);
+  background: color-mix(in srgb, var(--purple) 5%, #ffffff);
+  border-color: color-mix(in srgb, var(--purple) 32%, var(--grey-200));
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(20, 12, 40, 0.08);
 }
 
 .cal-btn-ghost:focus-visible {
@@ -259,11 +353,20 @@
   outline-offset: var(--focus-offset);
 }
 
+.cal-btn:disabled,
+.cal-btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  filter: none;
+}
+
 .cal-divider {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin: 28px 0 18px;
+  margin: 8px 0 2px;
   color: var(--grey-400);
   font-size: 12px;
   letter-spacing: 0.14em;
@@ -276,53 +379,77 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: var(--grey-200);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--purple) 18%, var(--grey-200)),
+    transparent
+  );
 }
 
 .cal-student {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  gap: 14px;
+  padding: 22px 24px;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--purple) 4%, #ffffff), color-mix(in srgb, var(--blue-bright) 6%, #ffffff));
+  border: 1px solid color-mix(in srgb, var(--blue-bright) 18%, var(--grey-200));
+  box-shadow: 0 10px 28px rgba(20, 12, 40, 0.04);
+}
+
+.cal-student-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--blue-mid) 55%, var(--grey-600));
 }
 
 .cal-student p {
   margin: 0;
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--grey-600);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .cal-student-link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  align-self: flex-start;
-  min-height: var(--hit);
-  padding: 0 4px 0 0;
-  color: var(--blue-mid);
+  width: fit-content;
+  min-height: 42px;
+  padding: 0 18px;
+  color: var(--white);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--blue-mid) 72%, var(--purple));
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--blue-mid) 22%, transparent);
   transition:
-    color var(--duration) var(--ease),
-    border-color var(--duration) var(--ease),
-    gap var(--duration) var(--ease);
+    transform 0.28s var(--ease),
+    box-shadow 0.28s var(--ease),
+    background 0.28s var(--ease),
+    gap 0.28s var(--ease);
 }
 
 .cal-student-link span[aria-hidden="true"] {
   display: inline-block;
-  transition: transform 0.25s var(--ease);
+  transition: transform 0.28s var(--ease);
 }
 
 .cal-student-link:hover {
-  color: var(--purple);
-  border-bottom-color: color-mix(in srgb, var(--purple) 35%, transparent);
+  background: color-mix(in srgb, var(--purple) 70%, var(--blue-bright));
+  transform: translateY(-2px);
   gap: 14px;
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--purple) 24%, transparent);
 }
 
 .cal-student-link:hover span[aria-hidden="true"] {
-  transform: translateX(4px);
+  transform: translateX(3px);
 }
 
 .cal-student-link:focus-visible {
@@ -331,10 +458,10 @@
 }
 
 .cal-note {
-  margin: 16px 0 0;
+  margin: 14px 0 0;
   font-size: 13px;
   color: var(--grey-400);
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .cal-toolbar {
@@ -342,8 +469,8 @@
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 16px 24px;
-  margin-bottom: 22px;
+  gap: 20px 28px;
+  margin-bottom: 28px;
 }
 
 .cal-toolbar-left {
@@ -356,21 +483,27 @@
   align-items: center;
   gap: 8px;
   width: fit-content;
-  margin: 0 0 8px;
-  padding: 6px 10px;
+  margin: 0 0 10px;
+  padding: 7px 12px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--grey-600);
-  background: var(--grey-100);
-  border: 1px solid var(--grey-200);
+  color: color-mix(in srgb, var(--purple) 55%, var(--grey-600));
+  background: color-mix(in srgb, var(--purple) 6%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--purple) 14%, var(--grey-200));
+  border-radius: 999px;
 }
 
 .cal-year {
   display: grid;
-  gap: 7px;
-  min-width: min(220px, 100%);
+  gap: 8px;
+  min-width: min(240px, 100%);
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid color-mix(in srgb, var(--grey-200) 75%, var(--blue-bright));
+  box-shadow: 0 10px 24px rgba(20, 12, 40, 0.04);
 }
 
 .cal-year label {
@@ -385,15 +518,17 @@
   min-height: var(--hit);
   padding: 0 14px;
   border: 1px solid var(--grey-200);
-  background: #faf9fb;
+  background: #f7f6fa;
   color: var(--ink);
   font-family: var(--sans);
   font-size: 15px;
+  font-weight: 500;
+  border-radius: 12px;
   cursor: pointer;
   transition:
-    border-color var(--duration) var(--ease),
-    background var(--duration) var(--ease),
-    box-shadow var(--duration) var(--ease);
+    border-color 0.25s var(--ease),
+    background 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
 }
 
 .cal-year select:hover {
@@ -405,24 +540,66 @@
   outline: none;
   border-color: color-mix(in srgb, var(--blue-bright) 55%, var(--purple));
   background: #ffffff;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue-bright) 18%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue-bright) 16%, transparent);
+}
+
+.cal-month-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 18px;
+  margin: 0 0 14px;
+}
+
+.cal-month-label {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.cal-empty-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin: 0 0 16px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--blue-bright) 7%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--blue-bright) 22%, var(--grey-200));
+  color: var(--grey-600);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.cal-empty-banner strong {
+  color: var(--purple);
+  font-weight: 600;
 }
 
 .cal-board {
   background: #ffffff;
-  border: 1px solid var(--grey-200);
-  box-shadow: 0 10px 32px rgba(20, 12, 40, 0.04);
+  border: 1px solid color-mix(in srgb, var(--grey-200) 80%, var(--purple));
+  border-radius: 18px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 18px 40px rgba(20, 12, 40, 0.05);
+  overflow: hidden;
 }
 
 .cal-board-head {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   border-bottom: 1px solid var(--grey-200);
-  background: #faf9fb;
+  background: linear-gradient(180deg, #f8f7fb, #f3f1f7);
 }
 
 .cal-board-head span {
-  padding: 12px 8px;
+  padding: 14px 8px;
   text-align: center;
   font-size: 11px;
   font-weight: 600;
@@ -442,12 +619,12 @@
 }
 
 .cal-day {
-  min-height: 92px;
-  padding: 10px;
+  min-height: 96px;
+  padding: 12px;
   border-right: 1px solid var(--grey-100);
   border-bottom: 1px solid var(--grey-100);
   background: #ffffff;
-  transition: background 0.2s var(--ease);
+  transition: background 0.22s var(--ease), box-shadow 0.22s var(--ease);
 }
 
 .cal-day:nth-child(7n) {
@@ -455,7 +632,8 @@
 }
 
 .cal-day:hover {
-  background: color-mix(in srgb, var(--purple) 3%, #ffffff);
+  background: color-mix(in srgb, var(--purple) 3.5%, #ffffff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--purple) 10%, transparent);
 }
 
 .cal-day.is-muted {
@@ -467,10 +645,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--purple) 88%, var(--blue-mid));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--purple) 88%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-mid) 50%, var(--blue-bright))
+  );
   color: #ffffff;
   font-weight: 600;
 }
@@ -478,18 +660,19 @@
 .cal-day-num {
   display: block;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: inherit;
   margin-bottom: 8px;
 }
 
 .cal-day-slot {
   margin: 0;
-  padding: 6px 8px;
+  padding: 7px 9px;
   font-size: 11px;
   line-height: 1.35;
   color: var(--grey-600);
-  background: color-mix(in srgb, var(--blue-bright) 8%, #ffffff);
+  background: color-mix(in srgb, var(--blue-bright) 9%, #ffffff);
+  border-radius: 8px;
   border-left: 2px solid color-mix(in srgb, var(--blue-bright) 55%, var(--purple));
 }
 
@@ -524,6 +707,7 @@
 .cal-legend-swatch {
   width: 12px;
   height: 12px;
+  border-radius: 4px;
   border: 1px solid var(--grey-200);
   background: color-mix(in srgb, var(--blue-bright) 12%, #ffffff);
   box-shadow: inset 2px 0 0 color-mix(in srgb, var(--blue-bright) 55%, var(--purple));
@@ -533,11 +717,11 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 24px;
 }
 
 .cal-body .foot {
-  background: #faf9fb;
+  background: #f7f6fa;
   border-top: 1px solid var(--grey-200);
   color: var(--grey-600);
 }
@@ -552,7 +736,16 @@
 
 @media (max-width: 720px) {
   .cal-card {
-    padding: 22px 18px 20px;
+    padding: 24px 18px 20px;
+    border-radius: 14px;
+  }
+
+  .cal-student {
+    padding: 18px;
+  }
+
+  .cal-student-link {
+    width: 100%;
   }
 
   .cal-day {
@@ -569,5 +762,9 @@
     padding: 10px 2px;
     font-size: 10px;
     letter-spacing: 0.06em;
+  }
+
+  .cal-year {
+    width: 100%;
   }
 }

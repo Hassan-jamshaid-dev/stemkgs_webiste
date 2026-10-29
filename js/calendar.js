@@ -3,6 +3,8 @@
   var loginStatus = document.getElementById("cal-login-status");
   var yearSelect = document.getElementById("cal-school-year");
   var viewStatus = document.getElementById("cal-view-status");
+  var emptyBanner = document.getElementById("cal-empty-banner");
+  var monthLabel = document.getElementById("cal-month-label");
   var grid = document.getElementById("cal-grid");
 
   if (loginForm) {
@@ -46,7 +48,7 @@
     }
 
     grid.innerHTML = "";
-    days.forEach(function (day, index) {
+    days.forEach(function (day) {
       var cell = document.createElement("div");
       cell.className = "cal-day" + (day.muted ? " is-muted" : "");
       cell.setAttribute("role", "listitem");
@@ -79,17 +81,27 @@
       }
 
       grid.appendChild(cell);
-      void index;
     });
   }
 
   function updateYearStatus() {
-    if (!yearSelect || !viewStatus) return;
+    if (!yearSelect) return;
     var year = yearSelect.value;
-    viewStatus.innerHTML =
-      "Showing placeholder layout for <strong>" +
-      year +
-      "</strong>. Live data arrives with the API.";
+    if (viewStatus) {
+      viewStatus.innerHTML =
+        "Showing placeholder layout for <strong>" +
+        year +
+        "</strong>. Live data arrives with the API.";
+    }
+    if (emptyBanner) {
+      emptyBanner.innerHTML =
+        "<strong>" +
+        year +
+        "</strong> — placeholder board. Live logistics load when the API is connected.";
+    }
+    if (monthLabel) {
+      monthLabel.textContent = "September · " + year;
+    }
     renderPlaceholderGrid(year);
     console.info("[calendar] school year selected", year);
   }
