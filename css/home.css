@@ -858,11 +858,12 @@ a.subject:focus-visible {
   margin: 0;
 }
 .foot-credit {
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  line-height: 1.4;
-  color: color-mix(in srgb, var(--muted-on-dark) 68%, transparent);
+  /* Match © copyright line: same size, weight, and color */
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  color: inherit;
 }
 .foot-links {
   display: flex;
