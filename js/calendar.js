@@ -23,6 +23,9 @@
     "December"
   ];
 
+  /* School-year display order: Aug → Jul */
+  var SCHOOL_YEAR_MONTHS = [7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6];
+
   if (loginForm) {
     loginForm.addEventListener("submit", function (event) {
       event.preventDefault();
@@ -50,12 +53,34 @@
     return day === 0 ? 6 : day - 1;
   }
 
-  function resolveCalendarYear(schoolYear, monthIndex) {
+  function parseSchoolYear(schoolYear) {
     var parts = String(schoolYear || "2025-2026").split("-");
     var startYear = parseInt(parts[0], 10) || 2025;
     var endYear = parseInt(parts[1], 10) || startYear + 1;
-    /* School year months: Sep–Dec = start year; Jan–Aug = end year */
-    return monthIndex >= 8 ? startYear : endYear;
+    return { startYear: startYear, endYear: endYear };
+  }
+
+  function resolveCalendarYear(schoolYear, monthIndex) {
+    var years = parseSchoolYear(schoolYear);
+    /* School year months: Aug–Dec = start year; Jan–Jul = end year */
+    return monthIndex >= 7 ? years.startYear : years.endYear;
+  }
+
+  function isMonthInSchoolYear(schoolYear, calendarYear, monthIndex) {
+    var years = parseSchoolYear(schoolYear);
+    if (calendarYear === years.startYear && monthIndex >= 7) return true;
+    if (calendarYear === years.endYear && monthIndex <= 6) return true;
+    return false;
+  }
+
+  function defaultMonthIndex(schoolYear) {
+    var now = new Date();
+    var y = now.getFullYear();
+    var m = now.getMonth();
+    if (isMonthInSchoolYear(schoolYear, y, m)) {
+      return m;
+    }
+    return 7; /* August — start of school year */
   }
 
   function renderPlaceholderGrid(periodLabel, calendarYear, monthIndex) {
@@ -127,9 +152,12 @@
     if (!yearSelect) return;
 
     var year = yearSelect.value || "2025-2026";
-    var monthIndex = monthSelect ? parseInt(monthSelect.value, 10) : 8;
+    var monthIndex = monthSelect ? parseInt(monthSelect.value, 10) : 7;
     if (isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) {
-      monthIndex = 8;
+      monthIndex = 7;
+    }
+    if (SCHOOL_YEAR_MONTHS.indexOf(monthIndex) === -1) {
+      monthIndex = 7;
     }
 
     var monthName = MONTH_NAMES[monthIndex];
@@ -156,10 +184,16 @@
   }
 
   if (yearSelect) {
-    yearSelect.addEventListener("change", updateCalendarView);
     if (monthSelect) {
+      monthSelect.value = String(defaultMonthIndex(yearSelect.value || "2025-2026"));
       monthSelect.addEventListener("change", updateCalendarView);
     }
+    yearSelect.addEventListener("change", function () {
+      if (monthSelect) {
+        monthSelect.value = String(defaultMonthIndex(yearSelect.value || "2025-2026"));
+      }
+      updateCalendarView();
+    });
     updateCalendarView();
   }
 })();
