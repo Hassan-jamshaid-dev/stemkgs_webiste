@@ -22,6 +22,7 @@ tmp_update_result.json
 .env
 .env.local
 backend/.env
+backend/.dummy_credentials.local
 backend/.venv/
 backend/venv/
 *.egg-info/

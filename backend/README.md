@@ -34,6 +34,22 @@ Frontend preview stays on http://localhost:4173 (static site). CORS allowlists t
 
 Timestamps use `timestamptz` with Asia/Karachi defaults.
 
-## Chunk status
+## Auth (Chunk 2)
 
-See parent agent / project notes for auth, public read, editor writes, and deploy chunks.
+| Method | Path | Notes |
+|--------|------|--------|
+| POST | `/auth/login` | email + password + society; rate limit 10/min; lockout ladder in DB |
+| POST | `/auth/logout` | requires session cookie + `X-CSRF-Token` |
+| GET | `/auth/session` | `{ authenticated, user?, csrf_token? }` |
+| GET | `/auth/me` | requires session |
+
+Session cookie: `stem_cal_session` (httpOnly; `Secure` when `COOKIE_SECURE=true`).
+
+Seed the single dummy editor:
+
+```powershell
+$env:DUMMY_SEED_PASSWORD = "your-long-local-password"
+.\.venv\Scripts\python.exe scripts\seed_dummy_user.py
+```
+
+Credentials are written locally only (e.g. `.dummy_credentials.local`, gitignored). Do not commit passwords.
