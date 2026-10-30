@@ -16,7 +16,7 @@ router = APIRouter(prefix="/events", tags=["events"])
 
 @router.get("", response_model=PublicEventList)
 def get_public_events(
-    school_year: str = Query(default="2025-2026", min_length=9, max_length=9),
+    school_year: str = Query(default="2026-2027", min_length=9, max_length=9),
     month: int | None = Query(
         default=None,
         ge=0,
@@ -40,6 +40,8 @@ def post_event(
 ) -> EditorEvent:
     _session, user = auth
     school_year = body.school_year or get_settings().school_year_current
+    # starts_at / ends_at are resolved from date+time fields (or legacy datetimes).
+    assert body.starts_at is not None and body.ends_at is not None
     ev = create_event(
         db,
         user=user,

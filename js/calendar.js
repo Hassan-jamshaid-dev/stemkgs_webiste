@@ -17,11 +17,16 @@
   var editId = document.getElementById("cal-edit-id");
   var editName = document.getElementById("cal-edit-name");
   var editRoom = document.getElementById("cal-edit-room");
-  var editStart = document.getElementById("cal-edit-start");
-  var editEnd = document.getElementById("cal-edit-end");
+  var editStartDate = document.getElementById("cal-edit-start-date");
+  var editStartTime = document.getElementById("cal-edit-start-time");
+  var editEndDate = document.getElementById("cal-edit-end-date");
+  var editEndTime = document.getElementById("cal-edit-end-time");
   var editSave = document.getElementById("cal-edit-save");
   var editReset = document.getElementById("cal-edit-reset");
+  var editClearSel = document.getElementById("cal-edit-clear-sel");
   var editDelete = document.getElementById("cal-edit-delete");
+  var selectionSummary = document.getElementById("cal-selection-summary");
+  var legendSelect = document.getElementById("cal-legend-select");
   var signInLink = document.getElementById("cal-signin-link");
   var logoutBtn = document.getElementById("cal-logout-btn");
 
@@ -51,7 +56,7 @@
     astronomy: "Astronomy",
     crime: "Crime"
   };
-  var CURRENT_SCHOOL_YEAR = "2025-2026";
+  var CURRENT_SCHOOL_YEAR = "2026-2027";
   var API_BASE =
     (window.STEM_CALENDAR_API && String(window.STEM_CALENDAR_API).replace(/\/$/, "")) ||
     "http://localhost:8000";
@@ -60,6 +65,10 @@
   var authUser = null;
   var csrfToken = null;
   var lastEvents = [];
+  var selectedStartKey = null;
+  var selectedEndKey = null;
+  var DEFAULT_START_TIME = "09:00";
+  var DEFAULT_END_TIME = "17:00";
 
   function api(path, options) {
     var opts = options || {};
@@ -109,7 +118,7 @@
 
   function parseSchoolYear(schoolYear) {
     var parts = String(schoolYear || CURRENT_SCHOOL_YEAR).split("-");
-    var startYear = parseInt(parts[0], 10) || 2025;
+    var startYear = parseInt(parts[0], 10) || 2026;
     var endYear = parseInt(parts[1], 10) || startYear + 1;
     return { startYear: startYear, endYear: endYear };
   }
@@ -135,18 +144,24 @@
   }
 
   function formatTimeRange(startsAt, endsAt) {
+    var startKey = karachiYmd(startsAt);
+    var endKey = karachiYmd(endsAt);
+    var timeOpts = { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Karachi" };
     var start = new Date(startsAt);
     var end = new Date(endsAt);
-    var opts = { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Karachi" };
+    var startTime;
+    var endTime;
     try {
-      return (
-        start.toLocaleTimeString("en-GB", opts) +
-        "–" +
-        end.toLocaleTimeString("en-GB", opts)
-      );
+      startTime = start.toLocaleTimeString("en-GB", timeOpts);
+      endTime = end.toLocaleTimeString("en-GB", timeOpts);
     } catch (err) {
-      return start.toISOString().slice(11, 16) + "–" + end.toISOString().slice(11, 16);
+      startTime = String(startsAt).slice(11, 16);
+      endTime = String(endsAt).slice(11, 16);
     }
+    if (startKey === endKey) {
+      return startTime + "–" + endTime;
+    }
+    return startKey.slice(5) + " " + startTime + " → " + endKey.slice(5) + " " + endTime;
   }
 
   function karachiYmd(iso) {
@@ -162,7 +177,7 @@
     }
   }
 
-  function toDatetimeLocalValue(iso) {
+  function toKarachiParts(iso) {
     var parts = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Karachi",
       year: "numeric",
@@ -176,13 +191,17 @@
     parts.forEach(function (p) {
       if (p.type !== "literal") map[p.type] = p.value;
     });
-    return map.year + "-" + map.month + "-" + map.day + "T" + map.hour + ":" + map.minute;
+    return {
+      date: map.year + "-" + map.month + "-" + map.day,
+      time: map.hour + ":" + map.minute
+    };
   }
 
-  function fromDatetimeLocalValue(value) {
-    /* Treat as Asia/Karachi wall time → ISO with +05:00 (no DST in PK). */
-    if (!value) return null;
-    return value + ":00+05:00";
+  function combineDateAndTime(dateValue, timeValue) {
+    /* Asia/Karachi wall time → ISO with +05:00 (no DST in PK). */
+    if (!dateValue || !timeValue) return null;
+    var time = timeValue.length === 5 ? timeValue + ":00" : timeValue;
+    return dateValue + "T" + time + "+05:00";
   }
 
   function canEditYear(schoolYear) {
@@ -232,6 +251,134 @@
     }
   }
 
+  function clearDaySelection(keepFormDates) {
+    selectedStartKey = null;
+    selectedEndKey = null;
+    paintDaySelection();
+    updateSelectionSummary();
+    if (!keepFormDates && editId && !editId.value) {
+      if (editStartDate) editStartDate.value = "";
+      if (editEndDate) editEndDate.value = "";
+    }
+  }
+
+  function selectedRangeKeys() {
+    if (!selectedStartKey) return [];
+    var a = selectedStartKey;
+    var b = selectedEndKey || selectedStartKey;
+    var start = a <= b ? a : b;
+    var end = a <= b ? b : a;
+    var keys = [];
+    var cursor = new Date(
+      parseInt(start.slice(0, 4), 10),
+      parseInt(start.slice(5, 7), 10) - 1,
+      parseInt(start.slice(8, 10), 10)
+    );
+    var endDate = new Date(
+      parseInt(end.slice(0, 4), 10),
+      parseInt(end.slice(5, 7), 10) - 1,
+      parseInt(end.slice(8, 10), 10)
+    );
+    while (cursor <= endDate) {
+      keys.push(
+        cursor.getFullYear() +
+          "-" +
+          String(cursor.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(cursor.getDate()).padStart(2, "0")
+      );
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    return keys;
+  }
+
+  function paintDaySelection() {
+    if (!grid) return;
+    var selected = {};
+    selectedRangeKeys().forEach(function (key) {
+      selected[key] = true;
+    });
+    Array.prototype.forEach.call(grid.querySelectorAll(".cal-day[data-date]"), function (cell) {
+      var key = cell.getAttribute("data-date");
+      cell.classList.toggle("is-selected", !!(key && selected[key]));
+      cell.setAttribute("aria-selected", key && selected[key] ? "true" : "false");
+    });
+  }
+
+  function formatKeyLabel(key) {
+    if (!key) return "";
+    var y = parseInt(key.slice(0, 4), 10);
+    var m = parseInt(key.slice(5, 7), 10) - 1;
+    var d = parseInt(key.slice(8, 10), 10);
+    return MONTH_NAMES[m] + " " + d + ", " + y;
+  }
+
+  function updateSelectionSummary() {
+    if (!selectionSummary) return;
+    var keys = selectedRangeKeys();
+    if (!keys.length) {
+      selectionSummary.hidden = true;
+      selectionSummary.textContent = "";
+      return;
+    }
+    selectionSummary.hidden = false;
+    if (keys.length === 1) {
+      selectionSummary.textContent = "Selected day: " + formatKeyLabel(keys[0]) + " — customize below.";
+    } else {
+      selectionSummary.textContent =
+        "Selected " +
+        keys.length +
+        " days: " +
+        formatKeyLabel(keys[0]) +
+        " → " +
+        formatKeyLabel(keys[keys.length - 1]) +
+        " — customize name, room, and times below.";
+    }
+  }
+
+  function applySelectionToEditor(options) {
+    var opts = options || {};
+    var keys = selectedRangeKeys();
+    if (!keys.length || !editorForm) return;
+    if (!opts.keepEventId) {
+      editId.value = "";
+      if (editDelete) editDelete.hidden = true;
+      if (editSave) editSave.textContent = "Save event";
+    }
+    if (editStartDate) editStartDate.value = keys[0];
+    if (editEndDate) editEndDate.value = keys[keys.length - 1];
+    if (editStartTime && (!editStartTime.value || opts.forceDefaultTimes)) {
+      editStartTime.value = DEFAULT_START_TIME;
+    }
+    if (editEndTime && (!editEndTime.value || opts.forceDefaultTimes)) {
+      editEndTime.value = DEFAULT_END_TIME;
+    }
+    updateSelectionSummary();
+    if (editorStatus) {
+      editorStatus.textContent =
+        keys.length === 1
+          ? "New booking on " + formatKeyLabel(keys[0]) + "."
+          : "New booking spanning " + keys.length + " days.";
+    }
+    if (editor && !editor.hidden) {
+      editor.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+
+  function handleDaySelect(key) {
+    if (!key) return;
+    if (!selectedStartKey || (selectedStartKey && selectedEndKey)) {
+      selectedStartKey = key;
+      selectedEndKey = null;
+    } else if (key === selectedStartKey) {
+      selectedEndKey = key;
+    } else {
+      selectedEndKey = key;
+    }
+    paintDaySelection();
+    applySelectionToEditor({ forceDefaultTimes: false });
+  }
+
   function resetEditorForm() {
     if (!editorForm) return;
     editId.value = "";
@@ -239,6 +386,7 @@
     if (editDelete) editDelete.hidden = true;
     if (editSave) editSave.textContent = "Save event";
     if (editorStatus) editorStatus.textContent = "";
+    clearDaySelection(true);
   }
 
   function loadEventIntoEditor(ev) {
@@ -246,8 +394,16 @@
     editId.value = ev.id;
     editName.value = ev.event_name;
     editRoom.value = ev.room;
-    editStart.value = toDatetimeLocalValue(ev.starts_at);
-    editEnd.value = toDatetimeLocalValue(ev.ends_at);
+    var startParts = toKarachiParts(ev.starts_at);
+    var endParts = toKarachiParts(ev.ends_at);
+    if (editStartDate) editStartDate.value = startParts.date;
+    if (editStartTime) editStartTime.value = startParts.time;
+    if (editEndDate) editEndDate.value = endParts.date;
+    if (editEndTime) editEndTime.value = endParts.time;
+    selectedStartKey = startParts.date;
+    selectedEndKey = endParts.date;
+    paintDaySelection();
+    updateSelectionSummary();
     if (editDelete) editDelete.hidden = false;
     if (editSave) editSave.textContent = "Update event";
     if (editorStatus) {
@@ -264,21 +420,29 @@
     }
     if (lead) {
       lead.textContent = editing
-        ? "You can create, update, or delete your society’s bookings for " + CURRENT_SCHOOL_YEAR + "."
+        ? "Click days on the grid to select a booking range for " +
+          CURRENT_SCHOOL_YEAR +
+          ", then customize name, room, and times below."
         : authUser
           ? "Signed in, but this school year is view-only. Edits are limited to " + CURRENT_SCHOOL_YEAR + "."
           : "Event, room, and time slots appear here by school year. Presidents and vice presidents edit after sign-in.";
     }
+    if (legendSelect) {
+      legendSelect.textContent = editing
+        ? "Editors: click a day, then another day to set the range. Click an event chip to edit it."
+        : "Empty cells are ready for scheduled logistics.";
+    }
     if (signInLink) signInLink.hidden = !!authUser;
     if (logoutBtn) logoutBtn.hidden = !authUser;
     setEditorVisible(editing);
+    if (!editing) clearDaySelection(true);
     if (editorMeta && authUser) {
       editorMeta.textContent =
         "Signed in as " +
         authUser.email +
         " · " +
         (SOCIETY_LABELS[authUser.society] || authUser.society) +
-        ". Room conflicts require a ≥2 hour gap.";
+        ". Click days to select · room conflicts need a ≥2 hour gap.";
     }
   }
 
@@ -326,7 +490,26 @@
       var cell = document.createElement("div");
       cell.className = "cal-day" + (day.muted ? " is-muted" : "");
       cell.setAttribute("role", "listitem");
+      if (!day.muted && day.key) {
+        cell.setAttribute("data-date", day.key);
+        cell.setAttribute("aria-selected", "false");
+      }
       if (!day.muted && day.key === todayKey) cell.classList.add("is-today");
+      if (!day.muted && editing) {
+        cell.classList.add("is-selectable");
+        cell.title = "Click to select this day for a booking";
+        cell.addEventListener("click", function (evt) {
+          if (evt.target.closest && evt.target.closest(".cal-day-slot")) return;
+          handleDaySelect(day.key);
+        });
+        cell.addEventListener("keydown", function (evt) {
+          if (evt.key === "Enter" || evt.key === " ") {
+            evt.preventDefault();
+            handleDaySelect(day.key);
+          }
+        });
+        cell.tabIndex = 0;
+      }
 
       var num = document.createElement("span");
       num.className = "cal-day-num";
@@ -355,7 +538,8 @@
               escapeHtml(society) +
               "</span>";
             if (editing && mine) {
-              slot.addEventListener("click", function () {
+              slot.addEventListener("click", function (evt) {
+                evt.stopPropagation();
                 loadEventIntoEditor(ev);
               });
             }
@@ -364,12 +548,14 @@
         } else {
           var empty = document.createElement("p");
           empty.className = "cal-day-empty";
-          empty.textContent = "No events";
+          empty.textContent = editing ? "Click to book" : "No events";
           cell.appendChild(empty);
         }
       }
       grid.appendChild(cell);
     });
+    paintDaySelection();
+    updateSelectionSummary();
   }
 
   function setStatus(periodLabel, count, errorMessage) {
@@ -476,11 +662,33 @@
     editorForm.addEventListener("submit", function (event) {
       event.preventDefault();
       if (!canEditYear(yearSelect ? yearSelect.value : CURRENT_SCHOOL_YEAR)) return;
+      var startDate = editStartDate ? editStartDate.value : "";
+      var startTime = editStartTime ? editStartTime.value : "";
+      var endDate = editEndDate ? editEndDate.value : "";
+      var endTime = editEndTime ? editEndTime.value : "";
+      var startsAt = combineDateAndTime(startDate, startTime);
+      var endsAt = combineDateAndTime(endDate, endTime);
+      if (!startsAt || !endsAt) {
+        if (editorStatus) {
+          editorStatus.textContent = "Enter starting date + start time and ending date + end time.";
+        }
+        return;
+      }
+      if (endsAt <= startsAt) {
+        if (editorStatus) {
+          editorStatus.textContent = "Ending date/time must be after starting date/time.";
+        }
+        return;
+      }
       var payload = {
         event_name: editName.value.trim(),
         room: editRoom.value.trim(),
-        starts_at: fromDatetimeLocalValue(editStart.value),
-        ends_at: fromDatetimeLocalValue(editEnd.value),
+        start_date: startDate,
+        start_time: startTime.length === 5 ? startTime + ":00" : startTime,
+        end_date: endDate,
+        end_time: endTime.length === 5 ? endTime + ":00" : endTime,
+        starts_at: startsAt,
+        ends_at: endsAt,
         school_year: CURRENT_SCHOOL_YEAR
       };
       var id = editId.value;
@@ -494,6 +702,7 @@
           return;
         }
         if (editorStatus) editorStatus.textContent = id ? "Updated." : "Created.";
+        clearDaySelection(true);
         resetEditorForm();
         updateCalendarView();
       }).catch(function () {
@@ -502,9 +711,34 @@
     });
   }
 
+  function syncSelectionFromDateInputs() {
+    if (!editStartDate || !editEndDate || !editStartDate.value) return;
+    selectedStartKey = editStartDate.value;
+    selectedEndKey = editEndDate.value || editStartDate.value;
+    paintDaySelection();
+    updateSelectionSummary();
+  }
+
+  if (editStartDate) {
+    editStartDate.addEventListener("change", syncSelectionFromDateInputs);
+  }
+  if (editEndDate) {
+    editEndDate.addEventListener("change", syncSelectionFromDateInputs);
+  }
+
+  if (editClearSel) {
+    editClearSel.addEventListener("click", function () {
+      clearDaySelection(false);
+      if (editorStatus) editorStatus.textContent = "Day selection cleared. Click days on the grid to book.";
+    });
+  }
+
   if (editReset) {
     editReset.addEventListener("click", function () {
       resetEditorForm();
+      if (editorStatus) {
+        editorStatus.textContent = "Ready for a new booking — click days on the grid.";
+      }
     });
   }
 
@@ -548,12 +782,16 @@
   if (yearSelect) {
     if (monthSelect) {
       monthSelect.value = String(defaultMonthIndex(yearSelect.value || CURRENT_SCHOOL_YEAR));
-      monthSelect.addEventListener("change", updateCalendarView);
+      monthSelect.addEventListener("change", function () {
+        clearDaySelection(true);
+        updateCalendarView();
+      });
     }
     yearSelect.addEventListener("change", function () {
       if (monthSelect) {
         monthSelect.value = String(defaultMonthIndex(yearSelect.value || CURRENT_SCHOOL_YEAR));
       }
+      clearDaySelection(true);
       updateCalendarView();
     });
     refreshSession()

@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/home.css?v=30">
-  <link rel="stylesheet" href="css/calendar.css?v=9">
+  <link rel="stylesheet" href="css/calendar.css?v=11">
 </head>
 <body class="cal-body">
   <a class="skip" href="#main">Skip to content</a>
@@ -65,14 +65,14 @@
           <div class="cal-year">
             <label for="cal-school-year">School year</label>
             <select id="cal-school-year" name="school-year">
-              <option value="2025-2026" selected>2025-2026</option>
+              <option value="2026-2027" selected>2026-2027</option>
             </select>
           </div>
         </div>
       </div>
 
       <div class="cal-month-bar">
-        <h2 class="cal-month-label" id="cal-month-label">August · 2025-2026</h2>
+        <h2 class="cal-month-label" id="cal-month-label">August · 2026-2027</h2>
         <p class="cal-empty-banner" id="cal-empty-banner" role="status">
           Loading logistics for this month…
         </p>
@@ -92,13 +92,14 @@
           <span class="cal-legend-swatch" aria-hidden="true"></span>
           Event · room · time
         </span>
-        <span class="cal-legend-item">Empty cells are ready for scheduled logistics.</span>
+        <span class="cal-legend-item" id="cal-legend-select">Empty cells are ready for scheduled logistics.</span>
       </div>
 
       <section class="cal-editor" id="cal-editor" hidden>
         <div class="cal-editor-head">
-          <h2>Edit logistics</h2>
-          <p id="cal-editor-meta">Signed in — create or update your society’s bookings for the current school year.</p>
+          <h2>Customize booking</h2>
+          <p id="cal-editor-meta">Signed in — click days on the grid to select a range, then set name, room, and times.</p>
+          <p class="cal-selection-summary" id="cal-selection-summary" hidden></p>
         </div>
         <form class="cal-form cal-editor-form" id="cal-editor-form">
           <input type="hidden" id="cal-edit-id" value="">
@@ -111,15 +112,24 @@
             <input id="cal-edit-room" name="room" type="text" maxlength="120" required>
           </div>
           <div class="cal-field">
-            <label for="cal-edit-start">Start (Asia/Karachi)</label>
-            <input id="cal-edit-start" name="starts_at" type="datetime-local" required>
+            <label for="cal-edit-start-date">Starting date</label>
+            <input id="cal-edit-start-date" name="start_date" type="date" required>
           </div>
           <div class="cal-field">
-            <label for="cal-edit-end">End (Asia/Karachi)</label>
-            <input id="cal-edit-end" name="ends_at" type="datetime-local" required>
+            <label for="cal-edit-start-time">Start time (Asia/Karachi)</label>
+            <input id="cal-edit-start-time" name="start_time" type="time" required>
+          </div>
+          <div class="cal-field">
+            <label for="cal-edit-end-date">Ending date</label>
+            <input id="cal-edit-end-date" name="end_date" type="date" required>
+          </div>
+          <div class="cal-field">
+            <label for="cal-edit-end-time">End time (Asia/Karachi)</label>
+            <input id="cal-edit-end-time" name="end_time" type="time" required>
           </div>
           <div class="cal-editor-actions">
             <button class="cal-btn cal-btn-primary" type="submit" id="cal-edit-save">Save event</button>
+            <button class="cal-btn cal-btn-ghost" type="button" id="cal-edit-clear-sel">Clear day selection</button>
             <button class="cal-btn cal-btn-ghost" type="button" id="cal-edit-reset">New event</button>
             <button class="cal-btn cal-btn-ghost" type="button" id="cal-edit-delete" hidden>Delete</button>
           </div>
@@ -149,6 +159,6 @@
   </footer>
 
   <script src="js/home.js" defer></script>
-  <script src="js/calendar.js?v=9" defer></script>
+  <script src="js/calendar.js?v=11" defer></script>
 </body>
 </html>

@@ -647,6 +647,35 @@
   color: var(--grey-400);
 }
 
+.cal-day.is-selectable {
+  cursor: pointer;
+}
+
+.cal-day.is-selectable:hover {
+  background: color-mix(in srgb, var(--blue-bright) 8%, #ffffff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue-mid) 28%, transparent);
+}
+
+.cal-day.is-selected {
+  background: color-mix(in srgb, var(--blue-bright) 14%, #ffffff);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--blue-mid) 55%, var(--purple));
+}
+
+.cal-day.is-selected.is-today .cal-day-num {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--blue-bright) 40%, transparent);
+}
+
+.cal-day.is-selectable .cal-day-empty {
+  opacity: 0.85;
+}
+
+.cal-selection-summary {
+  margin: 4px 0 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--purple);
+}
+
 .cal-day.is-today .cal-day-num {
   display: inline-flex;
   align-items: center;

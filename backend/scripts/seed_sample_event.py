@@ -17,10 +17,10 @@ from app.services.events import normalize_room
 
 TZ = ZoneInfo("Asia/Karachi")
 NAME = "Maths logistics sync"
-START = datetime(2025, 8, 12, 15, 0, tzinfo=TZ)
-END = datetime(2025, 8, 12, 16, 0, tzinfo=TZ)
+START = datetime(2026, 8, 12, 15, 0, tzinfo=TZ)
+END = datetime(2026, 8, 12, 16, 0, tzinfo=TZ)
 ROOM = "Lab 2"
-YEAR = "2025-2026"
+YEAR = "2026-2027"
 SOCIETY = "maths"
 
 

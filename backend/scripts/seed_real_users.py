@@ -3,7 +3,7 @@ Seed real P/VP accounts from a local JSON file (never commit that file).
 
 Input file format (array):
 [
-  {"email": "name.surname@khs.edu.pk", "password": "...", "society": "stem-society", "role": "president"},
+  {"email": "name.surname@kgs.edu.pk", "password": "...", "society": "stem-society", "role": "president"},
   ...
 ]
 

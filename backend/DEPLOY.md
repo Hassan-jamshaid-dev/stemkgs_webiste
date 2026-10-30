@@ -13,7 +13,7 @@ Localhost is fully working. Production deploy needs **your** login to a free hos
    - `COOKIE_SECURE=true`  
    - `COOKIE_SAMESITE=none` if the static site origin differs from the API host (cross-site cookies)  
    - `CORS_ORIGINS=` your live site origin(s), comma-separated  
-   - `SCHOOL_YEAR_CURRENT=2025-2026`  
+   - `SCHOOL_YEAR_CURRENT=2026-2027`  
    - `TZ=Asia/Karachi`
 4. Deploy from `backend/` using the included `Dockerfile` (runs `alembic upgrade head` then uvicorn).
 5. Seed authorized P/VP accounts against **production** `DATABASE_URL` via `scripts/seed_real_users.py` + a gitignored `users.local.json` (never commit passwords). Remove any leftover dummy with `scripts/delete_dummy_user.py`.

@@ -45,7 +45,7 @@ Timestamps use `timestamptz` with Asia/Karachi defaults.
 
 Session cookie: `stem_cal_session` (httpOnly; `Secure` when `COOKIE_SECURE=true`).
 
-School editor emails look like `first.lastNNNNN@khs.edu.pk`. Society is a slug from `SOCIETIES` (login also accepts display forms such as `STEM Society`, normalized to `stem-society`).
+School editor emails look like `first.lastNNNNN@kgs.edu.pk`. Society is a slug from `SOCIETIES` (login also accepts display forms such as `STEM Society`, normalized to `stem-society`).
 
 ### Local test editor (Hassan)
 

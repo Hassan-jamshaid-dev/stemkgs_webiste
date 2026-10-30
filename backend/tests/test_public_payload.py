@@ -21,11 +21,11 @@ def test_public_events_shape_only_allowed_fields(client: TestClient, maths_user)
         ev = CalendarEvent(
             society="maths",
             event_name=f"{TEST_PREFIX}public-shape",
-            starts_at=datetime(2025, 12, 1, 10, 0, tzinfo=TZ),
-            ends_at=datetime(2025, 12, 1, 11, 0, tzinfo=TZ),
+            starts_at=datetime(2026, 12, 1, 10, 0, tzinfo=TZ),
+            ends_at=datetime(2026, 12, 1, 11, 0, tzinfo=TZ),
             room="Lab X",
             room_normalized=normalize_room("Lab X"),
-            school_year="2025-2026",
+            school_year="2026-2027",
             created_by_user_id=maths_user.id,
         )
         db.add(ev)
@@ -34,7 +34,7 @@ def test_public_events_shape_only_allowed_fields(client: TestClient, maths_user)
         eid = ev.id
 
     try:
-        r = client.get("/events", params={"school_year": "2025-2026", "month": 11})
+        r = client.get("/events", params={"school_year": "2026-2027", "month": 11})
         assert r.status_code == 200
         payload = r.json()
         assert set(payload.keys()) == {"school_year", "count", "events"}
