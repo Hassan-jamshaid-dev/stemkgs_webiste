@@ -57,7 +57,8 @@
     crime: "Crime"
   };
   var CURRENT_SCHOOL_YEAR = "2026-2027";
-  var PROD_API_BASE = "https://stem-society-calendar-api.onrender.com";
+  // Public FastAPI on Vercel (same account as the static site; Neon Postgres).
+  var PROD_API_BASE = "https://stem-society-calendar-api.vercel.app";
   function resolveApiBase() {
     if (window.STEM_CALENDAR_API) {
       return String(window.STEM_CALENDAR_API).replace(/\/$/, "");

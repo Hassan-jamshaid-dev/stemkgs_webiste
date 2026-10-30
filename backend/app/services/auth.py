@@ -18,7 +18,16 @@ from app.security.tokens import hash_token, new_token
 
 
 def _tz() -> ZoneInfo:
-    return ZoneInfo(get_settings().tz)
+    name = (get_settings().tz or "Asia/Karachi").strip() or "Asia/Karachi"
+    # Vercel injects reserved TZ=':UTC' which is not a valid IANA zone.
+    if name.startswith(":") or name.upper() in {"UTC", "LOCAL"}:
+        if name.upper() == "UTC":
+            return ZoneInfo("UTC")
+        name = "Asia/Karachi"
+    try:
+        return ZoneInfo(name)
+    except Exception:
+        return ZoneInfo("Asia/Karachi")
 
 
 def _now() -> datetime:

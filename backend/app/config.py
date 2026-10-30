@@ -33,7 +33,8 @@ class Settings(BaseSettings):
     cookie_samesite: str = Field(default="lax", alias="COOKIE_SAMESITE")
 
     school_year_current: str = Field(default="2026-2027", alias="SCHOOL_YEAR_CURRENT")
-    tz: str = Field(default="Asia/Karachi", alias="TZ")
+    # Prefer APP_TZ — bare TZ is reserved/injected by Vercel and is not usable.
+    tz: str = Field(default="Asia/Karachi", alias="APP_TZ")
 
     @property
     def cors_origins(self) -> list[str]:
