@@ -1,0 +1,27 @@
+# Blueprint for STEM Society Calendar API (free web service).
+# Requires a payment method on the Render account even for free plan.
+services:
+  - type: web
+    name: stem-society-calendar-api
+    runtime: docker
+    plan: free
+    region: oregon
+    rootDir: backend
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAMESITE
+        value: none
+      - key: CORS_ORIGINS
+        value: https://stem-society-website.vercel.app,http://localhost:4173,http://127.0.0.1:4173
+      - key: SCHOOL_YEAR_CURRENT
+        value: 2026-2027
+      - key: TZ
+        value: Asia/Karachi
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true

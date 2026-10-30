@@ -1,37 +1,65 @@
 # Deploy API + Postgres (free tier)
 
-Localhost is fully working. Production deploy needs **your** login to a free host — CLIs for Railway / Render / Fly / Neon are not authenticated on this machine, so the agent cannot finish HTTPS publish without you.
+## Status (this machine)
 
-## Recommended free stack
+| Piece | Status |
+| --- | --- |
+| Neon CLI | Authenticated |
+| Render CLI | Authenticated (`m.hassanjamshaid224@gmail.com`) |
+| Neon Postgres | Project `stem-society-calendar` (`spring-sound-70797022`) live; migrations applied; demo user seeded (hash only) |
+| Render Web Service | **Blocked** — API returns **402 Payment information required** even for `plan: free` |
+| Frontend | `js/calendar.js` uses `https://stem-society-calendar-api.onrender.com` when hostname is `*.vercel.app` |
 
-1. **Postgres:** [Neon](https://neon.tech) free project → copy the connection string  
-2. **API:** [Render](https://render.com) free Web Service **or** [Fly.io](https://fly.io) free allowance  
-3. Set env vars on the host (same keys as `.env.example`):
-   - `DATABASE_URL=postgresql+psycopg://...` (Neon URL; use `postgresql+psycopg://` scheme)
-   - `SESSION_SECRET=` long random string  
-   - `APP_ENV=production`  
-   - `COOKIE_SECURE=true`  
-   - `COOKIE_SAMESITE=none` if the static site origin differs from the API host (cross-site cookies)  
-   - `CORS_ORIGINS=` your live site origin(s), comma-separated  
-   - `SCHOOL_YEAR_CURRENT=2026-2027`  
-   - `TZ=Asia/Karachi`
-4. Deploy from `backend/` using the included `Dockerfile` (runs `alembic upgrade head` then uvicorn).
-5. Seed authorized P/VP accounts against **production** `DATABASE_URL` via `scripts/seed_real_users.py` + a gitignored `users.local.json` (never commit passwords). Remove any leftover dummy with `scripts/delete_dummy_user.py`.
-6. Point the static site at the API:
+## Blocker — add a card on Render, then retry
 
-```html
-<script>window.STEM_CALENDAR_API = "https://YOUR-API-HOST";</script>
+Render now requires a payment method before creating **any** service (including free/sleep). Free tier itself can stay $0 with sleep/cold starts.
+
+1. Open billing and add a card (agent cannot complete this):  
+   https://dashboard.render.com/billing
+2. After the card is saved, tell the agent **“retry Render deploy”** (or run the commands below yourself).
+
+### Exact retry commands (PowerShell)
+
+```powershell
+cd "C:\Users\Solar Turbines User\STEM society website"
+
+# Connection string: Neon console → project stem-society-calendar → Connection details
+# Use scheme postgresql+psycopg:// (not postgresql://)
+$db = "postgresql+psycopg://neondb_owner:YOUR_PASSWORD@ep-plain-wind-b74t4tdh.c-13.us-east-1.aws.neon.tech/neondb?sslmode=require"
+$secret = -join ((48..57)+(65..90)+(97..122) | Get-Random -Count 48 | ForEach-Object {[char]$_})
+
+render services create `
+  --name stem-society-calendar-api `
+  --type web_service `
+  --repo https://github.com/Hassan-jamshaid-dev/stemkgs_webiste.git `
+  --branch main `
+  --runtime docker `
+  --root-directory backend `
+  --region oregon `
+  --plan free `
+  --health-check-path /health `
+  --env-var "DATABASE_URL=$db" `
+  --env-var "SESSION_SECRET=$secret" `
+  --env-var "APP_ENV=production" `
+  --env-var "COOKIE_SECURE=true" `
+  --env-var "COOKIE_SAMESITE=none" `
+  --env-var "CORS_ORIGINS=https://stem-society-website.vercel.app,http://localhost:4173,http://127.0.0.1:4173" `
+  --env-var "SCHOOL_YEAR_CURRENT=2026-2027" `
+  --env-var "TZ=Asia/Karachi" `
+  --confirm -o json
 ```
 
-(Do **not** deploy the static site to Vercel/Netlify unless you explicitly ask — Netlify is credit-blocked; localhost preview stays the default for the site.)
+Or from the dashboard: New → Blueprint → `render.yaml` at repo root (set `DATABASE_URL` when prompted).
 
-## Exact next step for you
+3. Wait until `https://stem-society-calendar-api.onrender.com/health` returns OK (first free-tier wake can take ~1 min).
+4. Then: commit/push (if needed) and `vercel --prod --yes`; verify login on  
+   https://stem-society-website.vercel.app/calendar-login.html
 
-1. Create a Neon project and copy the DB URL.  
-2. Create a Render Web Service from this repo’s `backend/` folder (Docker).  
-3. Paste env vars from `.env.example` with production values.  
-4. After deploy, open `https://YOUR-API/health` and `/ready`.  
-5. Tell the agent the API HTTPS URL + allowed CORS origin to wire `STEM_CALENDAR_API` on the live site.
+### Demo account (already seeded in Neon)
+
+- Email: `m.jamshaid16772@kgs.edu.pk`
+- Society: `robotics`
+- Password: only in local `backend/scripts/users.local.json` (gitignored) — never commit plaintext.
 
 ## Local forever (already done)
 

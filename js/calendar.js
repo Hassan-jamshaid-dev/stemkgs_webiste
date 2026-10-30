@@ -57,9 +57,18 @@
     crime: "Crime"
   };
   var CURRENT_SCHOOL_YEAR = "2026-2027";
-  var API_BASE =
-    (window.STEM_CALENDAR_API && String(window.STEM_CALENDAR_API).replace(/\/$/, "")) ||
-    "http://localhost:8000";
+  var PROD_API_BASE = "https://stem-society-calendar-api.onrender.com";
+  function resolveApiBase() {
+    if (window.STEM_CALENDAR_API) {
+      return String(window.STEM_CALENDAR_API).replace(/\/$/, "");
+    }
+    var host = (window.location && window.location.hostname) || "";
+    if (/\.vercel\.app$/i.test(host)) {
+      return PROD_API_BASE;
+    }
+    return "http://localhost:8000";
+  }
+  var API_BASE = resolveApiBase();
 
   var fetchSeq = 0;
   var authUser = null;

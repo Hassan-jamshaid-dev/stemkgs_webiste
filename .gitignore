@@ -22,6 +22,8 @@ tmp_update_result.json
 .env
 .env.local
 .neon
+.agents/
+skills-lock.json
 backend/.env
 backend/.env*
 backend/.dummy_credentials.local
