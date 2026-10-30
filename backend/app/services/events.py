@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.models.event import CalendarEvent
 from app.models.user import User
+from app.services.audit import event_snapshot, record_event_audit
 from app.services.school_year import assert_current_school_year, assert_range_in_school_year
 
 
@@ -139,6 +140,15 @@ def create_event(
         updated_by_user_id=user.id,
     )
     db.add(ev)
+    db.flush()
+    record_event_audit(
+        db,
+        user=user,
+        action="create",
+        entity_id=ev.id,
+        before=None,
+        after=event_snapshot(ev),
+    )
     db.commit()
     db.refresh(ev)
     return ev
@@ -182,6 +192,7 @@ def update_event(
     )
     _raise_if_conflicts(conflicts)
 
+    before = event_snapshot(ev)
     ev.event_name = new_name
     ev.starts_at = new_start
     ev.ends_at = new_end
@@ -189,6 +200,15 @@ def update_event(
     ev.room_normalized = new_room_n
     ev.updated_by_user_id = user.id
     db.add(ev)
+    db.flush()
+    record_event_audit(
+        db,
+        user=user,
+        action="update",
+        entity_id=ev.id,
+        before=before,
+        after=event_snapshot(ev),
+    )
     db.commit()
     db.refresh(ev)
     return ev
@@ -204,5 +224,15 @@ def delete_event(db: Session, *, user: User, event_id: str) -> None:
             detail="You can only delete your society's events.",
         )
     assert_current_school_year(ev.school_year)
+    before = event_snapshot(ev)
+    entity_id = ev.id
     db.delete(ev)
+    record_event_audit(
+        db,
+        user=user,
+        action="delete",
+        entity_id=entity_id,
+        before=before,
+        after=None,
+    )
     db.commit()
