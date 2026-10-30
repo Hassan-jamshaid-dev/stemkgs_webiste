@@ -1051,3 +1051,86 @@
     color: var(--blue-mid);
   }
 }
+
+/* Editor mode */
+.cal-mode-badge.is-editor {
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--purple) 86%, var(--blue-mid)),
+    color-mix(in srgb, var(--blue-mid) 50%, var(--blue-bright))
+  );
+  border-color: transparent;
+}
+
+.cal-editor {
+  margin: 28px 0 8px;
+  padding: 22px 22px 18px;
+  border: 1px solid color-mix(in srgb, var(--purple) 14%, var(--grey-200));
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--purple) 4%, #ffffff);
+}
+
+.cal-editor-head {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.cal-editor-head h2 {
+  margin: 0;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.35rem;
+  color: var(--purple);
+}
+
+.cal-editor-head p,
+.cal-editor .cal-note {
+  margin: 0;
+  color: var(--grey-600);
+  font-size: 0.95rem;
+}
+
+.cal-editor-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+
+.cal-editor-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.cal-editor-form .cal-note {
+  grid-column: 1 / -1;
+}
+
+button.cal-day-slot {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: default;
+}
+
+button.cal-day-slot.is-editable {
+  cursor: pointer;
+}
+
+button.cal-day-slot.is-editable:hover,
+button.cal-day-slot.is-editable:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--blue-bright) 16%, #ffffff);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--blue-mid) 28%, transparent);
+}
+
+@media (max-width: 760px) {
+  .cal-editor-form {
+    grid-template-columns: 1fr;
+  }
+}

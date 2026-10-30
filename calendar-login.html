@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/home.css?v=30">
-  <link rel="stylesheet" href="css/calendar.css?v=7">
+  <link rel="stylesheet" href="css/calendar.css?v=9">
 </head>
 <body class="cal-body cal-login-body">
   <a class="skip" href="#main">Skip to content</a>
@@ -55,7 +55,7 @@
         <div class="cal-card">
           <div class="cal-card-head">
             <h2>Presidents sign in</h2>
-            <p>Use your society credentials. Auth connects when the backend is ready.</p>
+            <p>Use your society credentials. Students stay on the view-only calendar.</p>
           </div>
           <form class="cal-form" id="cal-login-form" action="#" method="post" novalidate>
             <div class="cal-field">
@@ -82,7 +82,7 @@
             </div>
             <button class="cal-btn cal-btn-primary" type="submit">Sign in</button>
           </form>
-          <p class="cal-note" id="cal-login-status" role="status" aria-live="polite">Sign-in connects when the backend is ready. This form is UI-only for now.</p>
+          <p class="cal-note" id="cal-login-status" role="status" aria-live="polite">Enter your KGS email, password, and society to manage logistics.</p>
         </div>
 
         <div class="cal-divider">Students</div>
@@ -111,6 +111,6 @@
   </footer>
 
   <script src="js/home.js" defer></script>
-  <script src="js/calendar.js" defer></script>
+  <script src="js/calendar.js?v=9" defer></script>
 </body>
 </html>

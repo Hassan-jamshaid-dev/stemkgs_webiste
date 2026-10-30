@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/home.css?v=30">
-  <link rel="stylesheet" href="css/calendar.css?v=8">
+  <link rel="stylesheet" href="css/calendar.css?v=9">
 </head>
 <body class="cal-body">
   <a class="skip" href="#main">Skip to content</a>
@@ -39,10 +39,10 @@
     <div class="cal-shell cal-shell-wide">
       <div class="cal-toolbar">
         <div class="cal-toolbar-left">
-          <span class="cal-mode-badge">View only</span>
+          <span class="cal-mode-badge" id="cal-mode-badge">View only</span>
           <p class="cal-kicker">STEM Society logistics</p>
           <h1 class="cal-title">KGS School Year Calendar</h1>
-          <p class="cal-lead">Event, room, and time slots appear here by school year. Presidents and vice presidents edit after sign-in.</p>
+          <p class="cal-lead" id="cal-lead">Event, room, and time slots appear here by school year. Presidents and vice presidents edit after sign-in.</p>
         </div>
         <div class="cal-controls" role="group" aria-label="Calendar period">
           <div class="cal-year">
@@ -95,8 +95,41 @@
         <span class="cal-legend-item">Empty cells are ready for scheduled logistics.</span>
       </div>
 
+      <section class="cal-editor" id="cal-editor" hidden>
+        <div class="cal-editor-head">
+          <h2>Edit logistics</h2>
+          <p id="cal-editor-meta">Signed in — create or update your society’s bookings for the current school year.</p>
+        </div>
+        <form class="cal-form cal-editor-form" id="cal-editor-form">
+          <input type="hidden" id="cal-edit-id" value="">
+          <div class="cal-field">
+            <label for="cal-edit-name">Event name</label>
+            <input id="cal-edit-name" name="event_name" type="text" maxlength="200" required>
+          </div>
+          <div class="cal-field">
+            <label for="cal-edit-room">Room</label>
+            <input id="cal-edit-room" name="room" type="text" maxlength="120" required>
+          </div>
+          <div class="cal-field">
+            <label for="cal-edit-start">Start (Asia/Karachi)</label>
+            <input id="cal-edit-start" name="starts_at" type="datetime-local" required>
+          </div>
+          <div class="cal-field">
+            <label for="cal-edit-end">End (Asia/Karachi)</label>
+            <input id="cal-edit-end" name="ends_at" type="datetime-local" required>
+          </div>
+          <div class="cal-editor-actions">
+            <button class="cal-btn cal-btn-primary" type="submit" id="cal-edit-save">Save event</button>
+            <button class="cal-btn cal-btn-ghost" type="button" id="cal-edit-reset">New event</button>
+            <button class="cal-btn cal-btn-ghost" type="button" id="cal-edit-delete" hidden>Delete</button>
+          </div>
+          <p class="cal-note" id="cal-editor-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
       <div class="cal-actions">
-        <a class="cal-btn cal-btn-ghost" href="calendar-login.html">President / VP sign-in</a>
+        <a class="cal-btn cal-btn-ghost" href="calendar-login.html" id="cal-signin-link">President / VP sign-in</a>
+        <button class="cal-btn cal-btn-ghost" type="button" id="cal-logout-btn" hidden>Sign out</button>
         <button class="cal-btn cal-btn-ghost" type="button" id="cal-refresh-stub">Refresh events</button>
       </div>
       <p class="cal-note" id="cal-view-status" role="status" aria-live="polite">Loading calendar…</p>
@@ -116,6 +149,6 @@
   </footer>
 
   <script src="js/home.js" defer></script>
-  <script src="js/calendar.js?v=8" defer></script>
+  <script src="js/calendar.js?v=9" defer></script>
 </body>
 </html>
