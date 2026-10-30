@@ -8,6 +8,7 @@ from app.api.auth import router as auth_router
 from app.api.events import router as events_router
 from app.api.health import router as health_router
 from app.config import get_settings
+from app.middleware import SecurityHeadersMiddleware
 
 settings = get_settings()
 
@@ -18,6 +19,7 @@ app = FastAPI(
     redoc_url=None,
 )
 
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
