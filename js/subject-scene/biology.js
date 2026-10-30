@@ -1,5 +1,5 @@
 /**
- * Biology: sketched plant sprouting — seed → stem → leaves (line / sketch language).
+ * Biology: sketched plant sprouting — seed → stem → branches → leaves (line / sketch).
  * Matches maths quadratic intro: Line / LineSegments / Points only, readable, no mesh mush.
  * Palette: purple-black #0c0814 / cool white / soft green-lilac accents.
  * Instant start; total intro ≤ 4s; reduced-motion short path; cheap persistent field after.
@@ -39,12 +39,51 @@ function sampleStem(height, segments, wobble) {
   return pts;
 }
 
-function stemTip(height, wobble) {
-  const t = 1;
+function stemPoint(height, wobble, frac) {
+  const t = THREE.MathUtils.clamp(frac, 0, 1);
   return {
     x: wobble * Math.sin(t * Math.PI * 1.6) * t,
-    y: height,
+    y: t * height,
     z: wobble * 0.55 * Math.sin(t * Math.PI * 2.1) * (1 - t * 0.35),
+  };
+}
+
+/**
+ * Side branch stroke — maths-curve energy, arcs out from the stem.
+ * open 0→1 draws length along the branch.
+ */
+function sampleBranch(side, length, lift, open, segments, attach) {
+  const n = Math.max(4, segments);
+  const pts = new Float32Array((n + 1) * 3);
+  const L = length * Math.max(0.001, open);
+  const sx = side;
+
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const along = t * L;
+    const arch = Math.sin(t * Math.PI * 0.85) * 0.22;
+    const droop = Math.sin(t * Math.PI) * 0.06;
+    const x = attach.x + sx * (along * 0.88 + arch * 0.35);
+    const y = attach.y + along * lift + arch * 0.45 - droop;
+    const z = attach.z + sx * along * 0.18 + Math.sin(t * Math.PI) * 0.05 * sx;
+    const o = i * 3;
+    pts[o] = x;
+    pts[o + 1] = y;
+    pts[o + 2] = z;
+  }
+  return pts;
+}
+
+function branchTip(side, length, lift, open, attach) {
+  const t = 1;
+  const L = length * Math.max(0.001, open);
+  const along = t * L;
+  const arch = Math.sin(t * Math.PI * 0.85) * 0.22;
+  const droop = Math.sin(t * Math.PI) * 0.06;
+  return {
+    x: attach.x + side * (along * 0.88 + arch * 0.35),
+    y: attach.y + along * lift + arch * 0.45 - droop,
+    z: attach.z + side * along * 0.18 + Math.sin(t * Math.PI) * 0.05 * side,
   };
 }
 
@@ -109,6 +148,11 @@ function setLinePositions(line, pts) {
   line.geometry.computeBoundingSphere();
 }
 
+function smoothstep01(x) {
+  const t = THREE.MathUtils.clamp(x, 0, 1);
+  return t * t * (3 - 2 * t);
+}
+
 export function createBiologyExperience(mount) {
   const STEM_H = 2.35;
   const WOBBLE = 0.22;
@@ -120,6 +164,8 @@ export function createBiologyExperience(mount) {
   let stemCore = null;
   let stemGlow = null;
   let seedLine = null;
+  let branchCores = [];
+  let branchGlows = [];
   let leafCores = [];
   let leafGlows = [];
   let beads = null;
@@ -127,6 +173,7 @@ export function createBiologyExperience(mount) {
 
   const state = {
     grow: 0,
+    branch: 0,
     leaf: 0,
     seedFade: 0,
     drop: 0,
@@ -135,10 +182,21 @@ export function createBiologyExperience(mount) {
     camLift: 0.55,
   };
 
+  // Side branch strokes — fuller canopy silhouette without mesh bulk
+  const branchSpecs = [
+    { side: 1, heightFrac: 0.4, length: 0.82, lift: 0.38, delay: 0 },
+    { side: -1, heightFrac: 0.55, length: 0.95, lift: 0.48, delay: 0.1 },
+    { side: 1, heightFrac: 0.7, length: 0.68, lift: 0.52, delay: 0.18 },
+  ];
+
+  // Leaves attach on stem or at a branch tip (branch ≥ 0)
   const leafSpecs = [
-    { side: 1, length: 1.15, width: 0.55, delay: 0 },
-    { side: -1, length: 1.05, width: 0.5, delay: 0.08 },
-    { side: 1, length: 0.72, width: 0.36, delay: 0.16 },
+    { side: 1, length: 1.12, width: 0.54, delay: 0, attachFrac: 0.9, branch: -1 },
+    { side: -1, length: 1.05, width: 0.5, delay: 0.06, attachFrac: 0.86, branch: -1 },
+    { side: 1, length: 0.78, width: 0.4, delay: 0.12, attachFrac: 0.4, branch: 0 },
+    { side: -1, length: 0.88, width: 0.44, delay: 0.16, attachFrac: 0.55, branch: 1 },
+    { side: 1, length: 0.62, width: 0.32, delay: 0.22, attachFrac: 0.7, branch: 2 },
+    { side: -1, length: 0.58, width: 0.3, delay: 0.28, attachFrac: 0.76, branch: -1 },
   ];
 
   function rebuildStem() {
@@ -152,22 +210,58 @@ export function createBiologyExperience(mount) {
     }
   }
 
+  function branchOpen(i) {
+    const sp = branchSpecs[i];
+    if (!sp) return 0;
+    return smoothstep01(
+      (state.branch - sp.delay) / Math.max(0.01, 1 - sp.delay)
+    );
+  }
+
+  function rebuildBranches() {
+    const h = STEM_H * Math.max(0.001, state.grow);
+    for (let i = 0; i < branchCores.length; i++) {
+      const sp = branchSpecs[i];
+      const open = branchOpen(i);
+      // Gate on stem having reached the fork so branches sprout from living wood
+      const stemGate = THREE.MathUtils.clamp((state.grow - sp.heightFrac * 0.85) / 0.2, 0, 1);
+      const draw = open * stemGate;
+      const attach = stemPoint(h, WOBBLE, sp.heightFrac);
+      const segs = branchCores[i].userData.segs;
+      const pts = sampleBranch(sp.side, sp.length, sp.lift, Math.max(0.001, draw), segs, attach);
+      setLinePositions(branchCores[i], pts);
+      if (branchGlows[i]) {
+        setLinePositions(
+          branchGlows[i],
+          sampleBranch(sp.side, sp.length * 1.03, sp.lift, Math.max(0.001, draw), segs, attach)
+        );
+      }
+      branchCores[i].material.opacity = draw < 0.02 ? 0 : 0.2 + draw * 0.72;
+      if (branchGlows[i]) {
+        branchGlows[i].material.opacity = draw < 0.02 ? 0 : 0.06 + draw * 0.28;
+      }
+    }
+  }
+
+  function leafAttach(sp) {
+    const h = STEM_H * Math.max(0.001, state.grow);
+    if (sp.branch >= 0 && sp.branch < branchSpecs.length) {
+      const bs = branchSpecs[sp.branch];
+      const open = Math.max(0.001, branchOpen(sp.branch));
+      const base = stemPoint(h, WOBBLE, bs.heightFrac);
+      return branchTip(bs.side, bs.length * 0.92, bs.lift, open, base);
+    }
+    return stemPoint(h, WOBBLE, sp.attachFrac);
+  }
+
   function rebuildLeaves() {
-    const tip = stemTip(STEM_H * Math.max(0.001, state.grow), WOBBLE);
-    // Attach leaves slightly below tip so they read as sprouting from the stem
-    const attach = {
-      x: tip.x * 0.85,
-      y: tip.y * 0.78,
-      z: tip.z * 0.85,
-    };
     for (let i = 0; i < leafCores.length; i++) {
       const sp = leafSpecs[i];
-      const local = THREE.MathUtils.clamp(
-        (state.leaf - sp.delay) / Math.max(0.01, 1 - sp.delay),
-        0,
-        1
+      const local = smoothstep01(
+        (state.leaf - sp.delay) / Math.max(0.01, 1 - sp.delay)
       );
-      const open = local * local * (3 - 2 * local);
+      const open = local;
+      const attach = leafAttach(sp);
       const segs = leafCores[i].userData.segs;
       const pts = sampleLeaf(sp.side, sp.length, sp.width, open, segs, attach);
       setLinePositions(leafCores[i], pts);
@@ -177,9 +271,15 @@ export function createBiologyExperience(mount) {
           sampleLeaf(sp.side, sp.length * 1.02, sp.width * 1.05, open, segs, attach)
         );
       }
-      leafCores[i].material.opacity = 0.15 + open * 0.8;
-      if (leafGlows[i]) leafGlows[i].material.opacity = 0.05 + open * 0.32;
+      leafCores[i].material.opacity = open < 0.02 ? 0 : 0.15 + open * 0.8;
+      if (leafGlows[i]) leafGlows[i].material.opacity = open < 0.02 ? 0 : 0.05 + open * 0.32;
     }
+  }
+
+  function rebuildPlant() {
+    rebuildStem();
+    rebuildBranches();
+    rebuildLeaves();
   }
 
   function setCamera(ctx) {
@@ -209,18 +309,24 @@ export function createBiologyExperience(mount) {
 
   function showGrownQuiet() {
     state.grow = 1;
+    state.branch = 1;
     state.leaf = 1;
     state.seedFade = 1;
     state.drop = 1;
     state.glow = 0.22;
-    rebuildStem();
-    rebuildLeaves();
+    rebuildPlant();
     if (stemCore) stemCore.material.opacity = 0.18;
     if (stemGlow) stemGlow.material.opacity = 0.08;
     if (seedLine) seedLine.material.opacity = 0;
     if (soilLine) soilLine.material.opacity = 0.14;
     if (soilGlow) soilGlow.material.opacity = 0.06;
     if (beads) beads.material.opacity = 0.1;
+    branchCores.forEach(function (l) {
+      if (l) l.material.opacity = 0.15;
+    });
+    branchGlows.forEach(function (l) {
+      if (l) l.material.opacity = 0.055;
+    });
     leafCores.forEach(function (l) {
       if (l) l.material.opacity = 0.16;
     });
@@ -236,6 +342,8 @@ export function createBiologyExperience(mount) {
     fogNear: 12,
     fogFar: 42,
     build(ctx) {
+      branchCores = [];
+      branchGlows = [];
       leafCores = [];
       leafGlows = [];
 
@@ -333,8 +441,50 @@ export function createBiologyExperience(mount) {
       plant.add(stemGlow);
       ctx.track(stemGlow);
 
-      const leafSegs = budgetCount(20, 14, 10);
-      const leafN = ctx.weak ? 2 : leafSpecs.length;
+      const branchSegs = budgetCount(16, 12, 8);
+      const branchN = ctx.weak ? 2 : branchSpecs.length;
+      for (let i = 0; i < branchN; i++) {
+        const sp = branchSpecs[i];
+        const attach0 = { x: 0, y: 0.01, z: 0 };
+        const pts = sampleBranch(sp.side, sp.length, sp.lift, 0.001, branchSegs, attach0);
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.BufferAttribute(pts.slice(), 3));
+        const core = new THREE.Line(
+          geo,
+          new THREE.LineBasicMaterial({
+            color: 0xc8e0b8,
+            transparent: true,
+            opacity: 0,
+            toneMapped: false,
+          })
+        );
+        core.userData.segs = branchSegs;
+        plant.add(core);
+        ctx.track(core);
+        branchCores.push(core);
+
+        const gPts = sampleBranch(sp.side, sp.length * 1.03, sp.lift, 0.001, branchSegs, attach0);
+        const gGeo = new THREE.BufferGeometry();
+        gGeo.setAttribute("position", new THREE.BufferAttribute(gPts, 3));
+        const glow = new THREE.Line(
+          gGeo,
+          new THREE.LineBasicMaterial({
+            color: 0x5a8860,
+            transparent: true,
+            opacity: 0,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            toneMapped: false,
+          })
+        );
+        glow.userData.segs = branchSegs;
+        plant.add(glow);
+        ctx.track(glow);
+        branchGlows.push(glow);
+      }
+
+      const leafSegs = budgetCount(18, 12, 9);
+      const leafN = ctx.weak ? 3 : leafSpecs.length;
       for (let i = 0; i < leafN; i++) {
         const sp = leafSpecs[i];
         const attach0 = { x: 0, y: 0.01, z: 0 };
@@ -403,6 +553,7 @@ export function createBiologyExperience(mount) {
       ctx.track(beads);
 
       state.grow = 0;
+      state.branch = 0;
       state.leaf = 0;
       state.seedFade = 0;
       state.drop = 0;
@@ -435,6 +586,7 @@ export function createBiologyExperience(mount) {
           ease: "power2.out",
           onUpdate() {
             rebuildStem();
+            rebuildBranches();
             setCamera(ctx);
           },
         },
@@ -460,7 +612,19 @@ export function createBiologyExperience(mount) {
         0.85
       );
 
-      // Leaves unfurl as strokes
+      // Branches fork out as stem rises
+      tl.to(
+        state,
+        {
+          branch: 1,
+          duration: 1.05,
+          ease: "power2.out",
+          onUpdate: rebuildBranches,
+        },
+        0.85
+      );
+
+      // Leaves unfurl on stem + branch tips
       tl.to(
         state,
         {
@@ -508,6 +672,12 @@ export function createBiologyExperience(mount) {
       tl.to(stemGlow.material, { opacity: 0.08, duration: 0.75 }, 2.95);
       tl.to(soilGlow.material, { opacity: 0.06, duration: 0.75 }, 2.95);
       tl.to(beads.material, { opacity: 0.1, duration: 0.75 }, 2.95);
+      branchCores.forEach(function (l) {
+        tl.to(l.material, { opacity: 0.15, duration: 0.75 }, 2.95);
+      });
+      branchGlows.forEach(function (l) {
+        tl.to(l.material, { opacity: 0.055, duration: 0.75 }, 2.95);
+      });
       leafCores.forEach(function (l) {
         tl.to(l.material, { opacity: 0.16, duration: 0.75 }, 2.95);
       });
@@ -554,6 +724,10 @@ export function createBiologyExperience(mount) {
         if (soilLine) soilLine.material.opacity = 0.12;
         if (soilGlow) soilGlow.material.opacity = 0.05;
         if (beads) beads.material.opacity = 0.08 + state.glow * 0.05;
+        branchCores.forEach(function (l, i) {
+          if (!l) return;
+          l.material.opacity = 0.13 + 0.025 * Math.sin(t * 0.4 + i * 0.7);
+        });
         leafCores.forEach(function (l, i) {
           if (!l) return;
           l.material.opacity = 0.14 + 0.03 * Math.sin(t * 0.45 + i);
@@ -579,6 +753,8 @@ export function createBiologyExperience(mount) {
     },
 
     disposeExtra() {
+      branchCores = [];
+      branchGlows = [];
       leafCores = [];
       leafGlows = [];
     },
