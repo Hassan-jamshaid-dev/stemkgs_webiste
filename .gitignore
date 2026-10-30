@@ -1,4 +1,4 @@
-# Local Netlify folder
+﻿# Local Netlify folder
 .netlify/
 
 __pycache__/
@@ -21,7 +21,9 @@ tmp_update_result.json
 # Secrets and local runtime
 .env
 .env.local
+.neon
 backend/.env
+backend/.env*
 backend/.dummy_credentials.local
 backend/**/users.local.json
 backend/**/*.local.json
