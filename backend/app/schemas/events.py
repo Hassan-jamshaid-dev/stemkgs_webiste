@@ -38,3 +38,18 @@ class EventUpdate(BaseModel):
     starts_at: datetime | None = None
     ends_at: datetime | None = None
     room: str | None = Field(default=None, min_length=1, max_length=120)
+
+
+class EditorEvent(PublicEvent):
+    room_normalized: str
+    created_by_user_id: str | None = None
+    updated_by_user_id: str | None = None
+
+
+class ConflictDetail(BaseModel):
+    id: str
+    society: str
+    event_name: str
+    starts_at: datetime
+    ends_at: datetime
+    room: str
