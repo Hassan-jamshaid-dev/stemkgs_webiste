@@ -57,7 +57,7 @@ One real local account is seeded for calendar login testing (not the old dummy).
 .\.venv\Scripts\python.exe scripts\delete_dummy_user.py
 ```
 
-Login (API or `calendar-login.html`): school email + password + society **STEM Society** (or slug `stem-society`). Role stored as `president` (P/VP capability; schema also accepts `editor`).
+Login (API or `calendar-login.html`): school email + password + society **Robotics** (or slug `robotics`). Role stored as `president` (P/VP capability; schema also accepts `editor`).
 
 ### Optional dummy seed (dev only)
 
