@@ -36,7 +36,8 @@ def _normalize_email(email: str) -> str:
 
 
 def _normalize_society(society: str) -> str:
-    return society.strip().lower()
+    # "STEM Society" → "stem-society" (matches SOCIETIES slugs)
+    return society.strip().lower().replace(" ", "-")
 
 
 def set_session_cookie(response: Response, raw_token: str) -> None:

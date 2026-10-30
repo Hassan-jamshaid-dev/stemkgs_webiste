@@ -41,6 +41,7 @@
   ];
   var SCHOOL_YEAR_MONTHS = [7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6];
   var SOCIETY_LABELS = {
+    "stem-society": "STEM Society",
     maths: "Mathematics",
     physics: "Physics",
     chemistry: "Chemistry",

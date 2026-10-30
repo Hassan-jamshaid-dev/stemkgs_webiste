@@ -1,7 +1,8 @@
 [
   {
-    "email": "president.maths@kgs.edu.pk",
+    "email": "first.last12345@khs.edu.pk",
     "password": "replace-with-strong-password",
-    "society": "maths"
+    "society": "stem-society",
+    "role": "president"
   }
 ]

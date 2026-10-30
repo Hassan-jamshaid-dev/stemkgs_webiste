@@ -2,6 +2,7 @@
 
 SOCIETIES = frozenset(
     {
+        "stem-society",
         "maths",
         "physics",
         "chemistry",

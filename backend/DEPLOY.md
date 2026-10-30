@@ -16,7 +16,7 @@ Localhost is fully working. Production deploy needs **your** login to a free hos
    - `SCHOOL_YEAR_CURRENT=2025-2026`  
    - `TZ=Asia/Karachi`
 4. Deploy from `backend/` using the included `Dockerfile` (runs `alembic upgrade head` then uvicorn).
-5. Seed dummy (or reals) against **production** `DATABASE_URL` once, then delete dummy when reals exist.
+5. Seed authorized P/VP accounts against **production** `DATABASE_URL` via `scripts/seed_real_users.py` + a gitignored `users.local.json` (never commit passwords). Remove any leftover dummy with `scripts/delete_dummy_user.py`.
 6. Point the static site at the API:
 
 ```html

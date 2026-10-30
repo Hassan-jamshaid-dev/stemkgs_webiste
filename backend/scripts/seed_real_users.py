@@ -3,9 +3,12 @@ Seed real P/VP accounts from a local JSON file (never commit that file).
 
 Input file format (array):
 [
-  {"email": "name@kgs.edu.pk", "password": "...", "society": "maths"},
+  {"email": "name.surname@khs.edu.pk", "password": "...", "society": "stem-society", "role": "president"},
   ...
 ]
+
+Society values are stored as SOCIETIES slugs (spaces → hyphens). Optional role
+defaults to "editor" (P/VP capability); use "president" / "vice-president" if desired.
 
 Usage (from backend/):
   .\\.venv\\Scripts\\python.exe scripts\\seed_real_users.py path\\to\\users.local.json
@@ -28,6 +31,10 @@ from app.constants import SOCIETIES
 from app.db import SessionLocal
 from app.models.user import User
 from app.security.passwords import hash_password
+
+
+def _normalize_society(society: str) -> str:
+    return society.strip().lower().replace(" ", "-")
 
 
 def main() -> None:
@@ -53,15 +60,19 @@ def main() -> None:
         for row in rows:
             email = str(row["email"]).strip().lower()
             password = str(row["password"])
-            society = str(row["society"]).strip().lower()
+            society = _normalize_society(str(row["society"]))
+            role = str(row.get("role", "editor")).strip().lower() or "editor"
+            if len(role) > 16:
+                raise SystemExit(f"Role too long for {email}")
             if society not in SOCIETIES:
                 raise SystemExit(f"Unknown society for {email}: {society}")
-            if len(password) < 12:
+            if len(password) < 8:
                 raise SystemExit(f"Password too short for {email}")
             existing = db.scalar(select(User).where(User.email == email))
             if existing:
                 existing.password_hash = hash_password(password)
                 existing.society = society
+                existing.role = role
                 existing.is_active = True
                 existing.is_dummy = False
                 existing.failed_login_count = 0
@@ -75,7 +86,7 @@ def main() -> None:
                         email=email,
                         password_hash=hash_password(password),
                         society=society,
-                        role="editor",
+                        role=role,
                         is_active=True,
                         is_dummy=False,
                     )

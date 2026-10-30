@@ -45,25 +45,30 @@ Timestamps use `timestamptz` with Asia/Karachi defaults.
 
 Session cookie: `stem_cal_session` (httpOnly; `Secure` when `COOKIE_SECURE=true`).
 
-### Dummy account (exactly one for local/dev)
+School editor emails look like `first.lastNNNNN@khs.edu.pk`. Society is a slug from `SOCIETIES` (login also accepts display forms such as `STEM Society`, normalized to `stem-society`).
+
+### Local test editor (Hassan)
+
+One real local account is seeded for calendar login testing (not the old dummy). Credentials live only in gitignored `scripts/users.local.json` or your password manager — **never commit plaintext passwords**.
+
+```powershell
+# Copy example → local file, fill email / password / society / role, then:
+.\.venv\Scripts\python.exe scripts\seed_real_users.py scripts\users.local.json
+.\.venv\Scripts\python.exe scripts\delete_dummy_user.py
+```
+
+Login (API or `calendar-login.html`): school email + password + society **STEM Society** (or slug `stem-society`). Role stored as `president` (P/VP capability; schema also accepts `editor`).
+
+### Optional dummy seed (dev only)
+
+Prefer the real local account above. If you still need a throwaway user before reals exist:
 
 ```powershell
 $env:DUMMY_SEED_PASSWORD = "your-long-local-password"
 .\.venv\Scripts\python.exe scripts\seed_dummy_user.py
 ```
 
-Creates `dummy.president@kgs.edu.pk` / society `maths` only. Password is **not** printed; keep it in a password manager or gitignored `.dummy_credentials.local`.
-
-### Seed real P/VP accounts later (do not invent users)
-
-1. Copy `scripts/users.local.json.example` → `scripts/users.local.json` (gitignored).
-2. Fill real emails/passwords/societies (only accounts you authorize).
-3. Run:
-
-```powershell
-.\.venv\Scripts\python.exe scripts\seed_real_users.py scripts\users.local.json
-.\.venv\Scripts\python.exe scripts\delete_dummy_user.py
-```
+Delete it with `scripts/delete_dummy_user.py` once reals are seeded.
 
 ### Tests
 

@@ -49,7 +49,7 @@
     <div class="cal-shell">
       <p class="cal-kicker">Logistics calendar</p>
       <h1 class="cal-title">Only for presidents and vice presidents</h1>
-      <p class="cal-lead">Sign in with your KGS email to manage society events later. Students can open the view-only calendar below — no account needed.</p>
+      <p class="cal-lead">Sign in with your school email to manage society events later. Students can open the view-only calendar below — no account needed.</p>
 
       <div class="cal-panel">
         <div class="cal-card">
@@ -59,8 +59,8 @@
           </div>
           <form class="cal-form" id="cal-login-form" action="#" method="post" novalidate>
             <div class="cal-field">
-              <label for="cal-email">KGS email</label>
-              <input id="cal-email" name="email" type="email" autocomplete="username" placeholder="name@kgs.edu.pk" required>
+              <label for="cal-email">School email</label>
+              <input id="cal-email" name="email" type="email" autocomplete="username" placeholder="name.surname@khs.edu.pk" required>
             </div>
             <div class="cal-field">
               <label for="cal-password">Password</label>
@@ -70,6 +70,7 @@
               <label for="cal-society">Society</label>
               <select id="cal-society" name="society" required>
                 <option value="" disabled selected>Select society</option>
+                <option value="stem-society">STEM Society</option>
                 <option value="maths">Mathematics</option>
                 <option value="physics">Physics</option>
                 <option value="chemistry">Chemistry</option>
@@ -82,7 +83,7 @@
             </div>
             <button class="cal-btn cal-btn-primary" type="submit">Sign in</button>
           </form>
-          <p class="cal-note" id="cal-login-status" role="status" aria-live="polite">Enter your KGS email, password, and society to manage logistics.</p>
+          <p class="cal-note" id="cal-login-status" role="status" aria-live="polite">Enter your school email, password, and society to manage logistics.</p>
         </div>
 
         <div class="cal-divider">Students</div>
