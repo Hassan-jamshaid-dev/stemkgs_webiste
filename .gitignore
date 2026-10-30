@@ -3,10 +3,33 @@
 
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 _tmp_*.py
 _tmp_*.json
 _ui_check/
 _ui_preview2/
 _ui_preview3/
 _ui_zoom/
+_ui_fresh/
+_ui_inspect/
 netlify_site_info.json
+tmp_update_result.json
+
+# Secrets and local runtime
+.env
+.env.local
+backend/.env
+backend/.venv/
+backend/venv/
+*.egg-info/
+.coverage
+htmlcov/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
