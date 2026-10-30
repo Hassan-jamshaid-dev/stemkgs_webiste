@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/home.css?v=30">
-  <link rel="stylesheet" href="css/calendar.css?v=7">
+  <link rel="stylesheet" href="css/calendar.css?v=8">
 </head>
 <body class="cal-body">
   <a class="skip" href="#main">Skip to content</a>
@@ -74,12 +74,11 @@
       <div class="cal-month-bar">
         <h2 class="cal-month-label" id="cal-month-label">August · 2025-2026</h2>
         <p class="cal-empty-banner" id="cal-empty-banner" role="status">
-          <strong>Placeholder board</strong>
-          Live logistics load when the API is connected.
+          Loading logistics for this month…
         </p>
       </div>
 
-      <div class="cal-board" aria-label="Month calendar placeholder">
+      <div class="cal-board" aria-label="Month calendar">
         <div class="cal-board-head" aria-hidden="true">
           <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
         </div>
@@ -98,9 +97,9 @@
 
       <div class="cal-actions">
         <a class="cal-btn cal-btn-ghost" href="calendar-login.html">President / VP sign-in</a>
-        <button class="cal-btn cal-btn-ghost" type="button" id="cal-refresh-stub" disabled title="Available when the backend is connected">Refresh events</button>
+        <button class="cal-btn cal-btn-ghost" type="button" id="cal-refresh-stub">Refresh events</button>
       </div>
-      <p class="cal-note" id="cal-view-status" role="status" aria-live="polite">Showing placeholder layout for <strong>August · 2025-2026</strong>. Live data arrives with the API.</p>
+      <p class="cal-note" id="cal-view-status" role="status" aria-live="polite">Loading calendar…</p>
     </div>
   </main>
 
@@ -117,6 +116,6 @@
   </footer>
 
   <script src="js/home.js" defer></script>
-  <script src="js/calendar.js" defer></script>
+  <script src="js/calendar.js?v=8" defer></script>
 </body>
 </html>
