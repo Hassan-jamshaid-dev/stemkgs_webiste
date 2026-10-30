@@ -45,11 +45,32 @@ Timestamps use `timestamptz` with Asia/Karachi defaults.
 
 Session cookie: `stem_cal_session` (httpOnly; `Secure` when `COOKIE_SECURE=true`).
 
-Seed the single dummy editor:
+### Dummy account (exactly one for local/dev)
 
 ```powershell
 $env:DUMMY_SEED_PASSWORD = "your-long-local-password"
 .\.venv\Scripts\python.exe scripts\seed_dummy_user.py
 ```
 
-Credentials are written locally only (e.g. `.dummy_credentials.local`, gitignored). Do not commit passwords.
+Creates `dummy.president@kgs.edu.pk` / society `maths` only. Password is **not** printed; keep it in a password manager or gitignored `.dummy_credentials.local`.
+
+### Seed real P/VP accounts later (do not invent users)
+
+1. Copy `scripts/users.local.json.example` → `scripts/users.local.json` (gitignored).
+2. Fill real emails/passwords/societies (only accounts you authorize).
+3. Run:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\seed_real_users.py scripts\users.local.json
+.\.venv\Scripts\python.exe scripts\delete_dummy_user.py
+```
+
+### Tests
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+### Deploy
+
+See [DEPLOY.md](DEPLOY.md). Localhost API + site preview are complete; free prod HTTPS needs host login from you.
