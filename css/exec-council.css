@@ -1,0 +1,308 @@
+/* Executive Council — lab-cool field over STEM purple/blue */
+
+body.ec-page {
+  --ec-lab: #0e2438;
+  --ec-lab-mid: #163048;
+  --ec-glass: rgba(255, 255, 255, 0.06);
+  --ec-glow: rgba(74, 143, 212, 0.28);
+  --ec-line: color-mix(in srgb, var(--blue-bright) 28%, transparent);
+  background:
+    radial-gradient(ellipse 90% 50% at 50% -10%, rgba(40, 20, 76, 0.55), transparent 55%),
+    radial-gradient(ellipse 70% 40% at 80% 30%, rgba(30, 74, 122, 0.22), transparent 50%),
+    linear-gradient(180deg, #120a22 0%, var(--ec-lab) 38%, #0a1018 100%);
+}
+
+.ec-main.page {
+  background: transparent;
+  padding-bottom: clamp(48px, 8vh, 88px);
+}
+
+.ec-main.page::after {
+  background: linear-gradient(180deg, transparent, rgba(5, 5, 8, 0.55));
+}
+
+.ec-intro {
+  max-width: 42rem;
+  margin-bottom: clamp(28px, 5vh, 48px);
+}
+
+.ec-intro .page-lead {
+  margin-bottom: 0;
+}
+
+/* —— Hero: 3 Instagram carousel panels (or stitched banner) —— */
+.ec-hero-section {
+  margin: 0 0 clamp(40px, 7vh, 72px);
+  position: relative;
+}
+
+.ec-hero-stitched {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--ec-line);
+  background:
+    linear-gradient(135deg, rgba(40, 20, 76, 0.35), rgba(20, 44, 72, 0.25)),
+    var(--card);
+  box-shadow: 0 18px 48px rgba(5, 5, 8, 0.45);
+  animation: ec-hero-in 0.9s var(--ease) both;
+}
+
+.ec-hero-stitched[hidden] {
+  display: none;
+}
+
+.ec-hero-stitched-img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.ec-hero {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--ec-line);
+  background: var(--card);
+  box-shadow: 0 18px 48px rgba(5, 5, 8, 0.45);
+  animation: ec-hero-in 0.9s var(--ease) both;
+}
+
+.ec-hero[hidden] {
+  display: none;
+}
+
+.ec-hero-panel {
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(160deg, rgba(40, 20, 76, 0.4), rgba(20, 44, 72, 0.25)),
+    var(--ec-lab-mid);
+  min-height: clamp(160px, 28vw, 380px);
+}
+
+.ec-hero-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(8, 12, 24, 0.35) 100%
+  );
+  opacity: 0.65;
+}
+
+.ec-hero-panel img {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  aspect-ratio: 4 / 5;
+}
+
+.ec-section {
+  position: relative;
+  margin-top: var(--section-gap);
+  padding-top: 8px;
+  max-width: 1100px;
+}
+
+.ec-section::before {
+  content: "";
+  position: absolute;
+  inset: -8px 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--purple-soft) 55%, transparent) 20%,
+    color-mix(in srgb, var(--blue-bright) 45%, transparent) 80%,
+    transparent
+  );
+}
+
+.ec-section h2 {
+  margin: 0 auto 28px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: var(--h-section);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--white);
+  text-align: center;
+  text-shadow: none;
+}
+
+.ec-grid {
+  display: grid;
+  gap: clamp(14px, 2.2vw, 22px);
+}
+
+.ec-grid-2,
+.ec-grid-2x2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ec-grid-1 {
+  grid-template-columns: minmax(0, 420px);
+  justify-content: center;
+}
+
+.ec-member {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ec-glass);
+  border: 1px solid color-mix(in srgb, var(--purple-soft) 40%, transparent);
+  overflow: hidden;
+  transition:
+    border-color var(--duration) var(--ease),
+    transform var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease);
+  animation: ec-card-in 0.7s var(--ease) both;
+}
+
+.ec-grid-2 .ec-member:nth-child(1),
+.ec-grid-2x2 .ec-member:nth-child(1) { animation-delay: 0.05s; }
+.ec-grid-2 .ec-member:nth-child(2),
+.ec-grid-2x2 .ec-member:nth-child(2) { animation-delay: 0.12s; }
+.ec-grid-2x2 .ec-member:nth-child(3) { animation-delay: 0.18s; }
+.ec-grid-2x2 .ec-member:nth-child(4) { animation-delay: 0.24s; }
+
+.ec-member:hover {
+  border-color: color-mix(in srgb, var(--blue-bright) 55%, transparent);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(5, 5, 8, 0.4);
+}
+
+.ec-member img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  background:
+    linear-gradient(145deg, rgba(40, 20, 76, 0.55), rgba(20, 60, 100, 0.35)),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 11px,
+      rgba(255, 255, 255, 0.03) 11px,
+      rgba(255, 255, 255, 0.03) 12px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 11px,
+      rgba(255, 255, 255, 0.03) 11px,
+      rgba(255, 255, 255, 0.03) 12px
+    ),
+    var(--ec-lab-mid);
+}
+
+.ec-member figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px 18px;
+  border-top: 1px solid color-mix(in srgb, var(--blue-bright) 22%, transparent);
+  background: color-mix(in srgb, var(--black) 55%, var(--purple) 20%);
+}
+
+.ec-role {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--blue-bright) 75%, white);
+}
+
+.ec-name {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(18px, 2.2vw, 22px);
+  letter-spacing: -0.02em;
+  color: var(--white);
+  line-height: 1.2;
+}
+
+.ec-member-solo {
+  width: 100%;
+}
+
+@keyframes ec-hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ec-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ec-hero,
+  .ec-hero-stitched,
+  .ec-member {
+    animation: none;
+  }
+  .ec-member:hover {
+    transform: none;
+  }
+}
+
+/* Mobile: one column per picture */
+@media (max-width: 720px) {
+  .ec-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .ec-hero-panel {
+    min-height: 0;
+  }
+
+  .ec-hero-panel img {
+    aspect-ratio: 4 / 5;
+    max-height: none;
+  }
+
+  .ec-hero-stitched-img {
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .ec-grid-2,
+  .ec-grid-2x2,
+  .ec-grid-1 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 980px) {
+  .ec-hero-panel img {
+    aspect-ratio: 3 / 4;
+  }
+}
